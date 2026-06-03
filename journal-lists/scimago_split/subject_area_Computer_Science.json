@@ -1575,21 +1575,6 @@
     ]
   },
   {
-    "journal": "International Conference on Architectural Support for Programming Languages and Operating Systems - ASPLOS",
-    "issn_print": "",
-    "issn_electronic": "",
-    "quartile": "-",
-    "open_access": "No",
-    "subject_area": [
-      "Computer Science"
-    ],
-    "sub_category": [
-      "Hardware and Architecture",
-      "Information Systems",
-      "Software"
-    ]
-  },
-  {
     "journal": "Archives of Computational Methods in Engineering",
     "issn_print": "1886-1784",
     "issn_electronic": "1134-3060",
@@ -9155,21 +9140,6 @@
       "Computer Vision and Pattern Recognition",
       "Electrical and Electronic Engineering",
       "Signal Processing"
-    ]
-  },
-  {
-    "journal": "Proceedings of the Annual ACM Symposium on Principles of Distributed Computing",
-    "issn_print": "",
-    "issn_electronic": "",
-    "quartile": "-",
-    "open_access": "No",
-    "subject_area": [
-      "Computer Science"
-    ],
-    "sub_category": [
-      "Computer Networks and Communications",
-      "Hardware and Architecture",
-      "Software"
     ]
   },
   {
@@ -17726,21 +17696,6 @@
     ],
     "sub_category": [
       "Human-Computer Interaction"
-    ]
-  },
-  {
-    "journal": "Conference on Human Factors in Computing Systems - Proceedings",
-    "issn_print": "",
-    "issn_electronic": "",
-    "quartile": "-",
-    "open_access": "No",
-    "subject_area": [
-      "Computer Science"
-    ],
-    "sub_category": [
-      "Computer Graphics and Computer-Aided Design",
-      "Human-Computer Interaction",
-      "Software"
     ]
   },
   {

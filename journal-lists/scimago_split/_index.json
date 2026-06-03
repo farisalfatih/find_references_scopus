@@ -32,7 +32,7 @@
   {
     "subject_area": "Computer Science",
     "file": "subject_area_Computer_Science.json",
-    "total_journals": 2616
+    "total_journals": 2613
   },
   {
     "subject_area": "Decision Sciences",
@@ -57,12 +57,12 @@
   {
     "subject_area": "Energy",
     "file": "subject_area_Energy.json",
-    "total_journals": 776
+    "total_journals": 774
   },
   {
     "subject_area": "Engineering",
     "file": "subject_area_Engineering.json",
-    "total_journals": 3948
+    "total_journals": 3946
   },
   {
     "subject_area": "Environmental Science",
@@ -82,7 +82,7 @@
   {
     "subject_area": "Materials Science",
     "file": "subject_area_Materials_Science.json",
-    "total_journals": 1597
+    "total_journals": 1596
   },
   {
     "subject_area": "Mathematics",
@@ -117,7 +117,7 @@
   {
     "subject_area": "Physics and Astronomy",
     "file": "subject_area_Physics_and_Astronomy.json",
-    "total_journals": 1385
+    "total_journals": 1384
   },
   {
     "subject_area": "Psychology",
@@ -127,7 +127,7 @@
   {
     "subject_area": "Social Sciences",
     "file": "subject_area_Social_Sciences.json",
-    "total_journals": 9103
+    "total_journals": 9102
   },
   {
     "subject_area": "Veterinary",
