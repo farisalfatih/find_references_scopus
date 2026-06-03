@@ -1,0 +1,4638 @@
+[
+  {
+    "journal": "Annual Review of Animal Biosciences",
+    "issn_print": "2165-8110",
+    "issn_electronic": "2165-8102",
+    "quartile": "Q1",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Biochemistry, Genetics and Molecular Biology",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Biotechnology",
+      "Genetics",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Animal Nutrition",
+    "issn_print": "2405-6383",
+    "issn_electronic": "2405-6545",
+    "quartile": "Q1",
+    "open_access": "Yes",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Food Animals"
+    ]
+  },
+  {
+    "journal": "GeroScience",
+    "issn_print": "2509-2715",
+    "issn_electronic": "2509-2723",
+    "quartile": "Q1",
+    "open_access": "No",
+    "subject_area": [
+      "Biochemistry, Genetics and Molecular Biology",
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Aging",
+      "Cardiology and Cardiovascular Medicine",
+      "Complementary and Alternative Medicine",
+      "Geriatrics and Gerontology",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Vaccine",
+    "issn_print": "0264-410X",
+    "issn_electronic": "1873-2518",
+    "quartile": "Q1",
+    "open_access": "No",
+    "subject_area": [
+      "Biochemistry, Genetics and Molecular Biology",
+      "Immunology and Microbiology",
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Immunology and Microbiology (miscellaneous)",
+      "Infectious Diseases",
+      "Public Health, Environmental and Occupational Health",
+      "Veterinary (miscellaneous)",
+      "Molecular Medicine"
+    ]
+  },
+  {
+    "journal": "Journal of Zhejiang University: Science B",
+    "issn_print": "1673-1581",
+    "issn_electronic": "1862-1783",
+    "quartile": "Q1",
+    "open_access": "No",
+    "subject_area": [
+      "Biochemistry, Genetics and Molecular Biology",
+      "Medicine",
+      "Pharmacology, Toxicology and Pharmaceutics",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Biochemistry, Genetics and Molecular Biology (miscellaneous)",
+      "Medicine (miscellaneous)",
+      "Pharmacology, Toxicology and Pharmaceutics (miscellaneous)",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Animal Microbiome",
+    "issn_print": "",
+    "issn_electronic": "2524-4671",
+    "quartile": "Q1",
+    "open_access": "Yes",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Agricultural and Biological Sciences (miscellaneous)",
+      "Animal Science and Zoology",
+      "Microbiology (medical)",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "EFSA Journal",
+    "issn_print": "",
+    "issn_electronic": "1831-4732",
+    "quartile": "Q1",
+    "open_access": "Diamond OA",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Immunology and Microbiology",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Food Science",
+      "Parasitology",
+      "Plant Science",
+      "Veterinary (miscellaneous)",
+      "Microbiology"
+    ]
+  },
+  {
+    "journal": "Journal of Integrative Agriculture",
+    "issn_print": "2095-3119",
+    "issn_electronic": "2352-3425",
+    "quartile": "Q1",
+    "open_access": "Diamond OA",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Biochemistry, Genetics and Molecular Biology",
+      "Environmental Science",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Agronomy and Crop Science",
+      "Animal Science and Zoology",
+      "Ecology",
+      "Food Animals",
+      "Food Science",
+      "Plant Science",
+      "Biochemistry"
+    ]
+  },
+  {
+    "journal": "Animal Models and Experimental Medicine",
+    "issn_print": "2576-2095",
+    "issn_electronic": "2096-5451",
+    "quartile": "Q1",
+    "open_access": "Yes",
+    "subject_area": [
+      "Biochemistry, Genetics and Molecular Biology",
+      "Health Professions",
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Medical Laboratory Technology",
+      "Medicine (miscellaneous)",
+      "Veterinary (miscellaneous)",
+      "Biochemistry",
+      "Molecular Biology"
+    ]
+  },
+  {
+    "journal": "Veterinary Quarterly",
+    "issn_print": "0165-2176",
+    "issn_electronic": "1875-5941",
+    "quartile": "Q1",
+    "open_access": "Yes",
+    "subject_area": [
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Medicine (miscellaneous)",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Animal Frontiers",
+    "issn_print": "2160-6064",
+    "issn_electronic": "2160-6056",
+    "quartile": "Q1",
+    "open_access": "Diamond OA",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Food Animals"
+    ]
+  },
+  {
+    "journal": "Current Research in Parasitology and Vector-Borne Diseases",
+    "issn_print": "",
+    "issn_electronic": "2667-114X",
+    "quartile": "Q1",
+    "open_access": "Yes",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Immunology and Microbiology",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Insect Science",
+      "Parasitology",
+      "Veterinary (miscellaneous)",
+      "Virology"
+    ]
+  },
+  {
+    "journal": "Veterinary Research",
+    "issn_print": "0928-4249",
+    "issn_electronic": "1297-9716",
+    "quartile": "Q1",
+    "open_access": "Yes",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Journal of Feline Medicine and Surgery",
+    "issn_print": "1098-612X",
+    "issn_electronic": "1532-2750",
+    "quartile": "Q1",
+    "open_access": "Yes",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Small Animals"
+    ]
+  },
+  {
+    "journal": "Journal of Veterinary Internal Medicine",
+    "issn_print": "1939-1676",
+    "issn_electronic": "0891-6640",
+    "quartile": "Q1",
+    "open_access": "Yes",
+    "subject_area": [
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)",
+      "Medicine (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Transboundary and Emerging Diseases",
+    "issn_print": "1865-1674",
+    "issn_electronic": "1865-1682",
+    "quartile": "Q1",
+    "open_access": "No",
+    "subject_area": [
+      "Immunology and Microbiology",
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)",
+      "Immunology and Microbiology (miscellaneous)",
+      "Medicine (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Frontiers of Agricultural Science and Engineering",
+    "issn_print": "2095-7505",
+    "issn_electronic": "2095-977X",
+    "quartile": "Q1",
+    "open_access": "Diamond OA",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Biochemistry, Genetics and Molecular Biology",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Agricultural and Biological Sciences (miscellaneous)",
+      "Veterinary (miscellaneous)",
+      "Biotechnology"
+    ]
+  },
+  {
+    "journal": "Pakistan Veterinary Journal",
+    "issn_print": "0253-8318",
+    "issn_electronic": "2074-7764",
+    "quartile": "Q1",
+    "open_access": "Yes",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Laboratory Animal Research",
+    "issn_print": "1738-6055",
+    "issn_electronic": "2233-7660",
+    "quartile": "Q1",
+    "open_access": "Diamond OA",
+    "subject_area": [
+      "Biochemistry, Genetics and Molecular Biology",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)",
+      "Biochemistry, Genetics and Molecular Biology (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Equine Veterinary Journal",
+    "issn_print": "2042-3306",
+    "issn_electronic": "0425-1644",
+    "quartile": "Q1",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Equine"
+    ]
+  },
+  {
+    "journal": "Zoonoses and Public Health",
+    "issn_print": "1863-1959",
+    "issn_electronic": "1863-2378",
+    "quartile": "Q1",
+    "open_access": "No",
+    "subject_area": [
+      "Immunology and Microbiology",
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)",
+      "Epidemiology",
+      "Immunology and Microbiology (miscellaneous)",
+      "Infectious Diseases",
+      "Public Health, Environmental and Occupational Health"
+    ]
+  },
+  {
+    "journal": "Theriogenology",
+    "issn_print": "0093-691X",
+    "issn_electronic": "1879-3231",
+    "quartile": "Q1",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Equine",
+      "Food Animals",
+      "Small Animals"
+    ]
+  },
+  {
+    "journal": "Journal of Animal Science and Technology",
+    "issn_print": "2672-0191",
+    "issn_electronic": "2055-0391",
+    "quartile": "Q1",
+    "open_access": "Yes",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Biochemistry, Genetics and Molecular Biology",
+      "Environmental Science",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Ecology",
+      "Food Science",
+      "Veterinary (miscellaneous)",
+      "Biochemistry, Genetics and Molecular Biology (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Porcine Health Management",
+    "issn_print": "",
+    "issn_electronic": "2055-5660",
+    "quartile": "Q1",
+    "open_access": "Yes",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Food Animals",
+      "Small Animals"
+    ]
+  },
+  {
+    "journal": "Preventive Veterinary Medicine",
+    "issn_print": "0167-5877",
+    "issn_electronic": "1873-1716",
+    "quartile": "Q1",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Food Animals"
+    ]
+  },
+  {
+    "journal": "Frontiers in Veterinary Science",
+    "issn_print": "",
+    "issn_electronic": "2297-1769",
+    "quartile": "Q1",
+    "open_access": "Yes",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Veterinary Pathology",
+    "issn_print": "1544-2217",
+    "issn_electronic": "0300-9858",
+    "quartile": "Q1",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Veterinary Journal",
+    "issn_print": "1532-2971",
+    "issn_electronic": "1090-0233",
+    "quartile": "Q1",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Animal Bioscience",
+    "issn_print": "2765-0235",
+    "issn_electronic": "2765-0189",
+    "quartile": "Q1",
+    "open_access": "Yes",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Biochemistry, Genetics and Molecular Biology",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Veterinary (miscellaneous)",
+      "Food Science",
+      "Genetics",
+      "Physiology"
+    ]
+  },
+  {
+    "journal": "Animals",
+    "issn_print": "",
+    "issn_electronic": "2076-2615",
+    "quartile": "Q1",
+    "open_access": "Yes",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Medical Mycology",
+    "issn_print": "1369-3786",
+    "issn_electronic": "1460-2709",
+    "quartile": "Q1",
+    "open_access": "No",
+    "subject_area": [
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)",
+      "Infectious Diseases",
+      "Medicine (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Parasite",
+    "issn_print": "1252-607X",
+    "issn_electronic": "1776-1042",
+    "quartile": "Q1",
+    "open_access": "Yes",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Immunology and Microbiology",
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Agricultural and Biological Sciences (miscellaneous)",
+      "Animal Science and Zoology",
+      "Insect Science",
+      "Parasitology",
+      "Veterinary (miscellaneous)",
+      "Infectious Diseases"
+    ]
+  },
+  {
+    "journal": "Mycopathologia",
+    "issn_print": "1573-0832",
+    "issn_electronic": "0301-486X",
+    "quartile": "Q1",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Immunology and Microbiology",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Agronomy and Crop Science",
+      "Plant Science",
+      "Veterinary (miscellaneous)",
+      "Applied Microbiology and Biotechnology",
+      "Microbiology"
+    ]
+  },
+  {
+    "journal": "Vaccine: X",
+    "issn_print": "",
+    "issn_electronic": "2590-1362",
+    "quartile": "Q1",
+    "open_access": "Yes",
+    "subject_area": [
+      "Biochemistry, Genetics and Molecular Biology",
+      "Immunology and Microbiology",
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)",
+      "Immunology and Microbiology (miscellaneous)",
+      "Infectious Diseases",
+      "Public Health, Environmental and Occupational Health",
+      "Molecular Medicine"
+    ]
+  },
+  {
+    "journal": "Animal Reproduction Science",
+    "issn_print": "0378-4320",
+    "issn_electronic": "1873-2232",
+    "quartile": "Q1",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Biochemistry, Genetics and Molecular Biology",
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Food Animals",
+      "Medicine (miscellaneous)",
+      "Endocrinology"
+    ]
+  },
+  {
+    "journal": "BMC Veterinary Research",
+    "issn_print": "",
+    "issn_electronic": "1746-6148",
+    "quartile": "Q1",
+    "open_access": "Yes",
+    "subject_area": [
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)",
+      "Medicine (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Veterinary and Animal Science",
+    "issn_print": "",
+    "issn_electronic": "2451-943X",
+    "quartile": "Q1",
+    "open_access": "Yes",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Acta Tropica",
+    "issn_print": "1873-6254",
+    "issn_electronic": "0001-706X",
+    "quartile": "Q1",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Immunology and Microbiology",
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Insect Science",
+      "Veterinary (miscellaneous)",
+      "Infectious Diseases",
+      "Parasitology"
+    ]
+  },
+  {
+    "journal": "Irish Veterinary Journal",
+    "issn_print": "0368-0762",
+    "issn_electronic": "2046-0481",
+    "quartile": "Q1",
+    "open_access": "Yes",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Journal of Medical Entomology",
+    "issn_print": "0022-2585",
+    "issn_electronic": "1938-2928",
+    "quartile": "Q1",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Immunology and Microbiology",
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Insect Science",
+      "Veterinary (miscellaneous)",
+      "Infectious Diseases",
+      "Parasitology"
+    ]
+  },
+  {
+    "journal": "Journal of Veterinary Cardiology",
+    "issn_print": "1760-2734",
+    "issn_electronic": "1875-0834",
+    "quartile": "Q1",
+    "open_access": "No",
+    "subject_area": [
+      "Biochemistry, Genetics and Molecular Biology",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)",
+      "Physiology"
+    ]
+  },
+  {
+    "journal": "Veterinary Sciences",
+    "issn_print": "",
+    "issn_electronic": "2306-7381",
+    "quartile": "Q1",
+    "open_access": "Yes",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Journal of Animal Physiology and Animal Nutrition",
+    "issn_print": "1439-0396",
+    "issn_electronic": "0931-2439",
+    "quartile": "Q1",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Food Animals"
+    ]
+  },
+  {
+    "journal": "Journal of Small Animal Practice",
+    "issn_print": "0022-4510",
+    "issn_electronic": "1748-5827",
+    "quartile": "Q1",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Small Animals"
+    ]
+  },
+  {
+    "journal": "Avian Pathology",
+    "issn_print": "0307-9457",
+    "issn_electronic": "1465-3338",
+    "quartile": "Q1",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Immunology and Microbiology",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Food Animals",
+      "Immunology and Microbiology (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Veterinary Microbiology",
+    "issn_print": "0378-1135",
+    "issn_electronic": "1873-2542",
+    "quartile": "Q1",
+    "open_access": "No",
+    "subject_area": [
+      "Immunology and Microbiology",
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)",
+      "Medicine (miscellaneous)",
+      "Microbiology"
+    ]
+  },
+  {
+    "journal": "Veterinary Clinics of North America - Small Animal Practice",
+    "issn_print": "0195-5616",
+    "issn_electronic": "1878-1306",
+    "quartile": "Q1",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Small Animals"
+    ]
+  },
+  {
+    "journal": "Veterinary Parasitology",
+    "issn_print": "0304-4017",
+    "issn_electronic": "1873-2550",
+    "quartile": "Q1",
+    "open_access": "No",
+    "subject_area": [
+      "Immunology and Microbiology",
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)",
+      "Medicine (miscellaneous)",
+      "Parasitology"
+    ]
+  },
+  {
+    "journal": "Journal of Veterinary Emergency and Critical Care",
+    "issn_print": "1479-3261",
+    "issn_electronic": "1476-4431",
+    "quartile": "Q1",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Veterinary and Comparative Oncology",
+    "issn_print": "1476-5829",
+    "issn_electronic": "1476-5810",
+    "quartile": "Q1",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Experimental Animals",
+    "issn_print": "",
+    "issn_electronic": "1341-1357",
+    "quartile": "Q1",
+    "open_access": "Yes",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Biochemistry, Genetics and Molecular Biology",
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Veterinary (miscellaneous)",
+      "Biochemistry, Genetics and Molecular Biology (miscellaneous)",
+      "Medicine (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "International Journal of Veterinary Science and Medicine",
+    "issn_print": "2314-4599",
+    "issn_electronic": "2314-4580",
+    "quartile": "Q1",
+    "open_access": "Yes",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Frontiers in Parasitology",
+    "issn_print": "",
+    "issn_electronic": "2813-2424",
+    "quartile": "Q1",
+    "open_access": "Yes",
+    "subject_area": [
+      "Immunology and Microbiology",
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)",
+      "Infectious Diseases",
+      "Parasitology"
+    ]
+  },
+  {
+    "journal": "Applied Animal Behaviour Science",
+    "issn_print": "",
+    "issn_electronic": "0168-1591",
+    "quartile": "Q1",
+    "open_access": "Yes",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Food Animals"
+    ]
+  },
+  {
+    "journal": "Medical and Veterinary Entomology",
+    "issn_print": "0269-283X",
+    "issn_electronic": "1365-2915",
+    "quartile": "Q1",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Immunology and Microbiology",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Insect Science",
+      "Veterinary (miscellaneous)",
+      "Ecology, Evolution, Behavior and Systematics",
+      "Parasitology"
+    ]
+  },
+  {
+    "journal": "Veterinary Clinics of North America - Food Animal Practice",
+    "issn_print": "0749-0720",
+    "issn_electronic": "1558-4240",
+    "quartile": "Q1",
+    "open_access": "No",
+    "subject_area": [
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Food Animals",
+      "Medicine (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Comparative Immunology, Microbiology and Infectious Diseases",
+    "issn_print": "1878-1667",
+    "issn_electronic": "0147-9571",
+    "quartile": "Q1",
+    "open_access": "No",
+    "subject_area": [
+      "Immunology and Microbiology",
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)",
+      "Infectious Diseases",
+      "Medicine (miscellaneous)",
+      "Immunology",
+      "Immunology and Allergy",
+      "Microbiology"
+    ]
+  },
+  {
+    "journal": "Veterinary Surgery",
+    "issn_print": "1532-950X",
+    "issn_electronic": "0161-3499",
+    "quartile": "Q1",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Dairy",
+    "issn_print": "",
+    "issn_electronic": "2624-862X",
+    "quartile": "Q1",
+    "open_access": "Yes",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)",
+      "Agricultural and Biological Sciences (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Journal of the American Veterinary Medical Association",
+    "issn_print": "0003-1488",
+    "issn_electronic": "1943-569X",
+    "quartile": "Q1",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Translational Animal Science",
+    "issn_print": "",
+    "issn_electronic": "2573-2102",
+    "quartile": "Q1",
+    "open_access": "Yes",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Veterinary World",
+    "issn_print": "2231-0916",
+    "issn_electronic": "0972-8988",
+    "quartile": "Q1",
+    "open_access": "Yes",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Journal of Animal Breeding and Genetics",
+    "issn_print": "0931-2668",
+    "issn_electronic": "1439-0388",
+    "quartile": "Q1",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Food Animals",
+      "Medicine (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Journal of the American Animal Hospital Association",
+    "issn_print": "1547-3317",
+    "issn_electronic": "0587-2871",
+    "quartile": "Q1",
+    "open_access": "No",
+    "subject_area": [
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Small Animals",
+      "Medicine (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Veterinary Medicine and Science",
+    "issn_print": "",
+    "issn_electronic": "2053-1095",
+    "quartile": "Q1",
+    "open_access": "Yes",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Journal of Fish Diseases",
+    "issn_print": "1365-2761",
+    "issn_electronic": "0140-7775",
+    "quartile": "Q1",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)",
+      "Aquatic Science"
+    ]
+  },
+  {
+    "journal": "Acta Veterinaria Scandinavica",
+    "issn_print": "1751-0147",
+    "issn_electronic": "0044-605X",
+    "quartile": "Q1",
+    "open_access": "Yes",
+    "subject_area": [
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)",
+      "Medicine (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Veterinary Radiology and Ultrasound",
+    "issn_print": "1740-8261",
+    "issn_electronic": "1058-8183",
+    "quartile": "Q1",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Animal Welfare",
+    "issn_print": "",
+    "issn_electronic": "0962-7286",
+    "quartile": "Q1",
+    "open_access": "Yes",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Biochemistry, Genetics and Molecular Biology",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Veterinary (miscellaneous)",
+      "Biochemistry, Genetics and Molecular Biology (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Veterinary Dermatology",
+    "issn_print": "0959-4493",
+    "issn_electronic": "1365-3164",
+    "quartile": "Q1",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Annals of Animal Science",
+    "issn_print": "2300-8733",
+    "issn_electronic": "1642-3402",
+    "quartile": "Q1",
+    "open_access": "Yes",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Small Animals",
+      "Food Animals"
+    ]
+  },
+  {
+    "journal": "Veterinary Medicine International",
+    "issn_print": "2090-8113",
+    "issn_electronic": "2042-0048",
+    "quartile": "Q1",
+    "open_access": "Yes",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Animal Reproduction",
+    "issn_print": "1984-3143",
+    "issn_electronic": "1806-9614",
+    "quartile": "Q1",
+    "open_access": "Yes",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Livestock Science",
+    "issn_print": "",
+    "issn_electronic": "1871-1413",
+    "quartile": "Q1",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)",
+      "Animal Science and Zoology"
+    ]
+  },
+  {
+    "journal": "Animal Diseases",
+    "issn_print": "",
+    "issn_electronic": "2731-0442",
+    "quartile": "Q1",
+    "open_access": "Diamond OA",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Immunology and Microbiology",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)",
+      "Animal Science and Zoology",
+      "Immunology and Microbiology (miscellaneous)",
+      "Virology"
+    ]
+  },
+  {
+    "journal": "Research in Veterinary Science",
+    "issn_print": "1532-2661",
+    "issn_electronic": "0034-5288",
+    "quartile": "Q1",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Poultry",
+    "issn_print": "",
+    "issn_electronic": "2674-1164",
+    "quartile": "Q1",
+    "open_access": "Yes",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Biochemistry, Genetics and Molecular Biology",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)",
+      "Agricultural and Biological Sciences (miscellaneous)",
+      "Biochemistry, Genetics and Molecular Biology (miscellaneous)",
+      "Food Animals"
+    ]
+  },
+  {
+    "journal": "Veterinary Research Communications",
+    "issn_print": "1573-7446",
+    "issn_electronic": "0165-7380",
+    "quartile": "Q1",
+    "open_access": "No",
+    "subject_area": [
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)",
+      "Medicine (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Domestic Animal Endocrinology",
+    "issn_print": "1879-0054",
+    "issn_electronic": "0739-7240",
+    "quartile": "Q2",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Biochemistry, Genetics and Molecular Biology",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Food Animals",
+      "Endocrinology"
+    ]
+  },
+  {
+    "journal": "Parasitology Research",
+    "issn_print": "1432-1955",
+    "issn_electronic": "0932-0113",
+    "quartile": "Q1",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Immunology and Microbiology",
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)",
+      "Insect Science",
+      "Parasitology",
+      "Infectious Diseases",
+      "Medicine (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Veterinary Anaesthesia and Analgesia",
+    "issn_print": "1467-2995",
+    "issn_electronic": "1467-2987",
+    "quartile": "Q2",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Anthrozoos",
+    "issn_print": "0892-7936",
+    "issn_electronic": "1753-0377",
+    "quartile": "Q1",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Social Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Anthropology",
+      "Animal Science and Zoology",
+      "Education",
+      "Sociology and Political Science",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Archives Animal Breeding",
+    "issn_print": "0003-9438",
+    "issn_electronic": "2363-9822",
+    "quartile": "Q2",
+    "open_access": "Yes",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Biochemistry, Genetics and Molecular Biology",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Agronomy and Crop Science",
+      "Animal Science and Zoology",
+      "Food Animals",
+      "Plant Science",
+      "Genetics"
+    ]
+  },
+  {
+    "journal": "Pets",
+    "issn_print": "",
+    "issn_electronic": "2813-9372",
+    "quartile": "Q2",
+    "open_access": "Yes",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Small Animals"
+    ]
+  },
+  {
+    "journal": "Journal of Veterinary Science",
+    "issn_print": "1229-845X",
+    "issn_electronic": "1976-555X",
+    "quartile": "Q2",
+    "open_access": "Yes",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Veterinary Record Open",
+    "issn_print": "2399-2050",
+    "issn_electronic": "2052-6113",
+    "quartile": "Q2",
+    "open_access": "Yes",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Zoonoses (Ireland)",
+    "issn_print": "2737-7474",
+    "issn_electronic": "2737-7466",
+    "quartile": "Q2",
+    "open_access": "Diamond OA",
+    "subject_area": [
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)",
+      "Infectious Diseases"
+    ]
+  },
+  {
+    "journal": "Journal of Comparative Pathology",
+    "issn_print": "0021-9975",
+    "issn_electronic": "1532-3129",
+    "quartile": "Q2",
+    "open_access": "No",
+    "subject_area": [
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Pathology and Forensic Medicine",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Veterinary Ophthalmology",
+    "issn_print": "1463-5224",
+    "issn_electronic": "1463-5216",
+    "quartile": "Q2",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Journal of Veterinary Behavior",
+    "issn_print": "",
+    "issn_electronic": "1558-7878",
+    "quartile": "Q2",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Ruminants",
+    "issn_print": "",
+    "issn_electronic": "2673-933X",
+    "quartile": "Q2",
+    "open_access": "Yes",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Tropical Animal Health and Production",
+    "issn_print": "1573-7438",
+    "issn_electronic": "0049-4747",
+    "quartile": "Q2",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Food Animals"
+    ]
+  },
+  {
+    "journal": "Journal of Advanced Veterinary and Animal Research",
+    "issn_print": "",
+    "issn_electronic": "2311-7710",
+    "quartile": "Q2",
+    "open_access": "Yes",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Journal of Applied Animal Research",
+    "issn_print": "0974-1844",
+    "issn_electronic": "0971-2119",
+    "quartile": "Q2",
+    "open_access": "Yes",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Australian Veterinary Journal",
+    "issn_print": "1751-0813",
+    "issn_electronic": "0005-0423",
+    "quartile": "Q2",
+    "open_access": "No",
+    "subject_area": [
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)",
+      "Medicine (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Onderstepoort Journal of Veterinary Research",
+    "issn_print": "2219-0635",
+    "issn_electronic": "0030-2465",
+    "quartile": "Q2",
+    "open_access": "Yes",
+    "subject_area": [
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)",
+      "Medicine (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Veterinary Parasitology: Regional Studies and Reports",
+    "issn_print": "",
+    "issn_electronic": "2405-9390",
+    "quartile": "Q2",
+    "open_access": "No",
+    "subject_area": [
+      "Immunology and Microbiology",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Parasitology",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Journal of Veterinary Diagnostic Investigation",
+    "issn_print": "1943-4936",
+    "issn_electronic": "1040-6387",
+    "quartile": "Q2",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Veterinary Immunology and Immunopathology",
+    "issn_print": "0165-2427",
+    "issn_electronic": "1873-2534",
+    "quartile": "Q2",
+    "open_access": "No",
+    "subject_area": [
+      "Immunology and Microbiology",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)",
+      "Immunology"
+    ]
+  },
+  {
+    "journal": "American Journal of Veterinary Research",
+    "issn_print": "1943-5681",
+    "issn_electronic": "0002-9645",
+    "quartile": "Q2",
+    "open_access": "Yes",
+    "subject_area": [
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)",
+      "Medicine (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Avian Diseases",
+    "issn_print": "",
+    "issn_electronic": "0005-2086",
+    "quartile": "Q2",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Immunology and Microbiology",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Food Animals",
+      "Immunology and Microbiology (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Journal of Veterinary Medical Education",
+    "issn_print": "",
+    "issn_electronic": "0748-321X",
+    "quartile": "Q2",
+    "open_access": "No",
+    "subject_area": [
+      "Medicine",
+      "Social Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Education",
+      "Veterinary (miscellaneous)",
+      "Medicine (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Veterinary Clinical Pathology",
+    "issn_print": "0275-6382",
+    "issn_electronic": "1939-165X",
+    "quartile": "Q2",
+    "open_access": "No",
+    "subject_area": [
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)",
+      "Medicine (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Comparative Medicine",
+    "issn_print": "1532-0820",
+    "issn_electronic": "2769-819X",
+    "quartile": "Q2",
+    "open_access": "Yes",
+    "subject_area": [
+      "Biochemistry, Genetics and Molecular Biology",
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)",
+      "Biochemistry, Genetics and Molecular Biology (miscellaneous)",
+      "Medicine (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Small Ruminant Research",
+    "issn_print": "",
+    "issn_electronic": "0921-4488",
+    "quartile": "Q2",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Food Animals"
+    ]
+  },
+  {
+    "journal": "Veterinary and Comparative Orthopaedics and Traumatology",
+    "issn_print": "2567-6911",
+    "issn_electronic": "0932-0814",
+    "quartile": "Q2",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Journal of Veterinary Research (Poland)",
+    "issn_print": "2450-7393",
+    "issn_electronic": "2450-8608",
+    "quartile": "Q2",
+    "open_access": "Yes",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Journal of Equine Veterinary Science",
+    "issn_print": "1542-7412",
+    "issn_electronic": "0737-0806",
+    "quartile": "Q1",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Equine"
+    ]
+  },
+  {
+    "journal": "Topics in Companion Animal Medicine",
+    "issn_print": "",
+    "issn_electronic": "1938-9736",
+    "quartile": "Q2",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Small Animals"
+    ]
+  },
+  {
+    "journal": "Archives of Animal Nutrition",
+    "issn_print": "1477-2817",
+    "issn_electronic": "1745-039X",
+    "quartile": "Q2",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Veterinary (miscellaneous)",
+      "Medicine (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Acta Medica Academica",
+    "issn_print": "1840-2879",
+    "issn_electronic": "1840-1848",
+    "quartile": "Q2",
+    "open_access": "Diamond OA",
+    "subject_area": [
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)",
+      "Epidemiology",
+      "Public Health, Environmental and Occupational Health"
+    ]
+  },
+  {
+    "journal": "CAB Reviews: Perspectives in Agriculture, Veterinary Science, Nutrition and Natural Resources",
+    "issn_print": "",
+    "issn_electronic": "1749-8848",
+    "quartile": "Q2",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Environmental Science",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Agricultural and Biological Sciences (miscellaneous)",
+      "Nature and Landscape Conservation",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Veterinary Research Forum",
+    "issn_print": "",
+    "issn_electronic": "2008-8140",
+    "quartile": "Q2",
+    "open_access": "Yes",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Zoonotic Diseases",
+    "issn_print": "",
+    "issn_electronic": "2813-0227",
+    "quartile": "Q2",
+    "open_access": "Yes",
+    "subject_area": [
+      "Immunology and Microbiology",
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)",
+      "Immunology and Microbiology (miscellaneous)",
+      "Medicine (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Magyar Allatorvosok Lapja",
+    "issn_print": "",
+    "issn_electronic": "0025-004X",
+    "quartile": "Q2",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Equine Veterinary Education",
+    "issn_print": "2042-3292",
+    "issn_electronic": "0957-7734",
+    "quartile": "Q1",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Equine"
+    ]
+  },
+  {
+    "journal": "International Journal of Veterinary Science",
+    "issn_print": "2304-3075",
+    "issn_electronic": "2305-4360",
+    "quartile": "Q2",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Journal of Swine Health and Production",
+    "issn_print": "",
+    "issn_electronic": "1537-209X",
+    "quartile": "Q2",
+    "open_access": "Yes",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Food Animals"
+    ]
+  },
+  {
+    "journal": "Laboratory Animals",
+    "issn_print": "0023-6772",
+    "issn_electronic": "1758-1117",
+    "quartile": "Q2",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Veterinary Clinics of North America - Equine Practice",
+    "issn_print": "1558-4224",
+    "issn_electronic": "0749-0739",
+    "quartile": "Q2",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Equine"
+    ]
+  },
+  {
+    "journal": "Veterinary Record",
+    "issn_print": "0042-4900",
+    "issn_electronic": "2042-7670",
+    "quartile": "Q2",
+    "open_access": "Yes",
+    "subject_area": [
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)",
+      "Medicine (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Comparative Cognition and Behavior Reviews",
+    "issn_print": "",
+    "issn_electronic": "1911-4745",
+    "quartile": "Q2",
+    "open_access": "Diamond OA",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Veterinary (miscellaneous)",
+      "Ecology, Evolution, Behavior and Systematics"
+    ]
+  },
+  {
+    "journal": "Parasitologia",
+    "issn_print": "",
+    "issn_electronic": "2673-6772",
+    "quartile": "Q2",
+    "open_access": "Yes",
+    "subject_area": [
+      "Immunology and Microbiology",
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)",
+      "Medicine (miscellaneous)",
+      "Parasitology"
+    ]
+  },
+  {
+    "journal": "Journal of Veterinary Medical Science",
+    "issn_print": "1347-7439",
+    "issn_electronic": "0916-7250",
+    "quartile": "Q2",
+    "open_access": "Yes",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "German Journal of Veterinary Research",
+    "issn_print": "",
+    "issn_electronic": "2703-1322",
+    "quartile": "Q2",
+    "open_access": "Yes",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Revista Brasileira de Parasitologia Veterinaria",
+    "issn_print": "1984-2961",
+    "issn_electronic": "0103-846X",
+    "quartile": "Q2",
+    "open_access": "Yes",
+    "subject_area": [
+      "Immunology and Microbiology",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)",
+      "Parasitology"
+    ]
+  },
+  {
+    "journal": "Journal of Applied Animal Welfare Science",
+    "issn_print": "1532-7604",
+    "issn_electronic": "1088-8705",
+    "quartile": "Q2",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Open Veterinary Journal",
+    "issn_print": "2218-6050",
+    "issn_electronic": "2226-4485",
+    "quartile": "Q2",
+    "open_access": "Yes",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Acta Agriculturae Scandinavica - Section A: Animal Science",
+    "issn_print": "0906-4702",
+    "issn_electronic": "1651-1972",
+    "quartile": "Q2",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Food Animals"
+    ]
+  },
+  {
+    "journal": "Veterinary Clinics of North America - Exotic Animal Practice",
+    "issn_print": "1558-4232",
+    "issn_electronic": "1094-9194",
+    "quartile": "Q2",
+    "open_access": "No",
+    "subject_area": [
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Small Animals",
+      "Medicine (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Journal fur Verbraucherschutz und Lebensmittelsicherheit",
+    "issn_print": "",
+    "issn_electronic": "1661-5751",
+    "quartile": "Q2",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Biochemistry, Genetics and Molecular Biology",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Agronomy and Crop Science",
+      "Food Animals",
+      "Biotechnology",
+      "Food Science"
+    ]
+  },
+  {
+    "journal": "Journal of Exotic Pet Medicine",
+    "issn_print": "1931-6283",
+    "issn_electronic": "1557-5063",
+    "quartile": "Q2",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Human-Animal Interactions",
+    "issn_print": "",
+    "issn_electronic": "2957-9538",
+    "quartile": "Q2",
+    "open_access": "Yes",
+    "subject_area": [
+      "Psychology",
+      "Social Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Social Sciences (miscellaneous)",
+      "Veterinary (miscellaneous)",
+      "Applied Psychology",
+      "Psychology (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Schweizer Archiv fur Tierheilkunde",
+    "issn_print": "0036-7281",
+    "issn_electronic": "1664-2848",
+    "quartile": "Q2",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Journal of Zoological and Botanical Gardens",
+    "issn_print": "",
+    "issn_electronic": "2673-5636",
+    "quartile": "Q2",
+    "open_access": "Yes",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Agricultural and Biological Sciences (miscellaneous)",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Polish Journal of Veterinary Sciences",
+    "issn_print": "",
+    "issn_electronic": "1505-1773",
+    "quartile": "Q2",
+    "open_access": "No",
+    "subject_area": [
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)",
+      "Medicine (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Iranian Journal of Veterinary Medicine",
+    "issn_print": "2251-8894",
+    "issn_electronic": "2252-0554",
+    "quartile": "Q2",
+    "open_access": "Yes",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Journal of Feline Medicine and Surgery Open Reports",
+    "issn_print": "",
+    "issn_electronic": "2055-1169",
+    "quartile": "Q2",
+    "open_access": "Yes",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Small Animals"
+    ]
+  },
+  {
+    "journal": "Archives of Razi Institute",
+    "issn_print": "2008-9872",
+    "issn_electronic": "0365-3439",
+    "quartile": "Q2",
+    "open_access": "Diamond OA",
+    "subject_area": [
+      "Immunology and Microbiology",
+      "Pharmacology, Toxicology and Pharmaceutics",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)",
+      "Immunology and Microbiology (miscellaneous)",
+      "Toxicology"
+    ]
+  },
+  {
+    "journal": "New Zealand Veterinary Journal",
+    "issn_print": "0048-0169",
+    "issn_electronic": "1176-0710",
+    "quartile": "Q2",
+    "open_access": "No",
+    "subject_area": [
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)",
+      "Medicine (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Canadian Journal of Animal Science",
+    "issn_print": "0008-3984",
+    "issn_electronic": "1918-1825",
+    "quartile": "Q2",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Food Animals",
+      "Animal Science and Zoology"
+    ]
+  },
+  {
+    "journal": "Canadian Journal of Veterinary Research",
+    "issn_print": "1928-9022",
+    "issn_electronic": "0830-9000",
+    "quartile": "Q2",
+    "open_access": "No",
+    "subject_area": [
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)",
+      "Medicine (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Journal of Veterinary Dentistry",
+    "issn_print": "2470-4083",
+    "issn_electronic": "0898-7564",
+    "quartile": "Q2",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Journal of Zoo and Wildlife Medicine",
+    "issn_print": "",
+    "issn_electronic": "1042-7260",
+    "quartile": "Q2",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)",
+      "Animal Science and Zoology",
+      "Medicine (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Tropical Animal Science Journal",
+    "issn_print": "2615-790X",
+    "issn_electronic": "2615-787X",
+    "quartile": "Q2",
+    "open_access": "Yes",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)",
+      "Animal Science and Zoology",
+      "Food Animals"
+    ]
+  },
+  {
+    "journal": "Journal of Veterinary Medicine Series C: Anatomia Histologia Embryologia",
+    "issn_print": "1439-0264",
+    "issn_electronic": "0340-2096",
+    "quartile": "Q2",
+    "open_access": "No",
+    "subject_area": [
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)",
+      "Medicine (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "International Journal of One Health",
+    "issn_print": "2455-5673",
+    "issn_electronic": "2455-8931",
+    "quartile": "Q2",
+    "open_access": "Yes",
+    "subject_area": [
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)",
+      "Health Policy",
+      "Infectious Diseases",
+      "Public Health, Environmental and Occupational Health"
+    ]
+  },
+  {
+    "journal": "Journal of Veterinary Pharmacology and Therapeutics",
+    "issn_print": "0140-7783",
+    "issn_electronic": "1365-2885",
+    "quartile": "Q2",
+    "open_access": "No",
+    "subject_area": [
+      "Pharmacology, Toxicology and Pharmaceutics",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)",
+      "Pharmacology"
+    ]
+  },
+  {
+    "journal": "Veterinarni Medicina",
+    "issn_print": "1805-9392",
+    "issn_electronic": "0375-8427",
+    "quartile": "Q2",
+    "open_access": "Yes",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Journal of Avian Medicine and Surgery",
+    "issn_print": "",
+    "issn_electronic": "1082-6742",
+    "quartile": "Q2",
+    "open_access": "No",
+    "subject_area": [
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Small Animals",
+      "Medicine (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Ciencia e Agrotecnologia",
+    "issn_print": "1413-7054",
+    "issn_electronic": "1981-1829",
+    "quartile": "Q2",
+    "open_access": "Yes",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)",
+      "Agronomy and Crop Science",
+      "Animal Science and Zoology",
+      "Food Science",
+      "Soil Science"
+    ]
+  },
+  {
+    "journal": "Kafkas Universitesi Veteriner Fakultesi Dergisi",
+    "issn_print": "1300-6045",
+    "issn_electronic": "1309-2251",
+    "quartile": "Q2",
+    "open_access": "Diamond OA",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Revista Brasileira de Medicina Veterinaria",
+    "issn_print": "0100-2430",
+    "issn_electronic": "2527-2179",
+    "quartile": "Q2",
+    "open_access": "Yes",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Veterinaria Italiana",
+    "issn_print": "0505-401X",
+    "issn_electronic": "1828-1427",
+    "quartile": "Q2",
+    "open_access": "Diamond OA",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Pan African Medical Journal One Health",
+    "issn_print": "",
+    "issn_electronic": "2707-2800",
+    "quartile": "Q2",
+    "open_access": "Yes",
+    "subject_area": [
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)",
+      "Health Policy",
+      "Public Health, Environmental and Occupational Health"
+    ]
+  },
+  {
+    "journal": "Iranian Journal of Veterinary Research",
+    "issn_print": "",
+    "issn_electronic": "1728-1997",
+    "quartile": "Q2",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)",
+      "Animal Science and Zoology"
+    ]
+  },
+  {
+    "journal": "Acta Veterinaria",
+    "issn_print": "0567-8315",
+    "issn_electronic": "1820-7448",
+    "quartile": "Q2",
+    "open_access": "Yes",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "World's Veterinary Journal",
+    "issn_print": "",
+    "issn_electronic": "2322-4568",
+    "quartile": "Q3",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Acta Veterinaria Hungarica",
+    "issn_print": "1588-2705",
+    "issn_electronic": "0236-6290",
+    "quartile": "Q3",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Pesquisa Veterinaria Brasileira",
+    "issn_print": "0100-736X",
+    "issn_electronic": "1678-5150",
+    "quartile": "Q3",
+    "open_access": "Yes",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Journal of the South African Veterinary Association",
+    "issn_print": "1019-9128",
+    "issn_electronic": "2224-9435",
+    "quartile": "Q3",
+    "open_access": "Yes",
+    "subject_area": [
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Medicine (miscellaneous)",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Berliner und Munchener Tierarztliche Wochenschrift",
+    "issn_print": "1439-0299",
+    "issn_electronic": "0005-9366",
+    "quartile": "Q3",
+    "open_access": "Yes",
+    "subject_area": [
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Medicine (miscellaneous)",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Ankara Universitesi Veteriner Fakultesi Dergisi",
+    "issn_print": "1308-2817",
+    "issn_electronic": "1300-0861",
+    "quartile": "Q3",
+    "open_access": "Yes",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Indian Journal of Animal Research",
+    "issn_print": "0367-6722",
+    "issn_electronic": "0976-0555",
+    "quartile": "Q3",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Journal of World's Poultry Research",
+    "issn_print": "",
+    "issn_electronic": "2322-455X",
+    "quartile": "Q3",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Food Animals"
+    ]
+  },
+  {
+    "journal": "Lab Animal",
+    "issn_print": "1548-4475",
+    "issn_electronic": "0093-7355",
+    "quartile": "Q3",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Revista Mexicana De Ciencias Pecuarias",
+    "issn_print": "2007-1124",
+    "issn_electronic": "2448-6698",
+    "quartile": "Q3",
+    "open_access": "Yes",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Bulletin of the European Association of Fish Pathologists",
+    "issn_print": "0108-0288",
+    "issn_electronic": "3005-4648",
+    "quartile": "Q2",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Small Animals",
+      "Aquatic Science"
+    ]
+  },
+  {
+    "journal": "Canadian Veterinary Journal",
+    "issn_print": "",
+    "issn_electronic": "0008-5286",
+    "quartile": "Q3",
+    "open_access": "No",
+    "subject_area": [
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Medicine (miscellaneous)",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Journal of Medical Primatology",
+    "issn_print": "0047-2565",
+    "issn_electronic": "1600-0684",
+    "quartile": "Q3",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Turkish Journal of Veterinary and Animal Sciences",
+    "issn_print": "1303-6181",
+    "issn_electronic": "1300-0128",
+    "quartile": "Q3",
+    "open_access": "Yes",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Veterinary Integrative Sciences",
+    "issn_print": "",
+    "issn_electronic": "2629-9968",
+    "quartile": "Q3",
+    "open_access": "Diamond OA",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Agricultural and Biological Sciences (miscellaneous)",
+      "Animal Science and Zoology",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Egyptian Journal of Veterinary Science",
+    "issn_print": "1110-0222",
+    "issn_electronic": "2357-089X",
+    "quartile": "Q2",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Equine",
+      "Small Animals",
+      "Animal Science and Zoology",
+      "Food Animals",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "European Poultry Science",
+    "issn_print": "",
+    "issn_electronic": "1612-9199",
+    "quartile": "Q3",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Food Animals"
+    ]
+  },
+  {
+    "journal": "Animal Science Papers and Reports",
+    "issn_print": "2300-8342",
+    "issn_electronic": "0860-4037",
+    "quartile": "Q3",
+    "open_access": "Yes",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Biochemistry, Genetics and Molecular Biology",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Veterinary (miscellaneous)",
+      "Biotechnology",
+      "Genetics"
+    ]
+  },
+  {
+    "journal": "Acta Veterinaria Brno",
+    "issn_print": "1801-7576",
+    "issn_electronic": "0001-7213",
+    "quartile": "Q3",
+    "open_access": "Yes",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Scienze Regionali",
+    "issn_print": "1720-3929",
+    "issn_electronic": "2035-603X",
+    "quartile": "Q3",
+    "open_access": "No",
+    "subject_area": [
+      "Economics, Econometrics and Finance",
+      "Social Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Economics and Econometrics",
+      "Food Animals",
+      "Geography, Planning and Development",
+      "Public Administration",
+      "Urban Studies"
+    ]
+  },
+  {
+    "journal": "Ciencia Rural",
+    "issn_print": "0103-8478",
+    "issn_electronic": "1678-4596",
+    "quartile": "Q3",
+    "open_access": "Yes",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Agronomy and Crop Science",
+      "Animal Science and Zoology",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Asian Pacific Journal of Reproduction",
+    "issn_print": "2305-0500",
+    "issn_electronic": "2305-0519",
+    "quartile": "Q3",
+    "open_access": "Diamond OA",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Obstetrics and Gynecology",
+      "Plant Science",
+      "Reproductive Medicine",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Society and Animals",
+    "issn_print": "1568-5306",
+    "issn_electronic": "1063-1119",
+    "quartile": "Q2",
+    "open_access": "No",
+    "subject_area": [
+      "Arts and Humanities",
+      "Social Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Philosophy",
+      "Sociology and Political Science",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Advances in Animal and Veterinary Sciences",
+    "issn_print": "2309-3331",
+    "issn_electronic": "2307-8316",
+    "quartile": "Q3",
+    "open_access": "Yes",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Iraqi Journal of Veterinary Medicine",
+    "issn_print": "",
+    "issn_electronic": "1609-5693",
+    "quartile": "Q3",
+    "open_access": "Yes",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Buffalo Bulletin",
+    "issn_print": "2539-5696",
+    "issn_electronic": "0125-6726",
+    "quartile": "Q3",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Asian Journal of Dairy and Food Research",
+    "issn_print": "0976-0563",
+    "issn_electronic": "0971-4456",
+    "quartile": "Q3",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Food Science",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Online Journal of Animal and Feed Research",
+    "issn_print": "",
+    "issn_electronic": "2228-7701",
+    "quartile": "Q3",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Environmental Science",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Ecology",
+      "Food Science",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Journal of Applied Veterinary Sciences",
+    "issn_print": "1687-4072",
+    "issn_electronic": "2090-3308",
+    "quartile": "Q3",
+    "open_access": "Yes",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Journal of Zoonotic Diseases",
+    "issn_print": "2717-2910",
+    "issn_electronic": "2476-535X",
+    "quartile": "Q3",
+    "open_access": "Diamond OA",
+    "subject_area": [
+      "Immunology and Microbiology",
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Infectious Diseases",
+      "Veterinary (miscellaneous)",
+      "Parasitology",
+      "Public Health, Environmental and Occupational Health"
+    ]
+  },
+  {
+    "journal": "Ciencia Animal Brasileira",
+    "issn_print": "1809-6891",
+    "issn_electronic": "1518-2797",
+    "quartile": "Q3",
+    "open_access": "Diamond OA",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Arquivo Brasileiro de Medicina Veterinaria e Zootecnia",
+    "issn_print": "0102-0935",
+    "issn_electronic": "1678-4162",
+    "quartile": "Q3",
+    "open_access": "Yes",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Derecho Animal",
+    "issn_print": "",
+    "issn_electronic": "2462-7518",
+    "quartile": "Q3",
+    "open_access": "Diamond OA",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Social Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Law",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Journal of Experimental Biology and Agricultural Sciences",
+    "issn_print": "",
+    "issn_electronic": "2320-8694",
+    "quartile": "Q3",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Biochemistry, Genetics and Molecular Biology",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Agricultural and Biological Sciences (miscellaneous)",
+      "Veterinary (miscellaneous)",
+      "Biochemistry, Genetics and Molecular Biology (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Journal of the Indonesian Tropical Animal Agriculture",
+    "issn_print": "2087-8273",
+    "issn_electronic": "2460-6278",
+    "quartile": "Q3",
+    "open_access": "Yes",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Indian Journal of Small Ruminants",
+    "issn_print": "0973-9718",
+    "issn_electronic": "0971-9857",
+    "quartile": "Q3",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Small Animals"
+    ]
+  },
+  {
+    "journal": "Poultry Science Journal",
+    "issn_print": "2345-6604",
+    "issn_electronic": "2345-6566",
+    "quartile": "Q3",
+    "open_access": "Diamond OA",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Food Animals"
+    ]
+  },
+  {
+    "journal": "Veterinaria Mexico OA",
+    "issn_print": "",
+    "issn_electronic": "2448-6760",
+    "quartile": "Q3",
+    "open_access": "Diamond OA",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Revista Ceres",
+    "issn_print": "0034-737X",
+    "issn_electronic": "2177-3491",
+    "quartile": "Q3",
+    "open_access": "Yes",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Agricultural and Biological Sciences (miscellaneous)",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Acta Veterinaria Eurasia",
+    "issn_print": "2618-639X",
+    "issn_electronic": "2619-905X",
+    "quartile": "Q3",
+    "open_access": "Diamond OA",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Macedonian Veterinary Review",
+    "issn_print": "1409-7621",
+    "issn_electronic": "1857-7415",
+    "quartile": "Q3",
+    "open_access": "Diamond OA",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Veterinarski Glasnik",
+    "issn_print": "2406-0771",
+    "issn_electronic": "0350-2457",
+    "quartile": "Q3",
+    "open_access": "Diamond OA",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Journal of Animal Health and Production",
+    "issn_print": "",
+    "issn_electronic": "2308-2801",
+    "quartile": "Q3",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)",
+      "Animal Science and Zoology"
+    ]
+  },
+  {
+    "journal": "Veterinarska Stanica",
+    "issn_print": "1849-1170",
+    "issn_electronic": "0350-7149",
+    "quartile": "Q3",
+    "open_access": "Yes",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Austral Journal of Veterinary Sciences",
+    "issn_print": "0719-8000",
+    "issn_electronic": "0719-8132",
+    "quartile": "Q3",
+    "open_access": "Diamond OA",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Japanese Journal of Veterinary Research",
+    "issn_print": "",
+    "issn_electronic": "0047-1917",
+    "quartile": "Q3",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Veterinarski Arhiv",
+    "issn_print": "0372-5480",
+    "issn_electronic": "1331-8055",
+    "quartile": "Q3",
+    "open_access": "Yes",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Indonesian Journal of Halal Research",
+    "issn_print": "2657-0165",
+    "issn_electronic": "2656-3754",
+    "quartile": "Q2",
+    "open_access": "Yes",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Arts and Humanities",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Religious Studies",
+      "Food Animals",
+      "Food Science"
+    ]
+  },
+  {
+    "journal": "Journal of Buffalo Science",
+    "issn_print": "",
+    "issn_electronic": "1927-520X",
+    "quartile": "Q3",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)",
+      "Animal Science and Zoology"
+    ]
+  },
+  {
+    "journal": "Economia Agro-Alimentare",
+    "issn_print": "1972-4802",
+    "issn_electronic": "1126-1668",
+    "quartile": "Q2",
+    "open_access": "Yes",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Business, Management and Accounting",
+      "Economics, Econometrics and Finance",
+      "Environmental Science",
+      "Social Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Cultural Studies",
+      "Agricultural and Biological Sciences (miscellaneous)",
+      "Food Animals",
+      "Food Science",
+      "Geography, Planning and Development",
+      "Social Sciences (miscellaneous)",
+      "Agronomy and Crop Science",
+      "Business, Management and Accounting (miscellaneous)",
+      "Economics and Econometrics",
+      "Management, Monitoring, Policy and Law"
+    ]
+  },
+  {
+    "journal": "Journal of Equine Science",
+    "issn_print": "1347-7501",
+    "issn_electronic": "1340-3516",
+    "quartile": "Q2",
+    "open_access": "Yes",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Equine"
+    ]
+  },
+  {
+    "journal": "Large Animal Review",
+    "issn_print": "",
+    "issn_electronic": "1124-4593",
+    "quartile": "Q3",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Tierarztliche Praxis Ausgabe K: Kleintiere - Heimtiere",
+    "issn_print": "1434-1239",
+    "issn_electronic": "2567-5842",
+    "quartile": "Q3",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Small Animals"
+    ]
+  },
+  {
+    "journal": "Journal of Advanced Veterinary Research",
+    "issn_print": "2090-6269",
+    "issn_electronic": "2090-6277",
+    "quartile": "Q3",
+    "open_access": "Yes",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)",
+      "Animal Science and Zoology"
+    ]
+  },
+  {
+    "journal": "Animal Nutrition and Feed Technology",
+    "issn_print": "0974-181X",
+    "issn_electronic": "0972-2963",
+    "quartile": "Q3",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Food Animals"
+    ]
+  },
+  {
+    "journal": "Assiut Veterinary Medical Journal (Egypt)",
+    "issn_print": "2314-5226",
+    "issn_electronic": "1012-5973",
+    "quartile": "Q3",
+    "open_access": "Yes",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Equine",
+      "Food Animals",
+      "Small Animals",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Israel Journal of Veterinary Medicine",
+    "issn_print": "2304-8859",
+    "issn_electronic": "0334-9152",
+    "quartile": "Q3",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)",
+      "Animal Science and Zoology"
+    ]
+  },
+  {
+    "journal": "Advancements in Life Sciences",
+    "issn_print": "",
+    "issn_electronic": "2310-5380",
+    "quartile": "Q3",
+    "open_access": "Yes",
+    "subject_area": [
+      "Biochemistry, Genetics and Molecular Biology",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)",
+      "Biochemistry, Genetics and Molecular Biology (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Letters in Animal Biology",
+    "issn_print": "",
+    "issn_electronic": "2584-0479",
+    "quartile": "Q3",
+    "open_access": "Yes",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Equine",
+      "Food Animals",
+      "Small Animals",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Journal of the Hellenic Veterinary Medical Society",
+    "issn_print": "",
+    "issn_electronic": "1792-2720",
+    "quartile": "Q3",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "SVU-International Journal of Veterinary Sciences",
+    "issn_print": "2535-1877",
+    "issn_electronic": "2535-1826",
+    "quartile": "Q3",
+    "open_access": "Yes",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Revue d'Elevage et de Medecine Veterinaire des Pays Tropicaux (France)",
+    "issn_print": "1951-6711",
+    "issn_electronic": "0035-1865",
+    "quartile": "Q3",
+    "open_access": "Diamond OA",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Environmental Science",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)",
+      "Animal Science and Zoology",
+      "Ecology",
+      "Food Science"
+    ]
+  },
+  {
+    "journal": "Jurnal Medik Veteriner",
+    "issn_print": "2581-012X",
+    "issn_electronic": "2615-7497",
+    "quartile": "Q3",
+    "open_access": "Yes",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Folia Veterinaria",
+    "issn_print": "",
+    "issn_electronic": "2453-7837",
+    "quartile": "Q3",
+    "open_access": "Yes",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "In Practice",
+    "issn_print": "2042-7689",
+    "issn_electronic": "0263-841X",
+    "quartile": "Q3",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Tierarztliche Praxis Ausgabe G: Grosstiere - Nutztiere",
+    "issn_print": "1434-1220",
+    "issn_electronic": "2567-5834",
+    "quartile": "Q3",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Food Animals",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Thai Journal of Veterinary Medicine",
+    "issn_print": "",
+    "issn_electronic": "0125-6491",
+    "quartile": "Q3",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "American Journal of Animal and Veterinary Sciences",
+    "issn_print": "1557-4563",
+    "issn_electronic": "1557-4555",
+    "quartile": "Q3",
+    "open_access": "Yes",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)",
+      "Animal Science and Zoology"
+    ]
+  },
+  {
+    "journal": "International Journal of Probiotics and Prebiotics",
+    "issn_print": "",
+    "issn_electronic": "1555-1431",
+    "quartile": "Q4",
+    "open_access": "No",
+    "subject_area": [
+      "Immunology and Microbiology",
+      "Medicine",
+      "Nursing",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Applied Microbiology and Biotechnology",
+      "Food Animals",
+      "Nutrition and Dietetics",
+      "Public Health, Environmental and Occupational Health"
+    ]
+  },
+  {
+    "journal": "Medycyna Weterynaryjna",
+    "issn_print": "",
+    "issn_electronic": "0025-8628",
+    "quartile": "Q3",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Slovenian Veterinary Research",
+    "issn_print": "",
+    "issn_electronic": "1580-4003",
+    "quartile": "Q3",
+    "open_access": "Diamond OA",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Chinese Journal of Animal Nutrition",
+    "issn_print": "",
+    "issn_electronic": "1006-267X",
+    "quartile": "Q4",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Food Animals"
+    ]
+  },
+  {
+    "journal": "Indian Journal of Animal Sciences",
+    "issn_print": "",
+    "issn_electronic": "0367-8318",
+    "quartile": "Q3",
+    "open_access": "Diamond OA",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)",
+      "Animal Science and Zoology"
+    ]
+  },
+  {
+    "journal": "Iranian Journal of Veterinary Science and Technology",
+    "issn_print": "2423-6306",
+    "issn_electronic": "2008-465X",
+    "quartile": "Q4",
+    "open_access": "Diamond OA",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Archives of Veterinary Medicine",
+    "issn_print": "1820-9955",
+    "issn_electronic": "2683-4138",
+    "quartile": "Q3",
+    "open_access": "Diamond OA",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Equine",
+      "Small Animals",
+      "Food Animals",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Case Reports in Veterinary Medicine",
+    "issn_print": "2090-7001",
+    "issn_electronic": "2090-701X",
+    "quartile": "Q4",
+    "open_access": "Yes",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Comparative Exercise Physiology",
+    "issn_print": "1755-2540",
+    "issn_electronic": "1755-2559",
+    "quartile": "Q4",
+    "open_access": "No",
+    "subject_area": [
+      "Biochemistry, Genetics and Molecular Biology",
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Biochemistry",
+      "Biophysics",
+      "Endocrinology, Diabetes and Metabolism",
+      "Orthopedics and Sports Medicine",
+      "Physiology",
+      "Physiology (medical)",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Eurasian Journal of Veterinary Sciences",
+    "issn_print": "2146-1953",
+    "issn_electronic": "1309-6958",
+    "quartile": "Q4",
+    "open_access": "Yes",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Journal of Livestock Science and Technologies",
+    "issn_print": "2322-3553",
+    "issn_electronic": "2322-374X",
+    "quartile": "Q4",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Journal of Poultry Sciences and Avian Diseases",
+    "issn_print": "2981-1368",
+    "issn_electronic": "2981-135X",
+    "quartile": "Q3",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Small Animals",
+      "Animal Science and Zoology",
+      "Food Animals"
+    ]
+  },
+  {
+    "journal": "Journal of Veterinary Clinics",
+    "issn_print": "1598-298X",
+    "issn_electronic": "2384-0749",
+    "quartile": "Q4",
+    "open_access": "Yes",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Korean Journal of Veterinary Research",
+    "issn_print": "2466-1392",
+    "issn_electronic": "2466-1384",
+    "quartile": "Q4",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Wiener Tierarztliche Monatsschrift",
+    "issn_print": "",
+    "issn_electronic": "0043-535X",
+    "quartile": "Q4",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Brazilian Journal of Veterinary Research and Animal Science",
+    "issn_print": "1678-4456",
+    "issn_electronic": "1413-9596",
+    "quartile": "Q4",
+    "open_access": "Yes",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Revista de Investigaciones Veterinarias del Peru",
+    "issn_print": "1609-9117",
+    "issn_electronic": "1682-3419",
+    "quartile": "Q4",
+    "open_access": "Diamond OA",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Iranian Journal of Veterinary Surgery",
+    "issn_print": "2676-6299",
+    "issn_electronic": "2008-3033",
+    "quartile": "Q4",
+    "open_access": "Yes",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Bulgarian Journal of Agricultural Science",
+    "issn_print": "2534-983X",
+    "issn_electronic": "1310-0351",
+    "quartile": "Q4",
+    "open_access": "Yes",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Agricultural and Biological Sciences (miscellaneous)",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Veterinary Record Case Reports",
+    "issn_print": "",
+    "issn_electronic": "2052-6121",
+    "quartile": "Q4",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Meat Technology",
+    "issn_print": "2466-4812",
+    "issn_electronic": "2560-4295",
+    "quartile": "Q4",
+    "open_access": "Diamond OA",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Immunology and Microbiology",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Applied Microbiology and Biotechnology",
+      "Food Animals",
+      "Food Science"
+    ]
+  },
+  {
+    "journal": "Revista Colombiana de Ciencias Pecuarias",
+    "issn_print": "2256-2958",
+    "issn_electronic": "0120-0690",
+    "quartile": "Q4",
+    "open_access": "Yes",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Revista MVZ Cordoba",
+    "issn_print": "0122-0268",
+    "issn_electronic": "1909-0544",
+    "quartile": "Q4",
+    "open_access": "Diamond OA",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Aquatic Science",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Brazilian Journal of Veterinary Pathology",
+    "issn_print": "",
+    "issn_electronic": "1983-0246",
+    "quartile": "Q4",
+    "open_access": "Yes",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Dog Behavior",
+    "issn_print": "2421-0684",
+    "issn_electronic": "2421-5678",
+    "quartile": "Q4",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Psychology",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Applied Psychology",
+      "Small Animals"
+    ]
+  },
+  {
+    "journal": "Zhejiang Daxue Xuebao (Nongye yu Shengming Kexue Ban)/Journal of the Zhejiang University - Agriculture and Life Science",
+    "issn_print": "",
+    "issn_electronic": "1008-9209",
+    "quartile": "Q4",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Biochemistry, Genetics and Molecular Biology",
+      "Environmental Science",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Agricultural and Biological Sciences (miscellaneous)",
+      "Biochemistry, Genetics and Molecular Biology (miscellaneous)",
+      "Environmental Science (miscellaneous)",
+      "Food Science",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "ITEA Informacion Tecnica Economica Agraria",
+    "issn_print": "",
+    "issn_electronic": "1699-6887",
+    "quartile": "Q4",
+    "open_access": "Yes",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Economics, Econometrics and Finance",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Agronomy and Crop Science",
+      "Economics, Econometrics and Finance (miscellaneous)",
+      "Horticulture",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Animal Production Research",
+    "issn_print": "2252-0872",
+    "issn_electronic": "2538-6107",
+    "quartile": "Q4",
+    "open_access": "Diamond OA",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Food Science",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Buletin Peternakan",
+    "issn_print": "2407-876X",
+    "issn_electronic": "0126-4400",
+    "quartile": "Q4",
+    "open_access": "Yes",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Agricultural and Biological Sciences (miscellaneous)",
+      "Animal Science and Zoology",
+      "Food Animals",
+      "Food Science"
+    ]
+  },
+  {
+    "journal": "Jurnal Ilmu Ternak dan Veteriner",
+    "issn_print": "0853-7380",
+    "issn_electronic": "2252-696X",
+    "quartile": "Q4",
+    "open_access": "Yes",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Bulgarian Journal of Veterinary Medicine",
+    "issn_print": "1311-1477",
+    "issn_electronic": "1313-3543",
+    "quartile": "Q4",
+    "open_access": "Diamond OA",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Indian Journal of Animal Reproduction",
+    "issn_print": "0970-2997",
+    "issn_electronic": "2583-7583",
+    "quartile": "Q4",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "International Journal of Dairy Science",
+    "issn_print": "1811-9743",
+    "issn_electronic": "1811-9751",
+    "quartile": "Q4",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Food Animals"
+    ]
+  },
+  {
+    "journal": "Veterinary Evidence",
+    "issn_print": "",
+    "issn_electronic": "2396-9776",
+    "quartile": "Q4",
+    "open_access": "Diamond OA",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Alexandria Journal of Veterinary Sciences",
+    "issn_print": "2536-9520",
+    "issn_electronic": "1110-2047",
+    "quartile": "Q4",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Acta Scientiae Veterinariae",
+    "issn_print": "1678-0345",
+    "issn_electronic": "1679-9216",
+    "quartile": "Q4",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Revista de Ciencias Agroveterinarias",
+    "issn_print": "2238-1171",
+    "issn_electronic": "1676-9732",
+    "quartile": "Q4",
+    "open_access": "Diamond OA",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Agronomy and Crop Science",
+      "Animal Science and Zoology",
+      "Food Science",
+      "Plant Science",
+      "Soil Science",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Revista Veterinaria",
+    "issn_print": "1669-6840",
+    "issn_electronic": "1668-4834",
+    "quartile": "Q4",
+    "open_access": "Yes",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Vlaams Diergeneeskundig Tijdschrift",
+    "issn_print": "",
+    "issn_electronic": "0303-9021",
+    "quartile": "Q4",
+    "open_access": "Yes",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Exploratory Animal and Medical Research",
+    "issn_print": "2277-470X",
+    "issn_electronic": "2319-247X",
+    "quartile": "Q4",
+    "open_access": "Diamond OA",
+    "subject_area": [
+      "Environmental Science",
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Ecology",
+      "Health, Toxicology and Mutagenesis",
+      "Medicine (miscellaneous)",
+      "Public Health, Environmental and Occupational Health",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Archives of Veterinary Science",
+    "issn_print": "",
+    "issn_electronic": "1517-784X",
+    "quartile": "Q4",
+    "open_access": "Diamond OA",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Pferdeheilkunde",
+    "issn_print": "",
+    "issn_electronic": "0177-7726",
+    "quartile": "Q3",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Equine"
+    ]
+  },
+  {
+    "journal": "Roczniki Naukowe Zootechniki",
+    "issn_print": "",
+    "issn_electronic": "0137-1657",
+    "quartile": "Q4",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Acta Veterinaria et Zootechnica Sinica",
+    "issn_print": "",
+    "issn_electronic": "0366-6964",
+    "quartile": "Q4",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Indian Journal of Animal Production and Management",
+    "issn_print": "2350-0182",
+    "issn_electronic": "0970-1524",
+    "quartile": "Q4",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Revista Cientifica de la Facultad de Veterinaria",
+    "issn_print": "2521-9715",
+    "issn_electronic": "0798-2259",
+    "quartile": "Q4",
+    "open_access": "Diamond OA",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Immunology and Microbiology",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Food Science",
+      "Immunology and Microbiology (miscellaneous)",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Veterinary Sciences and Practices",
+    "issn_print": "",
+    "issn_electronic": "2822-3608",
+    "quartile": "Q4",
+    "open_access": "Diamond OA",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Tradition and Modernity in Veterinary Medicine",
+    "issn_print": "2534-9333",
+    "issn_electronic": "2534-9341",
+    "quartile": "Q4",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Bulletin of the International Dairy Federation",
+    "issn_print": "",
+    "issn_electronic": "0259-8434",
+    "quartile": "-",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Biochemistry, Genetics and Molecular Biology",
+      "Immunology and Microbiology",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Biochemistry",
+      "Food Animals",
+      "Food Science",
+      "Immunology"
+    ]
+  },
+  {
+    "journal": "Scandinavian Journal of Laboratory Animal Science",
+    "issn_print": "0901-3393",
+    "issn_electronic": "2002-0112",
+    "quartile": "Q4",
+    "open_access": "Yes",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Biochemistry, Genetics and Molecular Biology",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Biochemistry, Genetics and Molecular Biology (miscellaneous)",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Journal of Veterinary Research",
+    "issn_print": "2008-2525",
+    "issn_electronic": "2251-6190",
+    "quartile": "Q4",
+    "open_access": "Yes",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Tanzania Veterinary Journal",
+    "issn_print": "0856-1451",
+    "issn_electronic": "2714-206X",
+    "quartile": "Q4",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Equine",
+      "Food Animals",
+      "Small Animals",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Analecta Veterinaria",
+    "issn_print": "1514-2590",
+    "issn_electronic": "0365-5148",
+    "quartile": "Q4",
+    "open_access": "Diamond OA",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Equine",
+      "Food Animals",
+      "Small Animals",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Revue Veterinaire Clinique",
+    "issn_print": "2214-5680",
+    "issn_electronic": "2214-5672",
+    "quartile": "Q4",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Small Animals"
+    ]
+  },
+  {
+    "journal": "Zuchtungskunde",
+    "issn_print": "1867-4518",
+    "issn_electronic": "0044-5401",
+    "quartile": "Q4",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Food Animals"
+    ]
+  },
+  {
+    "journal": "Acta Veterinaria Brasilica",
+    "issn_print": "",
+    "issn_electronic": "1981-5484",
+    "quartile": "Q4",
+    "open_access": "Yes",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Praktische Tierarzt",
+    "issn_print": "",
+    "issn_electronic": "0032-681X",
+    "quartile": "Q4",
+    "open_access": "Yes",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Revista Academica Ciencia Animal",
+    "issn_print": "",
+    "issn_electronic": "2596-2868",
+    "quartile": "Q4",
+    "open_access": "Diamond OA",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Food Science",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Medicina Veterinaria (Brazil)",
+    "issn_print": "2675-6617",
+    "issn_electronic": "1809-4678",
+    "quartile": "Q4",
+    "open_access": "Diamond OA",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Indian Veterinary Journal",
+    "issn_print": "0974-9365",
+    "issn_electronic": "0019-6479",
+    "quartile": "Q4",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Philippine Journal of Veterinary Medicine",
+    "issn_print": "2984-763X",
+    "issn_electronic": "0031-7705",
+    "quartile": "Q4",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Chinese Journal of Veterinary Science",
+    "issn_print": "",
+    "issn_electronic": "1005-4545",
+    "quartile": "Q4",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Biochemistry, Genetics and Molecular Biology",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Biochemistry, Genetics and Molecular Biology (miscellaneous)",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Journal of Camelid Science",
+    "issn_print": "",
+    "issn_electronic": "1999-8732",
+    "quartile": "Q4",
+    "open_access": "Yes",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Indian Journal of Canine Practice",
+    "issn_print": "2349-4174",
+    "issn_electronic": "2277-6729",
+    "quartile": "Q4",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Veterinary Practitioner",
+    "issn_print": "",
+    "issn_electronic": "0972-4036",
+    "quartile": "Q4",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Veterinarija ir Zootechnika",
+    "issn_print": "",
+    "issn_electronic": "1392-2130",
+    "quartile": "Q4",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Biological Models Research and Technology Journal",
+    "issn_print": "",
+    "issn_electronic": "2675-9225",
+    "quartile": "Q4",
+    "open_access": "No",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Biochemistry, Genetics and Molecular Biology",
+      "Health Professions",
+      "Medicine",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Biochemistry, Genetics and Molecular Biology (miscellaneous)",
+      "Health Policy",
+      "Medical Laboratory Technology",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Bulletin de l'Academie Veterinaire de France",
+    "issn_print": "0034-1843",
+    "issn_electronic": "0001-4192",
+    "quartile": "Q4",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Journal of Wildlife Rehabilitation",
+    "issn_print": "2166-9198",
+    "issn_electronic": "1071-2232",
+    "quartile": "Q4",
+    "open_access": "Yes",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Australian Veterinary Practitioner",
+    "issn_print": "",
+    "issn_electronic": "0310-138X",
+    "quartile": "Q4",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Small Animals"
+    ]
+  },
+  {
+    "journal": "Journal of Economic Animal",
+    "issn_print": "",
+    "issn_electronic": "1007-7448",
+    "quartile": "Q4",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Equine",
+      "Food Animals",
+      "Small Animals",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Kleintierpraxis",
+    "issn_print": "",
+    "issn_electronic": "0023-2076",
+    "quartile": "Q4",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Small Animals"
+    ]
+  },
+  {
+    "journal": "Veterinaria",
+    "issn_print": "",
+    "issn_electronic": "0394-3151",
+    "quartile": "Q4",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Taurus",
+    "issn_print": "",
+    "issn_electronic": "1515-3037",
+    "quartile": "Q4",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Spermova",
+    "issn_print": "2223-9375",
+    "issn_electronic": "2308-4928",
+    "quartile": "Q4",
+    "open_access": "Diamond OA",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Biochemistry, Genetics and Molecular Biology",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Developmental Biology",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Journal of Veterinary Parasitology",
+    "issn_print": "",
+    "issn_electronic": "0971-1031",
+    "quartile": "Q4",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Epidemiologie et Sante Animale",
+    "issn_print": "",
+    "issn_electronic": "0754-2186",
+    "quartile": "Q4",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Iraqi Journal of Agricultural Sciences (discontinued)",
+    "issn_print": "0075-0530",
+    "issn_electronic": "2410-0862",
+    "quartile": "-",
+    "open_access": "Yes",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Environmental Science",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Agricultural and Biological Sciences (miscellaneous)",
+      "Animal Science and Zoology",
+      "Environmental Science (miscellaneous)",
+      "Food Animals",
+      "Food Science",
+      "Horticulture",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Iraqi Journal of Veterinary Sciences (discontinued)",
+    "issn_print": "2071-1255",
+    "issn_electronic": "1607-3894",
+    "quartile": "-",
+    "open_access": "Yes",
+    "subject_area": [
+      "Agricultural and Biological Sciences",
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Animal Science and Zoology",
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Tijdschrift voor Diergeneeskunde",
+    "issn_print": "",
+    "issn_electronic": "0040-7453",
+    "quartile": "-",
+    "open_access": "No",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  },
+  {
+    "journal": "Ukrainian Journal of Veterinary Sciences (discontinued)",
+    "issn_print": "2663-9688",
+    "issn_electronic": "2663-967X",
+    "quartile": "-",
+    "open_access": "Yes",
+    "subject_area": [
+      "Veterinary"
+    ],
+    "sub_category": [
+      "Veterinary (miscellaneous)"
+    ]
+  }
+]

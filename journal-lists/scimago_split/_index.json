@@ -1,0 +1,137 @@
+[
+  {
+    "subject_area": "Agricultural and Biological Sciences",
+    "file": "subject_area_Agricultural_and_Biological_Sciences.json",
+    "total_journals": 2653
+  },
+  {
+    "subject_area": "Arts and Humanities",
+    "file": "subject_area_Arts_and_Humanities.json",
+    "total_journals": 5229
+  },
+  {
+    "subject_area": "Biochemistry, Genetics and Molecular Biology",
+    "file": "subject_area_Biochemistry_Genetics_and_Molecular_Biology.json",
+    "total_journals": 2256
+  },
+  {
+    "subject_area": "Business, Management and Accounting",
+    "file": "subject_area_Business_Management_and_Accounting.json",
+    "total_journals": 1803
+  },
+  {
+    "subject_area": "Chemical Engineering",
+    "file": "subject_area_Chemical_Engineering.json",
+    "total_journals": 761
+  },
+  {
+    "subject_area": "Chemistry",
+    "file": "subject_area_Chemistry.json",
+    "total_journals": 1084
+  },
+  {
+    "subject_area": "Computer Science",
+    "file": "subject_area_Computer_Science.json",
+    "total_journals": 2616
+  },
+  {
+    "subject_area": "Decision Sciences",
+    "file": "subject_area_Decision_Sciences.json",
+    "total_journals": 611
+  },
+  {
+    "subject_area": "Dentistry",
+    "file": "subject_area_Dentistry.json",
+    "total_journals": 287
+  },
+  {
+    "subject_area": "Earth and Planetary Sciences",
+    "file": "subject_area_Earth_and_Planetary_Sciences.json",
+    "total_journals": 1462
+  },
+  {
+    "subject_area": "Economics, Econometrics and Finance",
+    "file": "subject_area_Economics_Econometrics_and_Finance.json",
+    "total_journals": 1383
+  },
+  {
+    "subject_area": "Energy",
+    "file": "subject_area_Energy.json",
+    "total_journals": 776
+  },
+  {
+    "subject_area": "Engineering",
+    "file": "subject_area_Engineering.json",
+    "total_journals": 3948
+  },
+  {
+    "subject_area": "Environmental Science",
+    "file": "subject_area_Environmental_Science.json",
+    "total_journals": 2045
+  },
+  {
+    "subject_area": "Health Professions",
+    "file": "subject_area_Health_Professions.json",
+    "total_journals": 790
+  },
+  {
+    "subject_area": "Immunology and Microbiology",
+    "file": "subject_area_Immunology_and_Microbiology.json",
+    "total_journals": 688
+  },
+  {
+    "subject_area": "Materials Science",
+    "file": "subject_area_Materials_Science.json",
+    "total_journals": 1597
+  },
+  {
+    "subject_area": "Mathematics",
+    "file": "subject_area_Mathematics.json",
+    "total_journals": 2007
+  },
+  {
+    "subject_area": "Medicine",
+    "file": "subject_area_Medicine.json",
+    "total_journals": 7900
+  },
+  {
+    "subject_area": "Multidisciplinary",
+    "file": "subject_area_Multidisciplinary.json",
+    "total_journals": 233
+  },
+  {
+    "subject_area": "Neuroscience",
+    "file": "subject_area_Neuroscience.json",
+    "total_journals": 679
+  },
+  {
+    "subject_area": "Nursing",
+    "file": "subject_area_Nursing.json",
+    "total_journals": 713
+  },
+  {
+    "subject_area": "Pharmacology, Toxicology and Pharmaceutics",
+    "file": "subject_area_Pharmacology_Toxicology_and_Pharmaceutics.json",
+    "total_journals": 759
+  },
+  {
+    "subject_area": "Physics and Astronomy",
+    "file": "subject_area_Physics_and_Astronomy.json",
+    "total_journals": 1385
+  },
+  {
+    "subject_area": "Psychology",
+    "file": "subject_area_Psychology.json",
+    "total_journals": 1448
+  },
+  {
+    "subject_area": "Social Sciences",
+    "file": "subject_area_Social_Sciences.json",
+    "total_journals": 9103
+  },
+  {
+    "subject_area": "Veterinary",
+    "file": "subject_area_Veterinary.json",
+    "total_journals": 306
+  }
+]
