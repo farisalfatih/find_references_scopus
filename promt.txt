@@ -1,0 +1,19 @@
+PROMT FILTER
+Buatkan saya list doi dalam 1 block code yang tidak sesuai dengan kriteria journal yang saya cari yang mana tentang prediksi finence entah itu clasifikasi atau (HARUS PREDIKSI ARAH HARGA FINEANCENYA), regresi baca setiap abstrack secara mendalam
+SEARCH_GROUPS = {
+    "XGBoost Cryptocurrency": {
+        "query": '(Cryptocurrency OR Solana OR Bitcoin OR ETH OR XRP) AND "XGBoost"'
+    },
+    "HMM XGBoost": {
+        "query": '("Hidden Markov Model" OR HMM) AND "XGBoost"'
+    },
+    "HMM Cryptocurrency": {
+        "query": '("Hidden Markov Model" OR HMM) AND (Cryptocurrency OR Solana OR Bitcoin OR ETH OR XRP)'
+    },
+    "XGBoost Technical Indicators": {
+        "query": '"XGBoost" AND (MACD OR RSI OR ADX OR Stochastic OR CCI OR ATR OR "Bollinger Bands" OR Ichimoku OR OBV OR MFI)'
+    },
+    "XGBoost Sharpe Sortino Profit Factor": {
+        "query": '("Sharpe ratio" OR "Sortino ratio" OR "profit factor") AND "XGBoost"'
+    },
+}
