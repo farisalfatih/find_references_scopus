@@ -16,7 +16,7 @@ for category, papers in data.items():
     removed_count = original_count - len(filtered_papers)
     total_removed += removed_count
     
-    if filtered_papers:  # hanya simpan kategori yang tidak kosong
+    if filtered_papers:
         cleaned_data[category] = filtered_papers
         print(f"Kategori '{category}': {original_count} -> {len(filtered_papers)} (dihapus {removed_count})")
     else:
