@@ -1,827 +1,1017 @@
-# Panduan Lengkap: Fetch & Filter Artikel dari OpenAlex
+# Find References Scopus
 
-Repository ini berisi sebelas script Python dan tiga panduan prompt AI untuk mengambil artikel ilmiah dari API OpenAlex berdasarkan daftar ISSN (dari SCImago), memfilter dengan kata kunci di judul/abstrak, menyaring artikel secara semantik dengan AI, menghapus DOI tertentu, melihat distribusi akhir, menulis latar belakang penelitian dengan AI, menambah informasi quartile & open access, mengekstrak klaim DOI dari markdown, memendekkan data referensi, memverifikasi klaim latar belakang dengan AI, memilih artikel berdasarkan DOI, serta mengonversi JSON ke format BibTeX.
+Pipeline Python + panduan prompt AI untuk **membantu pembuatan artikel jurnal dari nol sampai selesai**. Pipeline ini mengambil artikel dari OpenAlex (berbasis ISSN SCImago), lalu Anda memakai outputnya sebagai bahan referensi untuk menulis latar belakang, metode, hasil, diskusi, dan kesimpulan dengan bantuan AI.
 
-## Daftar Script
+Hasil akhir: **Markdown dengan citation `[DOI]`** yang siap dipakai di LaTeX/Word, plus file `.bib` untuk BibTeX.
 
-| Script | Fungsi |
-|--------|--------|
-| `get_issn_electronic.py` | Ekstrak daftar ISSN dari file JSON SCImago berdasarkan kuartil |
-| `openalex_fetch.py` | Mengambil artikel dari OpenAlex per kelompok query |
-| `filter_keywords_abstrac.py` | Filter lanjutan berdasarkan judul+abstrak dengan query boolean |
-| `clear_duplicate.py` | Hapus artikel berdasarkan daftar DOI, buang kategori kosong |
-| `remove_doi_list.py` | Versi sederhana clear_duplicate (hanya hapus DOI) |
-| `cek_distribusi_artikel.py` | Lihat jumlah artikel per kategori |
-| `marge_article_journal.py` | Menambahkan informasi quartile dan open access ke JSON artikel |
-| `extract_claims.py` | Ekstrak kalimat berisi DOI dari file Markdown untuk verifikasi klaim |
-| `extract_references.py` | Mengambil hanya DOI, author, dan abstract untuk memperpendek teks |
-| `selected_article.py` | Mengambil hanya artikel yang diinginkan berdasarkan daftar DOI |
-| `confert_bib.py` | Mengubah JSON menjadi file .bib untuk keperluan referensi di LaTeX |
-| **Prompt Filter** (bukan script) | Filter semantik dengan AI — menyaring artikel yang tidak sesuai kritis prediksi finance |
-| **Prompt Latar Belakang** (bukan script) | Menulis latar belakang penelitian dengan AI berdasarkan data referensi JSON |
-| **Prompt Verifikasi** (bukan script) | Memverifikasi kebenaran klaim dalam latar belakang terhadap abstract asli |
+---
 
-## Prasyarat
+## Daftar Isi
+
+- [Filosofi Project](#filosofi-project)
+- [Instalasi](#instalasi)
+- [Tahap-Tahap Pipeline](#tahap-tahap-pipeline)
+- [Prompt AI untuk Pembuatan Artikel](#prompt-ai-untuk-pembuatan-artikel)
+  - [A. Jika Bingung Mau Topik Apa](#a-jika-bingung-mau-topik-apa)
+  - [B. Memilih Jurnal yang Relevan](#b-memilih-jurnal-yang-relevan)
+  - [C. Mencari Referensi Pendukung](#c-mencari-referensi-pendukung)
+  - [D. Menulis Latar Belakang dengan [DOI]](#d-menulis-latar-belakang-dengan-doi)
+  - [E. Menulis Metode](#e-menulis-metode)
+  - [F. Menulis Hasil & Analisis](#f-menulis-hasil--analisis)
+  - [G. Menulis Diskusi](#g-menulis-diskusi)
+  - [H. Menulis Kesimpulan](#h-menulis-kesimpulan)
+  - [I. Jika Sudah Punya Code Penelitian](#i-jika-sudah-punya-code-penelitian)
+  - [J. Verifikasi Klaim [DOI]](#j-verifikasi-klaim-doi)
+  - [K. Finalisasi & Export ke BibTeX](#k-finalisasi--export-ke-bibtex)
+- [Daftar Command CLI](#daftar-command-cli)
+- [Konfigurasi (config.yaml)](#konfigurasi-configyaml)
+- [Struktur Folder](#struktur-folder)
+- [Detail Setiap Step Pipeline](#detail-setiap-step-pipeline)
+- [Migrasi dari Versi Lama](#migrasi-dari-versi-lama)
+
+---
+
+## Filosofi Project
+
+Project ini **bukan pipeline otomatis end-to-end**. Ada banyak keputusan riset yang hanya bisa diambil oleh peneliti:
+
+1. **Quartile mana** yang dipakai untuk filter jurnal? (Q1? Q1+Q2? semua?)
+2. **DOI mana** yang harus di-exclude karena tidak relevan meski match keyword?
+3. **Topik** apa yang mau diteliti?
+4. **Jurnal** mana yang mau dituju?
+5. **Klaim** mana yang benar-benar didukung referensi?
+
+Pipeline hanya mengotomasi bagian mekanis (fetch, filter, deduplikasi). Sisanya — brainstorming, menulis, verifikasi — dilakukan peneliti dengan bantuan AI memakai prompt-prompt yang sudah disediakan di README ini.
+
+### Output Akhir yang Diharapkan
+
+```
+data/
+├── draft.md                  ← Artikel lengkap dengan citation [DOI]
+├── 11_references.bib         ← File BibTeX untuk LaTeX
+├── 09_references.md          ← Daftar referensi ringkas (DOI, author, abstrak)
+└── 08_claims.json            ← Audit: setiap kalimat dengan [DOI] diekstrak
+```
+
+Format `draft.md`:
+```markdown
+## Latar Belakang
+
+Pasar cryptocurrency bersifat sangat volatile dengan fluktuasi harga yang
+sulit diprediksi [10.3390/fintech4040077]. XGBoost telah menunjukkan performa
+unggul dalam prediksi time-series keuangan [10.1007/s10614-025-10919-y]...
+```
+
+**Format citation**: HARUS pakai `[DOI]` (literal DOI di dalam kurung siku), BUKAN `\cite{}` atau `(Author, 2024)`. Alasannya: step 08 (`extract-claims`) memakai regex `10\.\d{4,9}/...` untuk ekstrak DOI dari markdown — format `[DOI]` paling reliable untuk diparse otomatis.
+
+**Konversi `[DOI]` → `\cite{key}`**: Tidak ada auto-convert di pipeline ini. Setelah Anda jalankan step 11 (`convert-bib`), file `.bib` berisi `@article{lastnameYYYY_abcde, ...}` akan ter-generate. Anda harus manual replace `[DOI]` di `draft.md` dengan `\cite{lastnameYYYY_abcde}` (atau pakai tool terpisah / regex find-replace di editor).
+
+---
+
+## Instalasi
 
 ```bash
-# Python 3.8+
-git clone git@github.com:farisalfatih/find_references_scopus.git
 cd find_references_scopus
-python -m venv venv
-source venv/bin/activate        # Linux/Mac
-# venv\Scripts\activate         # Windows
-pip install requests nltk
+
+# (Opsional) Buat virtual environment
+python -m venv .venv
+source .venv/bin/activate  # Linux/Mac
+
+# Install dependencies
+pip install -r requirements.txt
+
+# (Opsional) Install sebagai package agar dapat command `find-refs`
+pip install -e .
+```
+
+### Dependencies
+
+- `requests` — HTTP client untuk OpenAlex API
+- `nltk` — Tokenizer kalimat (untuk ekstrak klaim DOI)
+- `pyyaml` — Parser config.yaml
+
+---
+
+## Tahap-Tahap Pipeline
+
+Jalankan `find-refs guide` untuk lihat panduan singkat di terminal. Berikut penjelasan lengkap setiap tahap:
+
+### TAHAP 0 — Persiapan Data SCImago (sekali saja)
+
+```bash
+find-refs csv-to-json
+find-refs delete-no-issn
+find-refs split-subject   # opsional
+```
+**Output**: `data/scimagojr_2025.json` + `data/scimagojr_2025_ok.json`
+
+### TAHAP 1 — Pilih ISSN berdasarkan Quartile + Subject Area [MANUAL]
+
+Putuskan:
+1. **Subject area mana** yang mau dipakai? (mis. Computer Science saja, atau gabungan beberapa area)
+2. **Quartile mana** yang mau dipakai? (mis. Q1+Q2 untuk jurnal top-tier)
+
+```bash
+# Lihat daftar subject area tersedia (27 area, masing-masing punya nomor)
+find-refs get-issn --subject list
+
+# Mode default: SCImago full (semua subject area)
+find-refs get-issn -q Q1,Q2         # Q1+Q2 dari semua area
+find-refs get-issn                  # semua quartile
+
+# Mode subject area: pilih area spesifik
+find-refs get-issn --subject 7              # Computer Science saja, semua quartile
+find-refs get-issn --subject 7,8 -q Q1      # Computer Science + Decision Sciences, Q1
+find-refs get-issn --subject Computer -q Q1,Q2  # semua area yg namanya ada "Computer"
+find-refs get-issn --subject "Computer Science,Mathematics" -q Q1   # multi-name
+
+# atau mode interaktif (prompt quartile via input()):
+find-refs get-issn -i
+```
+**Output**: `data/01_issn_list.txt`
+
+### TAHAP 2 — Fetch Artikel OpenAlex + Filter + Deduplikasi
+
+```bash
+find-refs fetch        # ambil artikel dari OpenAlex API (bisa lama)
+find-refs filter       # filter berdasar keyword di judul+abstrak
+find-refs deduplicate  # hapus DOI duplikat antar group
+```
+**Output**: `data/04_deduplicated.json`
+
+### TAHAP 3 — REVIEW MANUAL: Tentukan DOI Exclude [MANUAL]
+
+Buka `data/04_deduplicated.json`. Baca abstrak tiap artikel. Identifikasi DOI yang **tidak relevan** meski match keyword (false positive filter).
+
+Tulis DOI tersebut ke `data/excluded_dois.txt` (satu per baris). Boleh kosong kalau tidak ada.
+
+### TAHAP 4 — Hapus Exclude + Statistik + Merge Info Jurnal
+
+```bash
+find-refs remove-excluded
+find-refs distribution
+find-refs merge-journal
+```
+**Output**: `data/07_with_journal_info.json` ← **dataset final dengan quartile & open_access**
+
+### TAHAP 5 — TULIS ARTIKEL dengan Bantuan AI [MANUAL]
+
+Gunakan AI (ChatGPT/Gemini/Claude/dll) untuk menulis latar belakang, metode, hasil, diskusi, kesimpulan. Berikan `data/07_with_journal_info.json` sebagai konteks. Minta AI menyisipkan `[DOI]` di setiap klaim.
+
+**Lihat bagian [Prompt AI untuk Pembuatan Artikel](#prompt-ai-untuk-pembuatan-artikel)** untuk kumpulan prompt siap pakai.
+
+**Output**: `data/draft.md`
+
+### TAHAP 6 — Verifikasi Klaim [DOI]
+
+```bash
+find-refs extract-claims --input data/draft.md
+```
+**Output**: `data/08_claims.json` — list kalimat yang mengandung [DOI] + DOI unik
+
+**Regex DOI yang dipakai**: `10\.\d{4,9}/...` (registrant code 4-9 digit, suffix alfanumerik). DOI otomatis di:
+- **Lowercase-normalize** (DOI case-insensitive per spesifikasi Crossref)
+- **Strip trailing punctuation** (titik, koma, titik koma, kurung) agar tidak bocor dari akhir kalimat
+
+Review: apakah setiap klaim di draf benar-benar didukung artikel yang DOI-nya di-claim? Hapus/ubah klaim yang tidak cocok.
+
+### TAHAP 7 — PILIH DOI untuk Cite di Paper [MANUAL opsional]
+
+Tentukan DOI mana yang akan Anda cite di paper akhir (subset dari 07). Edit `config.yaml`, isi `selected_dois`. Lalu:
+
+```bash
+find-refs select-articles
+```
+**Output**: `data/10_selected.json`
+
+### TAHAP 8 — Export ke Markdown & BibTeX
+
+```bash
+find-refs extract-references       # Markdown ringkas semua artikel
+find-refs convert-bib              # BibTeX dari SEMUA artikel (step 07)
+# ATAU pakai subset (step 10):
+find-refs convert-bib --input data/10_selected.json
+```
+**Output**: `data/09_references.md` + `data/11_references.bib`
+
+---
+
+## Prompt AI untuk Pembuatan Artikel
+
+Berikut kumpulan prompt siap pakai untuk AI assistant (ChatGPT, Gemini, Claude, GLM, dll). Copy-paste dan sesuaikan bagian dalam `[...]` dengan konteks Anda.
+
+### A. Jika Bingung Mau Topik Apa
+
+**Prompt eksplorasi topik**:
+```
+Saya ingin menulis artikel jurnal tapi belum punya topik pasti. Background saya:
+- Bidang: [mis. machine learning / finance / kesehatan / pendidikan]
+- Tool yang saya kuasai: [mis. Python, XGBoost, PyTorch, R]
+- Minat khusus: [mis. cryptocurrency, NLP, computer vision, time-series]
+
+Bantu saya:
+1. Beri 10 ide topik penelitian yang feasible untuk jurnal Q1/Q2 (bukan topik
+   yang sudah terlalu jenuh).
+2. Untuk setiap topik, jelaskan: novelty-nya apa, mengapa penting, apa
+   gap penelitian yang bisa di-isi, dan tool/toolchain yang cocok.
+3. Untuk topik yang menurut Anda paling promising, beri 5 keyword pencarian
+   yang bisa saya pakai di OpenAlex/Google Scholar.
+
+Format jawaban: tabel markdown dengan kolom (Topik, Novelty, Gap, Keyword).
+```
+
+**Prompt validasi topik**:
+```
+Saya sedang mempertimbangkan topik penelitian: "[topik Anda]".
+
+Bantu evaluasi:
+1. Apakah topik ini sudah terlalu jenuh? Cek berapa banyak paper serupa
+   dalam 3 tahun terakhir (estimasi berdasarkan keyword).
+2. Apa angle yang bisa membuat topik ini jadi novel? Beri 3 saran angle.
+3. Jurnal Q1/Q2 apa yang cocok untuk topik ini? Sebutkan 3 jurnal + ISSN.
+4. Apa risiko utama saat eksekusi topik ini (data, method, dll.)?
 ```
 
 ---
 
-## 1. Ekstrak ISSN dari SCImago (`get_issn_electronic.py`)
+### B. Memilih Jurnal yang Relevan
 
-Script ini membaca file JSON hasil SCImago (bisa dari `journal-lists/scimagojr_2025.json` atau file per bidang di `journal-lists/scimago_split/`).
+**Prompt pencarian jurnal**:
+```
+Saya menulis artikel dengan topik: "[topik Anda]".
+Method utama: [mis. XGBoost + HMM untuk prediksi harga cryptocurrency].
 
-**Cara menjalankan:**
+Saya punya akses ke dataset SCImago 2025 (file JSON berisi 32,000+ jurnal
+dengan field: journal, issn_print, issn_electronic, quartile, open_access,
+subject_area, sub_category).
 
-```bash
-python get_issn_electronic.py
+Bantu saya:
+1. Tentukan subject_area SCImago yang paling cocok untuk topik saya
+   (mis. Computer Science, Decision Sciences, Economics Econometrics and Finance).
+2. Beri kriteria filter jurnal yang harus dipakai:
+   - Quartile minimum: [Q1/Q2/Q3/Q4]
+   - Open access: [Yes/No/Diamond/semua]
+   - Subject area prioritas: [uraian]
+3. Saya akan memakai pipeline find_references_scopus untuk filter jurnal.
+   Beri query boolean OpenAlex untuk search_groups di config.yaml.
+
+PENTING — Aturan query (parser recursive-descent, DIDUKUNG):
+- "quoted phrase" untuk frasa literal (mis. "XGBoost", "Hidden Markov Model")
+- (a OR b OR c) untuk alternatif
+- X AND Y untuk wajib keduanya
+- X AND NOT Y untuk exclude (mis. "XGBoost" AND NOT survey)
+- Nested parens DIDUKUNG: ((A OR B) AND C) OR D
+- Word-boundary match: "eth" TIDAK match "method"/"version"
+
+Format output:
+  "Group Name 1":
+    query: '(keyword1 OR keyword2) AND "phrase"'
+  "Group Name 2":
+    query: '...'
+
+Buat 3-5 group query yang mencakup aspek berbeda dari topik saya.
+JANGAN fabricate ISSN — saya akan ambil ISSN dari SCImago via step 01
+(find-refs get-issn), bukan dari output AI.
 ```
 
-**Input yang diminta:**
-- Path file JSON → contoh: `journal-lists/scimago_split/subject_area_Computer_Science.json`
-- Pilihan quartile → `semua`, `Q1`, `Q2`, `Q3`, `Q4` (bisa kombinasi, misal `Q1,Q2`)
+**Prompt validasi jurnal tujuan**:
+```
+Saya mau submit ke jurnal: [nama jurnal + ISSN].
 
-**Output:** Set ISSN Python, contoh:
+Bantu analisis:
+1. Apakah scope jurnal ini cocok dengan topik saya? (cek di description jurnal)
+2. Quartile jurnal ini apa? (SJR/Scopus)
+3. Berapa biasanya waktu review & publication?
+4. Apakah jurnal ini open access atau berbayar? Berapa APC-nya?
+5. Beri 3 contoh artikel di jurnal ini (5 tahun terakhir) yang mirip topik
+   saya — untuk saya jadikan referensi struktur penulisan.
 ```
-{"2157-846X", "2365-9440", "2666-920X", ...}
-```
-**Simpan output ini** (copy) untuk digunakan di `openalex_fetch.py`.
 
 ---
 
-## 2. Fetch Artikel dari OpenAlex (`openalex_fetch.py`)
+### C. Mencari Referensi Pendukung
 
-### 2.1 Konfigurasi Dasar
+**Prompt setelah dataset didapat** (setelah TAHAP 4):
 
-Buka `openalex_fetch.py` dan atur variabel berikut:
-
-| Variabel | Deskripsi | Contoh |
-|----------|-----------|--------|
-| `ISSN_ELECTRONIC` | Set ISSN dari langkah 1 | `{"2157-846X", ...}` |
-| `YEAR_FROM`, `YEAR_TO` | Rentang tahun publikasi | `2021`, `2026` |
-| `LANGUAGE` | Filter bahasa (ISO 639-1) | `["en"]` atau `[]` untuk semua |
-| `OUTPUT_FILE` | Nama file output | `"openalex_results.json"` |
-| `PER_PAGE` | Maks hasil per halaman (max 200) | `200` |
-| `REQUEST_DELAY` | Jeda antar request (detik) | `1.0` |
-| `MAX_RESULTS` | Batas maks per kelompok (0 = tak terbatas) | `0` |
-| `ISSN_BATCH_SIZE` | Jumlah ISSN per request (max ~200) | `50` |
-
-### 2.2 Mendefinisikan Kelompok Pencarian (`SEARCH_GROUPS`)
-
-Struktur `SEARCH_GROUPS` adalah dictionary dengan format:
-
-```python
-SEARCH_GROUPS = {
-    "Nama Kelompok": {
-        "query": "string query OpenAlex search syntax"
-    },
-    ...
-}
 ```
-
-**Syntax Query OpenAlex** (dokumentasi: https://docs.openalex.org/api/get-lists-of-works/search-works)
-
-- Gunakan `AND`, `OR`, tanda kurung `( )`, dan kutip `"` untuk frasa eksak.
-- Contoh:
-  - `"machine learning" AND "cryptocurrency"`
-  - `(Bitcoin OR Ethereum) AND "price prediction"`
-  - `("LSTM" OR "GRU") AND "XGBoost" AND (MACD OR RSI)`
-
-**Contoh SEARCH_GROUPS yang sudah disediakan:**
-
-```python
-SEARCH_GROUPS = {
-    "XGBoost Cryptocurrency": {
-        "query": '(Cryptocurrency OR Solana OR Bitcoin OR ETH OR XRP) AND "XGBoost"'
-    },
-    "HMM XGBoost": {
-        "query": '("Hidden Markov Model" OR HMM) AND "XGBoost"'
-    },
-    "HMM Cryptocurrency": {
-        "query": '("Hidden Markov Model" OR HMM) AND (Cryptocurrency OR Solana OR Bitcoin OR ETH OR XRP)'
-    },
-    "XGBoost Technical Indicators": {
-        "query": '"XGBoost" AND (MACD OR RSI OR ADX OR Stochastic OR CCI OR ATR OR "Bollinger Bands" OR Ichimoku OR OBV OR MFI)'
-    },
-    "XGBoost Sharpe Sortino Profit Factor": {
-        "query": '("Sharpe ratio" OR "Sortino ratio" OR "profit factor") AND "XGBoost"'
-    },
-}
-```
-
-### 2.3 Menjalankan Fetch
-
-```bash
-python openalex_fetch.py
-```
-
-Proses akan:
-- Melakukan request ke API OpenAlex dengan filter ISSN dan query search.
-- Menggabungkan hasil per kelompok.
-- Menyimpan ke file JSON (contoh struktur di bawah).
-
-**Output JSON (`openalex_results.json`):**
-
-```json
+Saya punya dataset artikel hasil filter (file JSON 07_with_journal_info.json)
+dengan struktur:
 {
-  "XGBoost Cryptocurrency": [
+  "kategori_1": [
     {
-      "doi": "10.1016/j.eswa.2022.117497",
-      "title": "Bitcoin price prediction using XGBoost...",
-      "abstract": "This study applies XGBoost to forecast Bitcoin...",
-      "authors": ["John Doe", "Jane Smith"],
-      "year": 2022,
-      "pub_date": "2022-03-15",
-      "volume": "45",
-      "issue": "2",
-      "first_page": "100",
-      "last_page": "115",
-      "publisher": "Elsevier",
-      "journal": "Expert Systems with Applications",
-      "issn_electronic": "2157-846X",
-      "open_access": "No"
+      "doi": "...", "title": "...", "abstract": "...",
+      "authors": [...], "year": ..., "journal": "...",
+      "quartile": "Q1/Q2/...", "open_access": "Yes/No/Diamond OA"
     },
     ...
   ],
-  "HMM XGBoost": [...]
+  "kategori_2": [...]
 }
+
+Tugas: bantu saya identifikasi referensi yang paling relevan untuk topik
+saya: "[topik]". Method yang saya pakai: [uraian singkat method].
+
+Untuk setiap kategori, beri:
+1. Top 5 artikel yang PALING relevan (dengan alasan singkat 1 kalimat).
+2. 1-2 artikel yang harus jadi referensi UTAMA (karena paling foundational).
+3. 1-2 artikel yang harus di-cite karena CONTRASTING view (membandingkan).
+
+Format output: tabel markdown dengan kolom (DOI, Title, Year, Why-relevant,
+Role: main/supporting/contrast).
+
+JANGAN gunakan artikel di luar dataset yang saya berikan.
 ```
 
 ---
 
-## 3. Filter Lanjutan Berdasarkan Judul+Abstrak (`filter_keywords_abstrac.py`)
+### D. Menulis Latar Belakang dengan [DOI]
 
-Script ini menerapkan filter **setelah fetch** menggunakan logika boolean yang sama seperti `SEARCH_GROUPS` tetapi diterapkan pada teks `title + abstract` (karena API OpenAlex hanya mencari di seluruh metadata, tidak spesifik di title/abstract). Ini berguna untuk menyaring lebih ketat.
+**Prompt menulis latar belakang** (paling penting!):
 
-### 3.1 Konfigurasi
+```
+Bantu saya menulis bagian "Latar Belakang" untuk artikel jurnal dengan
+topik: "[topik Anda]".
 
-Di dalam `filter_keywords_abstrac.py`, variabel `SEARCH_GROUPS` didefinisikan dengan format yang **sama persis** seperti di `openalex_fetch.py`. Pastikan query-nya sesuai dengan kebutuhan filter Anda.
+Konteks artikel:
+- Method yang diajukan: [uraian singkat, mis. "XGBoost + HMM untuk prediksi
+  harga cryptocurrency dengan dynamic labeling berbasis ATR"]
+- Kontribusi utama: [3 bullet point novelty]
+- Target jurnal: [nama jurnal, quartile]
 
-**Contoh query yang bisa digunakan:**
+Dataset referensi yang TERSEDIA (boleh di-cite, beri [DOI] di akhir kalimat
+yang merujuk):
+[copy-paste bagian dari 07_with_journal_info.json yang sudah Anda kurasi,
+ atau attach file dan minta AI baca]
 
-| Tujuan | Contoh Query |
-|--------|--------------|
-| Frasa eksak | `"machine learning"` |
-| Kombinasi AND | `LSTM AND bitcoin AND volatility` |
-| Kombinasi OR | `(LSTM OR GRU OR RNN) AND (bitcoin OR ethereum)` |
+Aturan penulisan:
+1. Setiap klaim faktual HARUS diakhiri dengan [DOI] sumbernya.
+   Format WAJIB: kurung siku + DOI literal, contoh:
+   "Pasar cryptocurrency memiliki volatilitas 5x lebih tinggi dari
+   saham [10.3390/fintech4040077]."
 
-### 3.2 Cara Kerja
+2. PENTING — Format DOI yang benar:
+   - Pakai literal DOI: 10.xxxx/yyyy (registrant 4-9 digit)
+   - JANGAN pakai placeholder seperti [DOI-A] atau [DOI-B] — ganti dengan
+     DOI aktual dari dataset di atas
+   - JANGAN pakai \cite{} atau (Author, 2024) — HANYA [DOI]
+   - Letakkan DOI di AKHIR kalimat sebelum tanda baca akhir
+     (titik/koma), supaya regex step 08 bisa ekstrak dengan bersih
+   - Contoh BENAR: "...5x lebih tinggi [10.3390/fintech4040077]."
+   - Contoh SALAH: "...5x lebih tinggi. [10.3390/fintech4040077]"
+     (titik sebelum bracket akan menyebabkan DOI ter-ekstrak dengan titik)
 
-- Untuk setiap artikel, script menggabungkan `title` dan `abstract`.
-- Mengevaluasi apakah teks tersebut memenuhi query (case-insensitive).
-- Artikel yang tidak memenuhi akan dihapus dari kelompoknya.
+3. Jika ada kontradiksi antar referensi, sebutkan keduanya:
+   "Studi A menemukan X [DOI-A], namun studi B menemukan Y [DOI-B]."
+   (Ganti [DOI-A] dan [DOI-B] dengan DOI aktual dari dataset)
 
-### 3.3 Menjalankan
+4. JANGAN cite artikel di luar dataset di atas.
 
-```bash
-python filter_keywords_abstrac.py
+5. Struktur latar belakang (4-5 paragraf):
+   - Paragraf 1: konteks luas topik + kenapa penting
+   - Paragraf 2: state-of-the-art saat ini (cite 3-5 paper foundational)
+   - Paragraf 3: gap penelitian yang belum di-isi
+   - Paragraf 4: kontribusi paper ini (3 bullet point)
+   - Paragraf 5: struktur paper (opsional)
+6. Panjang: 600-800 kata.
+7. Bahasa: [Indonesia/English].
+
+Output: tulis langsung dalam format Markdown, siap di-paste ke draf.
 ```
 
-**Input:** `openalex_results.json` (default)  
-**Output:** `openalex_results_filtered.json`
+**Tips**:
+- Jika dataset terlalu besar untuk di-paste, pecah per kategori dan minta AI tulis latar belakang bertahap per topik.
+- Selalu minta `[DOI]` di akhir kalimat — jangan `\cite{}` atau `(Author, Year)` karena pipeline extract-claims (TAHAP 6) hanya mengenali pola `10.xxxx/yyyy` (literal DOI).
+- Setelah AI generate, jalankan `find-refs extract-claims --input data/draft.md` untuk verifikasi semua DOI yang di-claim benar-benar ada di dataset (TAHAP 6).
 
 ---
 
-## 4. Filter Semantik dengan AI (Prompt Filter)
-
-Langkah ini **bukan script Python**, melainkan prompt yang diberikan ke AI (LLM) untuk membaca setiap abstract secara mendalam dan menentukan apakah artikel benar-benar sesuai dengan kriteria penelitian. Filter keyword boolean di langkah 3 hanya mencocokkan keberadaan kata tertentu, tetapi tidak memahami konteks. Prompt filter ini mengatasi kelemahan tersebut dengan meminta AI memahami makna abstract secara keseluruhan.
-
-**Mengapa langkah ini penting?** Hasil fetch dan filter keyword sering kali masih mengandung artikel yang secara teknis mengandung kata kunci tetapi tidak sesuai secara substansi. Misalnya, artikel yang menggunakan XGBoost untuk klasifikasi sentimen (bukan prediksi harga) tetap lolos filter keyword "XGBoost" dan "Cryptocurrency". Prompt filter ini menyaring artikel tersebut secara semantik.
-
-**Cara penggunaan:**
-
-1. Jalankan `extract_references.py` terlebih dahulu untuk memperpendek teks (hanya DOI, author, abstract), sehingga token yang dikirim ke AI lebih sedikit dan lebih hemat.
-   ```bash
-   python extract_references.py > references_summary.txt
-   ```
-2. Salin output ke AI (ChatGPT, Claude, dll) bersama prompt berikut.
-3. AI akan mengembalikan daftar DOI yang **tidak sesuai** kriteria.
-4. Salin daftar DOI tersebut ke `excluded_dois.txt` untuk langkah 5 (pembersihan).
-
-**Prompt Filter:**
+### E. Menulis Metode
 
 ```
-Buatkan saya list doi dalam 1 block code yang tidak sesuai dengan kriteria journal yang saya cari yang mana tentang prediksi finence entah itu clasifikasi atau (HARUS PREDIKSI ARAH HARGA FINEANCENYA), regresi baca setiap abstrack secara mendalam
-SEARCH_GROUPS = {
-    "XGBoost Cryptocurrency": {
-        "query": '(Cryptocurrency OR Solana OR Bitcoin OR ETH OR XRP) AND "XGBoost"'
-    },
-    "HMM XGBoost": {
-        "query": '("Hidden Markov Model" OR HMM) AND "XGBoost"'
-    },
-    "HMM Cryptocurrency": {
-        "query": '("Hidden Markov Model" OR HMM) AND (Cryptocurrency OR Solana OR Bitcoin OR ETH OR XRP)'
-    },
-    "XGBoost Technical Indicators": {
-        "query": '"XGBoost" AND (MACD OR RSI OR ADX OR Stochastic OR CCI OR ATR OR "Bollinger Bands" OR Ichimoku OR OBV OR MFI)'
-    },
-    "XGBoost Sharpe Sortino Profit Factor": {
-        "query": '("Sharpe ratio" OR "Sortino ratio" OR "profit factor") AND "XGBoost"'
-    },
-}
-```
+Bantu saya menulis bagian "Metode" untuk artikel yang sama.
 
-**Kriteria yang digunakan AI untuk menyaring:**
-- Artikel **harus** tentang prediksi finance (klasifikasi arah harga atau regresi harga).
-- Artikel yang hanya menggunakan metode ML untuk analisis sentimen, deteksi anomaly, portofolio optimasi, clustering, dll — **tidak sesuai** dan DOI-nya akan dimasukkan ke daftar.
-- AI membaca setiap abstract secara mendalam, bukan sekadar mencocokkan keyword.
+Method yang saya pakai:
+- Algoritma: [mis. XGBoost untuk klasifikasi, HMM untuk state detection]
+- Data: [sumber, periode, fitur]
+- Evaluasi: [metric, mis. Sharpe ratio, Sortino ratio, profit factor, accuracy]
+- Train/test split: [walk-forward / k-fold / chronological]
 
-**Hasil yang diharapkan:** AI mengembalikan block code berisi daftar DOI yang tidak sesuai, siap disalin ke `excluded_dois.txt`.
+Struktur yang diminta:
+1. Overview Method (1 paragraf)
+2. Data Preparation (1-2 paragraf, cite sumber data dengan [DOI])
+3. Feature Engineering (1-2 paragraf, cite teknik yang dipakai dengan [DOI])
+4. Model Architecture (2-3 paragraf, cite algoritma asli dengan [DOI])
+5. Evaluation Metrics (1 paragraf, definisi setiap metric + [DOI])
+6. Backtesting Strategy (1 paragraf, cite metode backtest dengan [DOI])
 
----
-
-## 5. Pembersihan: Hapus DOI Tertentu & Buang Kategori Kosong
-
-### Opsi A: Menggunakan `clear_duplicate.py` (direkomendasikan)
-
-Script ini membaca `excluded_dois.txt` (satu DOI per baris, tanpa `https://doi.org/`) — yang bisa diisi dari hasil Prompt Filter langkah 4 — dan menghapus artikel yang DOI-nya tercantum. Kategori yang menjadi kosong akan dihapus dari output.
-
-**Persiapan:**
-
-```bash
-# Buat file excluded_dois.txt
-nano excluded_dois.txt
-# Isi dengan DOI, contoh:
-10.1016/j.eswa.2022.117497
-10.1109/TKDE.2021.3078515
-```
-
-**Rename file hasil filter agar sesuai dengan yang dibaca script:**
-
-```bash
-cp openalex_results_filtered.json openalex_results_deduplicated.json
-```
-
-**Jalankan:**
-
-```bash
-python clear_duplicate.py
-```
-
-**Output:** `cleaned_results.json`
-
-### Opsi B: Menggunakan `remove_doi_list.py` (lebih sederhana)
-
-Script ini hanya menghapus DOI tanpa menghapus kategori kosong. Cara pakai sama:
-
-```bash
-cp openalex_results_filtered.json openalex_results_deduplicated.json
-python remove_doi_list.py
+Aturan:
+- Setiap definisi/saya pakai rumus → cite sumber aslinya dengan [DOI].
+- Format rumus pakai LaTeX inline: $\text{Sharpe} = \frac{\mu}{\sigma}$.
+- Bahasa: [Indonesia/English].
+- Panjang: 800-1200 kata.
 ```
 
 ---
 
-## 6. Cek Distribusi Akhir (`cek_distribusi_artikel.py`)
-
-Menampilkan jumlah artikel per kategori dan total keseluruhan.
-
-```bash
-python cek_distribusi_artikel.py
-```
-
-**Contoh output:**
+### F. Menulis Hasil & Analisis
 
 ```
-Distribusi jumlah artikel per kategori:
+Bantu saya menulis bagian "Hasil dan Analisis".
 
-XGBoost Cryptocurrency: 45 artikel
-HMM XGBoost: 12 artikel
-HMM Cryptocurrency: 8 artikel
-XGBoost Technical Indicators: 23 artikel
-XGBoost Sharpe Sortino Profit Factor: 5 artikel
+Hasil eksperimen saya (rangkuman, sisipkan angka Anda):
+- Model A (baseline): Sharpe = X, Sortino = Y, Profit Factor = Z
+- Model B (proposed): Sharpe = X', Sortino = Y', Profit Factor = Z'
+- Improvement: [persentase]
+- Statistical test: [t-test/Mann-Whitney, p-value]
 
-Total semua artikel: 93
-```
+Struktur yang diminta:
+1. Overview Hasil (1 paragraf, sebutkan temuan utama)
+2. Performance Comparison (1-2 paragraf + 1 tabel markdown)
+3. Ablation Study (1 paragraf, kontribusi tiap komponen method)
+4. Analysis: kenapa model proposed lebih baik (2-3 paragraf,
+   cite 2-3 referensi yang mendukung interpretasi Anda dengan [DOI])
+5. Limitations (1 paragraf, sebutkan keterbatasan dengan jujur)
 
----
-
-## 7. Penulisan Latar Belakang dengan AI (Prompt Latar Belakang)
-
-Langkah ini **bukan script Python**, melainkan prompt yang diberikan ke AI (LLM) untuk menulis **latar belakang penelitian** secara otomatis berdasarkan data referensi JSON yang sudah dikumpulkan. Prompt ini dirancang agar latar belakang yang dihasilkan memiliki struktur piramida terbalik (umum → spesifik), setiap klaim disertai sitasi DOI, dan diakhiri dengan research gap serta pertanyaan penelitian.
-
-**Mengapa langkah ini penting?** Menulis latar belakang penelitian yang baik membutuhkan sintesis dari puluhan artikel, pencarian data evaluasi numerik (RMSE, MAE, akurasi, Sharpe ratio), dan perumusan gap penelitian — proses yang memakan waktu berjam-jam jika dilakukan manual. Dengan prompt ini, AI dapat mengolah seluruh data referensi sekaligus dan menghasilkan draf latar belakang yang terstruktur dalam hitungan menit.
-
-**Prasyarat sebelum menggunakan prompt ini:**
-- File JSON referensi sudah final (`final_references.json`), yaitu sudah melewati langkah 1-6 (fetch, filter, pembersihan, merge quartile).
-- Jalankan `extract_references.py` terlebih dahulu untuk memperpendek teks sehingga token yang dikirim ke AI lebih hemat.
-  ```bash
-  python extract_references.py > references_summary.txt
-  ```
-
-**Cara penggunaan:**
-
-1. Salin output `references_summary.txt` ke AI (ChatGPT, Claude, dll).
-2. Salin juga kode Python eksperimen Anda (metode, data, fitur, target, horizon, metrik evaluasi).
-3. Berikan prompt berikut.
-4. Isi parameter `[isi bidang]` dan `[isi jumlah kata]` sesuai kebutuhan.
-5. AI akan menghasilkan draf latar belakang penelitian yang terstruktur.
-
-**Prompt Latar Belakang:**
-
-```
-Anda adalah asisten peneliti akademik. Tulis **latar belakang penelitian** dengan struktur piramida terbalik (umum → spesifik) berdasarkan data yang saya berikan.
-## Aturan mutlak:
-1. Setiap paragraf wajib memiliki minimal 1 sitasi DOI `[10.xxxx/xxxx]`.
-2. Setiap klaim faktual (contoh: akurasi 92%, RMSE 67,18) harus disertai DOI dari file JSON.
-3. Gunakan bahasa Indonesia akademik formal (baku, tanpa kata "saya", "kita").
-4. Tulisan dalam bentuk **paragraf utuh mengalir**, bukan poin-poin.
-5. Sertakan data evaluasi numerik dari penelitian terdahulu (RMSE, MAE, akurasi, Sharpe ratio, dll.).
-6. Jangan mengarang informasi yang tidak ada dalam JSON/kode Python.
-7. Akhiri dengan perumusan **research gap minimal 3 poin** dan **pertanyaan penelitian** (3-5 pertanyaan).
-
-## Input dari saya:
-- File JSON: daftar artikel dengan DOI, abstrak, dll.
-- Kode Python: metode, data, fitur, target, horizon, metrik evaluasi.
-- Bidang penelitian: [isi bidang, misal: Cryptocurrency]
-- Panjang target: [isi jumlah kata, misal: 2000 kata]
-
-## Contoh penggunaan untuk bidang lain:
-Jika bidang = **Kesehatan (prediksi penyakit jantung)**, JSON berisi artikel tentang XGBoost, Random Forest, SVM dengan akurasi 92-95%. Kode Python menggunakan data rekam medis (usia, tekanan darah, kolesterol) dengan target klasifikasi biner (berisiko/tidak). Gap: belum ada yang menggunakan data longitudinal dan evaluasi clinical net benefit. Maka latar belakang akan: (a) tingginya angka kematian jantung, (b) keterbatasan model konvensional, (c) studi XGBoost dengan akurasi X%, (d) gap data longitudinal, (e) pertanyaan penelitian tentang pengaruh time-series features dan net benefit curve.
-
-Mulai tulis setelah saya memberikan data.
-```
-
-**Struktur output yang dihasilkan AI:**
-1. **Pembukaan umum** — konteks bidang penelitian (misal: perkembangan pasar cryptocurrency).
-2. **Permasalahan** — tantangan yang dihadapi (volatilitas, ketidakpastian, dll).
-3. **Studi terdahulu** — ringkasan metode dan hasil penelitian dari JSON, lengkap dengan data numerik dan sitasi DOI.
-4. **Research gap** — minimal 3 poin kesenjangan yang belum diteliti.
-5. **Pertanyaan penelitian** — 3-5 pertanyaan yang menjadi fokus penelitian.
-
-**Tips untuk hasil optimal:**
-- Semakin banyak data referensi yang diberikan, semakin kaya latar belakang yang dihasilkan.
-- Sertakan kode Python eksperimen agar AI memahami konteks metode dan metrik yang digunakan.
-- Jika hasil terlalu panjang/dpendek, sesuaikan parameter `Panjang target`.
-- Setelah AI menghasilkan draf, gunakan `extract_claims.py` (langkah 9) untuk memverifikasi bahwa setiap DOI yang disitasi memang merujuk ke klaim yang benar.
-
----
-
-## 8. Menambahkan Informasi Quartile & Open Access (`marge_article_journal.py`)
-
-Script ini menggabungkan data artikel JSON dengan data jurnal (hasil SCImago) untuk menambahkan informasi **quartile** dan **open_access** ke setiap artikel. Dengan informasi tambahan ini, Anda dapat menilai kualitas jurnal dan aksesibilitas artikel secara langsung dari file JSON.
-
-**Cara menjalankan:**
-
-```bash
-python marge_article_journal.py <articles_json> <journals_json>
-```
-
-**Parameter:**
-
-| Parameter | Deskripsi | Contoh |
-|-----------|-----------|--------|
-| `articles_json` | Path file JSON berisi data artikel | `cleaned_results.json` |
-| `journals_json` | Path file JSON berisi data jurnal SCImago | `journal-lists/scimagojr_2025.json` |
-
-**Cara kerja:**
-1. Membangun indeks jurnal berdasarkan `issn_electronic` dari file jurnal.
-2. Untuk setiap artikel, mencocokkan `issn_electronic` dengan indeks jurnal.
-3. Menambahkan field `quartile` dan `open_access` ke artikel yang cocok.
-4. Artikel yang ISSN-nya tidak ditemukan di data jurnal akan mendapat nilai `null` untuk kedua field.
-
-**Output:** `final_references.json`
-
-**Contoh:**
-
-```bash
-python marge_article_journal.py cleaned_results.json journal-lists/scimagojr_2025.json
-# Output: final_references.json
+Aturan:
+- Jangan over-claim. Pakai kata "menunjukkan" bukan "membuktikan".
+- Bandingkan dengan hasil paper lain jika ada (cite [DOI]).
+- Bahasa: [Indonesia/English].
+- Panjang: 600-900 kata.
 ```
 
 ---
 
-## 9. Ekstrak Klaim DOI dari Markdown (`extract_claims.py`)
+### G. Menulis Diskusi
 
-Script ini mengekstrak kalimat-kalimat yang mengandung DOI dari file Markdown (`.md`), misalnya draf artikel atau skripsi. Tujuannya agar lebih mudah memverifikasi klaim (claim) yang dibuat dalam tulisan dengan jurnal rujukan aslinya. Output berupa daftar kalimat beserta DOI yang terkandung di dalamnya, serta daftar DOI unik yang bisa langsung digunakan oleh `selected_article.py`.
+```
+Bantu saya menulis bagian "Diskusi".
 
-**Cara menjalankan:**
+Hasil utama paper saya: [1 kalimat temuan utama].
+Method yang dipakai: [uraian singkat].
 
-```bash
-python extract_claims.py <input.md> <output.json>
+Struktur yang diminta:
+1. Interpretasi hasil dalam konteks literatur (2-3 paragraf)
+   - Bandingkan dengan 3-5 paper terkait (cite [DOI])
+   - Kenapa hasil saya konsisten/berbeda dengan mereka?
+2. Implikasi praktis (1-2 paragraf)
+   - Untuk praktisi: apa manfaat method ini?
+   - Untuk regulator: apa pertimbangan policy?
+3. Implikasi teoretis (1 paragraf)
+   - Apa kontribusi terhadap body of knowledge?
+4. Future research (1 paragraf, 3-4 bullet point)
+
+Aturan:
+- Jangan ulangi Hasil — fokus pada "kenapa" dan "apa implikasinya".
+- Cite minimal 5 referensi dari dataset.
+- Bahasa: [Indonesia/English].
+- Panjang: 700-1000 kata.
 ```
 
-**Parameter:**
+---
 
-| Parameter | Deskripsi | Contoh |
-|-----------|-----------|--------|
-| `input.md` | Path file Markdown yang berisi klaim dengan DOI | `draft_artikel.md` |
-| `output.json` | Path file JSON output | `claims_extracted.json` |
+### H. Menulis Kesimpulan
 
-**Cara kerja:**
-1. Membaca teks dari file Markdown.
-2. Menghapus baris heading (`#`, `##`, dll.) dan numbering heading.
-3. Memecah teks menjadi paragraf, lalu memecah setiap paragraf menjadi kalimat menggunakan `nltk.PunktSentenceTokenizer`.
-4. Mencari pola DOI (format `10.xxxx/...`) di setiap kalimat.
-5. Kalimat yang mengandung DOI dikumpulkan beserta daftar DOI-nya.
-6. Menghasilkan daftar DOI unik dari seluruh kalimat.
+```
+Bantu saya menulis "Kesimpulan" (1 paragraf, 200-300 kata).
 
-**Output JSON:**
+Konteks:
+- Topik: [topik]
+- Kontribusi utama: [3 bullet]
+- Hasil utama: [1 kalimat dengan angka]
 
-```json
+Struktur:
+1. Restate problem (1 kalimat)
+2. Restate method (1 kalimat)
+3. Sebutkan 3 temuan utama (3 kalimat, dengan angka)
+4. Implikasi praktis (1 kalimat)
+5. Future work (1 kalimat)
+
+JANGAN cite [DOI] di kesimpulan.
+JANGAN perkenalkan ide baru.
+
+Catatan: Walaupun step 08 (extract-claims) akan tetap mengekstrak DOI
+dari section manapun di draft.md (termasuk kesimpulan), best practice
+akademik adalah TIDAK cite di kesimpulan. Kalau AI tetap menambahkan
+[DOI], hapus manual saat review.
+```
+
+---
+
+### I. Jika Sudah Punya Code Penelitian
+
+**Prompt translate code → artikel**:
+
+```
+Saya sudah punya code penelitian lengkap (Python). Saya ingin menulis
+artikel jurnal dari code ini.
+
+Code saya: [paste code, atau attach file]
+
+Bantu saya:
+1. Ekstrak struktur penelitian dari code:
+   - Apa problem yang dipecahkan?
+   - Apa method yang dipakai?
+   - Apa dataset?
+   - Apa metric evaluasi?
+   - Apa hasil utama (dari output code)?
+2. Identifikasi novelty-nya (apa yang baru dari code ini).
+3. Beri saran topik & judul artikel (5 alternatif).
+4. Beri saran 3-5 jurnal target (Q1/Q2) yang cocok.
+5. Beri outline artikel (section + sub-section + perkiraan panjang tiap section).
+6. Beri 5 keyword pencarian untuk cari referensi pendukung di OpenAlex.
+
+Setelah ini saya akan:
+- Pakai outline yang Anda buat untuk generate search_groups di config.yaml
+  (ikuti sintaks di README bagian "Sintaks Query Boolean")
+- Jalankan pipeline find_references_scopus untuk fetch referensi
+- Pakai prompt "Menulis Latar Belakang dengan [DOI]" dengan dataset hasil
+
+Catatan: Output prompt ini (outline, search_groups, keyword) TIDAK otomatis
+ter-parse oleh pipeline. Anda harus copy-paste manual ke config.yaml.
+```
+
+**Prompt menulis method dari code**:
+
+```
+Bantu saya menulis bagian "Metode" berdasarkan code Python saya berikut.
+
+Code: [paste code lengkap]
+
+Tulis metode dalam format paper akademik:
+1. Jangan translate code baris-per-baris. Abstraksikan jadi konsep.
+2. Sebutkan library/version yang dipakai (mis. "XGBoost 1.7.6 [DOI-XGBoost-paper]").
+3. Sebutkan hyperparameter penting (yang Anda pakai default vs yang di-tune).
+4. Untuk setiap teknik yang dipakai, cite paper aslinya dengan [DOI].
+   (Saya akan supply dataset referensi terpisah.)
+5. Sertakan pseudo-code untuk algoritma utama (format LaTeX algorithm2e).
+
+Bahasa: [Indonesia/English]. Panjang: 800-1200 kata.
+```
+
+**Prompt menulis hasil dari output eksperimen**:
+
+```
+Saya sudah jalankan eksperimen. Output log/CSV:
+
+[paste output: mis. classification_report, sharpe ratio, equity curve summary, dst]
+
+Bantu saya:
+1. Rangkum hasil dalam tabel markdown (perbandingan model).
+2. Identifikasi temuan utama (3 bullet point).
+3. Sebutkan anomali/insight menarik yang perlu di-discuss.
+4. Apa perlu uji statistik lanjutan? (sebutkan test apa + library Python)
+5. Draft 1 paragraf "Overview Hasil" untuk paper.
+
+JANGAN fabricate angka. Hanya pakai yang ada di output saya.
+```
+
+---
+
+### J. Verifikasi Klaim [DOI]
+
+Setelah Anda selesai menulis `draft.md` (TAHAP 5), jalankan:
+
+```bash
+find-refs extract-claims --input data/draft.md
+```
+
+Output `data/08_claims.json` berisi semua kalimat yang mengandung [DOI] + list DOI unik. Lalu pakai prompt ini di AI:
+
+**Prompt verifikasi klaim**:
+```
+Saya punya daftar klaim dari draft artikel saya (format JSON):
 {
   "results": [
-    {
-      "sentence": "Metode ini menunjukkan akurasi 95% (10.1016/j.eswa.2022.117497).",
-      "dois": ["10.1016/j.eswa.2022.117497"]
-    }
+    {"sentence": "...kalimat dengan [DOI]...", "dois": ["10.xxxx/yyyy"]},
+    ...
   ],
-  "doi_list": ["10.1016/j.eswa.2022.117497"]
-}
-```
-
-**Catatan:** Field `doi_list` pada output dapat langsung disalin ke variabel `doi_list` di `selected_article.py` untuk mengambil artikel yang relevan.
-
-**Dependensi tambahan:**
-
-```bash
-pip install nltk
-```
-
----
-
-## 10. Ringkas Data Referensi (`extract_references.py`)
-
-Script ini mengambil hanya field **DOI**, **author**, dan **abstract** dari file JSON referensi, membuang field lainnya seperti title, journal, year, volume, dll. Tujuannya adalah memperpendek teks sehingga AI lebih mudah mengolahnya karena output token yang dihasilkan lebih sedikit, terutama saat menggunakan LLM untuk menganalisis atau meringkas referensi.
-
-**Cara menjalankan:**
-
-```bash
-python extract_references.py
-```
-
-**Konfigurasi:**
-
-Di dalam script, variabel `json_file` menentukan file input:
-
-```python
-json_file = "final_references.json"
-```
-
-Ubah sesuai kebutuhan jika file input Anda berbeda.
-
-**Cara kerja:**
-1. Membaca file JSON referensi (struktur: kategori → daftar paper).
-2. Untuk setiap paper, mengekstrak hanya `doi`, `authors`, dan `abstract`.
-3. Memformat nama author: jika 1 author → nama lengkap, 2 author → "A and B", lebih dari 2 → "A et al."
-4. Mencetak hasil ke terminal (bukan file) dalam format:
-   - `# <DOI>`
-   - `## <formatted_authors>`
-   - `### <abstract>`
-
-**Catatan:** Script ini mencetak ke stdout. Jika ingin menyimpan ke file, gunakan redirect:
-
-```bash
-python extract_references.py > references_summary.txt
-```
-
----
-
-## 11. Verifikasi Klaim Latar Belakang dengan AI (Prompt Verifikasi)
-
-Langkah ini **bukan script Python**, melainkan prompt yang diberikan ke AI (LLM) untuk memverifikasi bahwa setiap klaim dalam draf latar belakang penelitian (hasil langkah 7) benar-benar didukung oleh abstract artikel rujukannya. Prompt ini adalah langkah quality control yang memastikan tidak ada klaim yang keliru atau mengarang data (hallucination) dalam latar belakang.
-
-**Mengapa langkah ini penting?** Meskipun Prompt Latar Belakang (langkah 7) sudah meminta AI untuk tidak mengarang informasi, LLM tetap bisa menghasilkan klaim yang tidak sepenuhnya akurat — misalnya mengutip akurasi 92% padahal abstract menyebutkan 89%, atau menyatakan sebuah studi menggunakan LSTM padahal sebenarnya menggunakan GRU. Prompt Verifikasi ini mengecek setiap klaim satu per satu terhadap abstract asli.
-
-**Prasyarat sebelum menggunakan prompt ini:**
-- Draf latar belakang sudah disimpan dalam format JSON sebagai `latar-belakang.json` (hasil dari langkah 7).
-- File `selected_papers.json` sudah tersedia (hasil dari `selected_article.py` di langkah 12).
-- Kedua file harus berada dalam sesi AI yang sama agar AI dapat membaca keduanya.
-
-**Cara penggunaan:**
-
-1. Pastikan AI sudah memiliki akses ke kedua file: `latar-belakang.json` dan `selected_papers.json`.
-2. Berikan prompt berikut.
-3. AI akan membaca setiap klaim, mencocokkan dengan abstract, dan menambahkan field `verification_klaim`.
-4. Periksa hasil verifikasi — fokus pada item yang `sesuai: false`.
-5. Untuk klaim yang tidak sesuai, perbaiki draf latar belakang sesuai saran AI.
-
-**Prompt Verifikasi:**
-
-```
-Ambil semua **abstract** dan **DOI** serta **penulis** dari `selected_papers.json`.
-Kemudian, tambahkan ke dalam `latar-belakang.json` sebuah field baru bernama `verification_klaim` dengan struktur berikut:
-
-{
-  "verification_klaim": [
-    {
-      "doi": "10.11591/ijeecs.v39.i3.pp1745-1754",
-      "penulis": ["Nrusingha Tripathy", "Yugandhar Manchala", ...],
-      "penggalan_kalimat": "penggalan kalimat dari abstract yang mendukung klaim terkait",
-      "sesuai": true / false
-    }
-  ]
+  "doi_list": ["10.xxxx/yyyy", ...]
 }
 
-Lakukan langkah-langkah berikut:
-1. Evaluasi apakah setiap klaim dalam `latar-belakang.json` **sesuai** dengan abstract yang diambil.
-2. Jika ada klaim yang dinilai **tidak sesuai**, baca ulang abstract dari referensi tersebut, lalu pertimbangkan kembali apakah sebenarnya klaim tersebut sesuai atau tidak.
-3. Jika ternyata sesuai setelah pertimbangan ulang, perbarui `penggalan_kalimat` dengan kutipan yang lebih tepat dari abstract.
-4. Jika tetap tidak sesuai, biarkan `sesuai` bernilai `false` dan isi `penggalan_kalimat` dengan kutipan yang relevan (jika ada) atau biarkan kosong.
-Setelah selesai, kirimkan kepada saya file `latar-belakang.json` yang sudah ditambahkan field `verification_klaim` sesuai format di atas.
+Dan saya punya dataset artikel (07_with_journal_info.json) dengan struktur:
+{kategori: [{doi, title, abstract, ...}, ...]}
+
+Tugas: untuk SETIAP klaim di draft, cek apakah klaim tersebut BENAR-BENAR
+didukung oleh artikel yang di-claim (cek abstract/title artikel).
+
+Output: tabel markdown dengan kolom:
+| Klaim | DOI di-claim | Relevan? (Yes/Partial/No) | Catatan |
+
+Jika ada klaim "No" atau "Partial", beri saran:
+- Ganti DOI yang lebih cocok (dari dataset), ATAU
+- Hapus klaim tersebut, ATAU
+- Lemahklaim klaim (mis. dari "menunjukkan" jadi "mungkin menunjukkan")
+
+Jangan fabricate DOI baru di luar dataset.
 ```
-
-**Struktur output yang dihasilkan AI:**
-
-File `latar-belakang.json` yang sama, ditambah field baru `verification_klaim` berisi:
-- `doi` — DOI artikel rujukan.
-- `penulis` — daftar penulis artikel.
-- `penggalan_kalimat` — kutipan dari abstract yang mendukung atau menyangkal klaim.
-- `sesuai` — `true` jika klaim sesuai dengan abstract, `false` jika tidak.
-
-**Contoh hasil verifikasi:**
-
-```json
-{
-  "verification_klaim": [
-    {
-      "doi": "10.11591/ijeecs.v39.i3.pp1745-1754",
-      "penulis": ["Nrusingha Tripathy", "Yugandhar Manchala"],
-      "penggalan_kalimat": "The proposed XGBoost model achieved an accuracy of 92.3% for Bitcoin price direction prediction.",
-      "sesuai": true
-    },
-    {
-      "doi": "10.1016/j.eswa.2022.117497",
-      "penulis": ["John Doe", "Jane Smith"],
-      "penggalan_kalimat": "",
-      "sesuai": false
-    }
-  ]
-}
-```
-
-**Tindak lanjut setelah verifikasi:**
-- Untuk klaim dengan `sesuai: false`, hapus atau perbaiki klaim tersebut di draf latar belakang.
-- Untuk klaim dengan `sesuai: true` tapi `penggalan_kalimat` berbeda dari apa yang ditulis, sesuaikan wording klaim agar lebih akurat.
-- Ulangi proses verifikasi jika melakukan perubahan signifikan pada draf.
 
 ---
 
-## 12. Pilih Artikel Berdasarkan DOI (`selected_article.py`)
+### K. Finalisasi & Export ke BibTeX
 
-Script ini mengambil hanya artikel yang diinginkan dari file JSON referensi berdasarkan daftar DOI. Dapat dikombinasikan dengan hasil `doi_list` yang dihasilkan oleh `extract_claims.py` — sehingga Anda bisa mengekstrak hanya artikel yang dirujuk dalam draf tulisan Anda.
+**Prompt finalisasi struktur artikel**:
 
-**Cara menjalankan:**
+```
+Saya sudah punya draft artikel (file markdown) dengan struktur:
+1. Latar Belakang
+2. Metode
+3. Hasil & Analisis
+4. Diskusi
+5. Kesimpulan
+
+Draft: [paste atau attach]
+
+Bantu saya:
+1. Cek konsistensi istilah (mis. "model" vs "sistem" vs "framework" — pilih satu).
+2. Cek flow antar section (apakah transisi mulus?).
+3. Cek apakah ada klaim di Diskusi yang TIDAK didukung Hasil.
+4. Beri saran judul akhir (5 alternatif, max 15 kata).
+5. Beri 5 keyword untuk abstract.
+6. Tulis abstract (200-250 kata) berdasarkan draft.
+
+Bahasa: [Indonesia/English].
+```
+
+**Setelah final**, convert ke BibTeX:
+```bash
+find-refs convert-bib --input data/07_with_journal_info.json
+# Output: data/11_references.bib (untuk LaTeX \bibliography{references})
+```
+
+Atau pakai subset DOI yang Anda cite di paper:
+```bash
+# Edit config.yaml, isi selected_dois dengan DOI yang benar-benar di-cite
+find-refs select-articles
+find-refs convert-bib --input data/10_selected.json
+```
+
+---
+
+## Daftar Command CLI
+
+Setelah `pip install -e .`:
 
 ```bash
-python selected_article.py [output_file] [--input input_file]
+find-refs list            # lihat semua command
+find-refs guide           # panduan tahap-tahap pipeline
+find-refs <command> -h    # bantuan command tertentu
 ```
 
-**Parameter:**
+### Pipeline Commands (11 step)
 
-| Parameter | Deskripsi | Default |
-|-----------|-----------|---------|
-| `output_file` | Nama file JSON output | `selected_papers.json` |
-| `--input`, `-i` | Path file JSON referensi input | `final_references.json` |
+| # | Command | Type | Deskripsi |
+|---|---------|------|-----------|
+| 01 | `get-issn` | MANUAL | Ekstrak ISSN electronic dari SCImago per quartile + subject area |
+| 02 | `fetch` | AUTO | Fetch artikel OpenAlex per search group |
+| 03 | `filter` | AUTO | Filter keyword di judul+abstrak |
+| 04 | `deduplicate` | AUTO | Hapus DOI duplikat antar group |
+| 05 | `remove-excluded` | MANUAL | Hapus DOI yang ada di `excluded_dois.txt` |
+| 06 | `distribution` | AUTO | Statistik artikel per kategori |
+| 07 | `merge-journal` | AUTO | Tambah quartile & open_access dari SCImago |
+| 08 | `extract-claims` | MANUAL | Ekstrak kalimat berisi [DOI] dari Markdown |
+| 09 | `extract-references` | AUTO | Format artikel jadi Markdown ringkas |
+| 10 | `select-articles` | MANUAL | Pilih subset artikel berdasar DOI |
+| 11 | `convert-bib` | AUTO | Konversi JSON ke BibTeX |
 
-**Konfigurasi DOI:**
+### Utility Commands (preprocessing SCImago)
 
-Di dalam script, variabel `doi_list` berisi daftar DOI yang ingin diambil:
+| Command | Deskripsi |
+|---------|-----------|
+| `csv-to-json` | Konversi SCImago CSV → JSON |
+| `check-issn` | Audit kelengkapan ISSN print/electronic |
+| `delete-no-issn` | Hapus jurnal tanpa ISSN electronic |
+| `split-subject` | Pecah JSON per subject area |
 
-```python
-doi_list = [
-    "10.1007/s44163-025-00519-y",
-    "10.1007/s10614-025-10919-y",
-    ...
-]
+### Special Commands
+
+| Command | Deskripsi |
+|---------|-----------|
+| `list` | Tampilkan daftar command dengan tag AUTO/MANUAL |
+| `guide` | Tampilkan panduan tahap-tahap pipeline + checkpoint |
+
+---
+
+## Konfigurasi (config.yaml)
+
+Semua parameter terpusat di `config.yaml`. Edit file ini, **tidak perlu sentuh kode Python**.
+
+```yaml
+# Parameter umum fetch OpenAlex
+year_from: 2021
+year_to: 2026
+language: ["en"]
+per_page: 200
+request_delay: 1.0
+max_results_per_group: 0    # 0 = tanpa batas
+issn_batch_size: 50
+
+# Daftar ISSN electronic (kosongkan jika pakai output step 01)
+issn_electronic: []
+
+# Search groups — SATU sumber kebenaran
+search_groups:
+  "XGBoost Cryptocurrency":
+    query: '(Cryptocurrency OR Solana OR Bitcoin OR ETH OR XRP) AND "XGBoost"'
+  "HMM XGBoost":
+    query: '("Hidden Markov Model" OR HMM) AND "XGBoost"'
+  # ... tambah group sesuai kebutuhan
+
+# DOI yang ingin dipilih di step 10
+selected_dois: []
+
+# Path file input/output (relatif terhadap root project)
+paths:
+  scimago_csv: "data/scimagojr_2025.csv"
+  scimago_json: "data/scimagojr_2025.json"
+  excluded_dois: "data/excluded_dois.txt"
+  step_01_issn_list: "data/01_issn_list.txt"
+  # ... dst
 ```
 
-Ubah daftar ini sesuai kebutuhan. Anda juga bisa menyalin daftar DOI dari field `doi_list` pada output `extract_claims.py`.
+### Sintaks Query Boolean
 
-**Cara kerja:**
-1. Membaca file JSON referensi dan membangun mapping DOI → paper.
-2. Mencari setiap DOI dalam daftar.
-3. Menyimpan paper yang ditemukan ke file output.
-4. Menampilkan peringatan untuk DOI yang tidak ditemukan.
-5. Mencetak ringkasan paper yang ditemukan ke terminal.
+Query di `search_groups` didukung oleh parser recursive-descent (sejak v1.1) dengan sintaks lengkap:
 
-**Contoh:**
+- `"quoted phrase"` — pencocokan substring literal (case-insensitive)
+- `word` — pencocokan **word-boundary** (mis. `eth` TIDAK match `method`/`version`/`ethical`)
+- `(a OR b OR c)` — salah satu harus ada
+- `X AND Y` — keduanya harus ada
+- `X AND NOT Y` — X harus ada, Y tidak boleh ada
+- `((a OR b) AND c) OR d` — **nested parentheses didukung penuh**
+- `"phrase with AND inside"` — AND/OR di dalam quote dianggap **literal**, tidak di-parse
 
+**Validasi otomatis**: Jika query tidak valid (paren tidak seimbang, quote tidak tertutup, dll), step 03 akan log error dan skip group tersebut (artikel disalin apa adanya).
+
+**Contoh query valid**:
+```
+("Hidden Markov Model" OR HMM) AND "XGBoost"
+```
+```
+(Cryptocurrency OR Solana OR Bitcoin OR ETH OR XRP) AND "XGBoost" AND NOT "survey"
+```
+```
+(("Sharpe ratio" OR "Sortino ratio") AND XGBoost) OR ("profit factor" AND LSTM)
+```
+
+**Limitasi**: Tidak ada wildcard (`*`), tidak ada regex, tidak ada proximity search (`~`). Untuk kebutuhan tersebut, gunakan search API OpenAlex langsung.
+
+---
+
+## Struktur Folder
+
+```
+find_references_scopus/
+├── pyproject.toml
+├── requirements.txt
+├── config.yaml                 # Konfigurasi terpusat
+├── README.md                   # Dokumentasi ini
+├── data/                       # Semua file data
+│   ├── scimagojr_2025.csv      # Sumber SCImago
+│   ├── scimagojr_2025.json     # Konversi JSON
+│   ├── excluded_dois.txt       # Daftar DOI exclude (manual)
+│   ├── draft.md                # Draf artikel Anda (manual, dengan [DOI])
+│   ├── 01_issn_list.txt        # Output step 01
+│   ├── 02_openalex_raw.json    # Output step 02
+│   ├── ...
+│   └── 11_references.bib       # Output final untuk LaTeX
+├── docs/
+│   └── flowchart.svg           # Diagram alur
+└── find_references_scopus/     # Package Python
+    ├── __init__.py
+    ├── __main__.py             # python -m find_references_scopus
+    ├── cli.py                  # CLI dispatcher
+    ├── config.py               # Loader config.yaml
+    ├── utils.py                # Utility bersama
+    ├── pipeline/               # 11 step
+    │   ├── step_01_get_issn.py
+    │   ├── ...
+    │   └── step_11_convert_bib.py
+    └── journal_lists/          # 4 utility SCImago
+        ├── csv_to_json.py
+        ├── check_issn.py
+        ├── delete_no_issn.py
+        └── split_by_subject_area.py
+```
+
+---
+
+## Detail Setiap Step Pipeline
+
+### Step 01 — get-issn
+
+**Tujuan**: Ekstrak ISSN electronic dari SCImago, bisa per quartile dan/atau per subject area.
+
+**Mode sumber data**:
+1. **SCImago full** (default) — pakai `data/scimagojr_2025.json`
+2. **Subject area pilihan** — pakai file di `data/scimago_split/subject_area_*.json` (hasil dari `find-refs split-subject`)
+
+**Cara pakai**:
 ```bash
-# Menggunakan default
-python selected_article.py
+# Mode default: SCImago full
+find-refs get-issn -q Q1,Q2         # Q1+Q2 dari semua subject area
+find-refs get-issn                  # semua quartile
+find-refs get-issn -i               # interaktif (prompt quartile)
 
-# Menentukan file output dan input
-python selected_article.py my_papers.json --input cleaned_results.json
+# Mode subject area: lihat daftar dulu
+find-refs get-issn --subject list   # tampilkan 27 subject area + nomor
+
+# Pilih subject area berdasarkan nomor
+find-refs get-issn --subject 7               # Computer Science saja
+find-refs get-issn --subject 7,8             # Computer Science + Decision Sciences
+find-refs get-issn --subject 7,8 -q Q1       # + filter Q1
+
+# Pilih subject area berdasarkan nama/keyword (case-insensitive)
+find-refs get-issn --subject Computer        # semua area yg namanya ada "Computer"
+find-refs get-issn --subject "Computer Science,Mathematics"  # multi-name
+
+# Gabung semua subject area (sama dengan SCImago full)
+find-refs get-issn --subject all -q Q1,Q2
 ```
 
-**Output JSON:** Array berisi paper yang ditemukan:
+**Input**: `data/scimagojr_2025.json` (mode default) ATAU `data/scimago_split/subject_area_*.json` (mode subject)
+**Output**: `data/01_issn_list.txt` (satu ISSN per baris)
 
-```json
-[
-  {
-    "doi": "10.1016/j.eswa.2022.117497",
-    "title": "Bitcoin price prediction using XGBoost...",
-    "authors": ["John Doe", "Jane Smith"],
-    "abstract": "This study applies XGBoost...",
-    ...
-  }
-]
-```
+**Catatan**: Subject area yang dipilih akan otomatis di-dedup (jurnal yang muncul di multiple subject area hanya dihitung sekali).
 
----
-
-## 13. Konversi JSON ke BibTeX (`confert_bib.py`)
-
-Script ini mengubah file JSON referensi menjadi file BibTeX (`.bib`) untuk keperluan input referensi ke LaTeX atau manajer referensi seperti di Windows (Zotero, Mendeley, JabRef, dll). Semua field yang relevan (author, title, journal, year, volume, issue, pages, doi, publisher) akan dikonversi ke format BibTeX standar.
-
-**Cara menjalankan:**
-
+### Step 02 — fetch
 ```bash
-python confert_bib.py
+find-refs fetch                 # pakai ISSN dari config atau output step 01
+find-refs fetch --issn-file path/ke/issn.txt
 ```
+**Input**: config.yaml (search_groups + ISSN)
+**Output**: `data/02_openalex_raw.json`
+**Catatan**: Proses bisa lama (menit-jam). OpenAlex rate limit ~100 req/menit.
 
-**Konfigurasi:**
-
-Di dalam script, variabel berikut menentukan file input dan output:
-
-```python
-input_json = "final_references.json"
-output_bib = "references.bib"
-```
-
-Ubah sesuai kebutuhan jika file input/output Anda berbeda.
-
-**Cara kerja:**
-1. Membaca file JSON referensi (struktur: kategori → daftar paper).
-2. Menggabungkan semua artikel dari berbagai kategori menjadi satu daftar.
-3. Untuk setiap artikel, membuat entry `@article` dalam format BibTeX dengan field:
-   - `author` — nama author digabung dengan "and"
-   - `title`, `journal`, `year`, `month`
-   - `volume`, `number` (issue), `pages`
-   - `doi`, `publisher`
-4. Citation key dihasilkan otomatis dari nama belakang author pertama + tahun + indeks (contoh: `Doe2022_0`).
-5. Karakter khusus BibTeX (`&`, `%`, `$`, `_`, dll.) di-escape secara otomatis.
-6. Field `abstract` sengaja tidak disertakan untuk menjaga file `.bib` tetap ringkas.
-
-**Output:** `references.bib`
-
-**Contoh output BibTeX:**
-
-```bibtex
-@article{Doe2022_0,
-  author = {John Doe and Jane Smith},
-  title = {Bitcoin price prediction using XGBoost},
-  journal = {Expert Systems with Applications},
-  year = {2022},
-  month = mar,
-  volume = {45},
-  number = {2},
-  pages = {100--115},
-  doi = {10.1016/j.eswa.2022.117497},
-  publisher = {Elsevier}
-}
-```
-
----
-
-## Alur Lengkap (Copy-Paste Commands)
-
+### Step 03 — filter
 ```bash
-# 1. Ekstrak ISSN
-python get_issn_electronic.py
-# -> copy output set ISSN
-
-# 2. Tempel ISSN ke openalex_fetch.py, lalu jalankan
-python openalex_fetch.py
-
-# 3. Filter dengan keyword di abstract (sesuaikan query di dalam script jika perlu)
-python filter_keywords_abstrac.py
-
-# 4. Filter semantik dengan AI (Prompt Filter)
-# a. Ringkas referensi dulu agar token lebih hemat
-python extract_references.py > references_summary.txt
-# b. Salin output + prompt ke AI (lihat section 4 untuk prompt lengkapnya)
-# c. Salin daftar DOI yang tidak sesuai ke excluded_dois.txt
-
-# 5. Rename untuk input pembersihan
-cp openalex_results_filtered.json openalex_results_deduplicated.json
-
-# 6. Buat daftar DOI yang ingin dikecualikan (dari hasil Prompt Filter langkah 4)
-echo "10.1016/j.eswa.2022.117497" > excluded_dois.txt
-echo "10.1109/TKDE.2021.3078515" >> excluded_dois.txt
-
-# 7. Hapus DOI dan bersihkan kategori kosong
-python clear_duplicate.py
-
-# 8. Lihat distribusi
-python cek_distribusi_artikel.py
-
-# 9. Tambahkan informasi quartile & open access
-python marge_article_journal.py cleaned_results.json journal-lists/scimagojr_2025.json
-# -> Output: final_references.json
-
-# 10. Tulis latar belakang penelitian dengan AI (Prompt Latar Belakang)
-# a. Ringkas referensi dulu agar token lebih hemat
-python extract_references.py > references_summary.txt
-# b. Salin output + kode Python + prompt ke AI (lihat section 7 untuk prompt lengkapnya)
-# c. Isi parameter bidang dan panjang target
-# d. AI menghasilkan draf latar belakang terstruktur
-
-# 11. (Opsional) Ekstrak klaim DOI dari draf Markdown
-python extract_claims.py draft_artikel.md claims_extracted.json
-# -> Salin doi_list dari output ke selected_article.py
-
-# 12. (Opsional) Pilih artikel berdasarkan DOI
-# Salin doi_list dari extract_claims.py ke variabel doi_list di selected_article.py
-python selected_article.py
-# -> Output: selected_papers.json
-
-# 13. Verifikasi klaim latar belakang dengan AI (Prompt Verifikasi)
-# a. Siapkan latar-belakang.json (draf dari langkah 10) dan selected_papers.json (langkah 12)
-# b. Berikan kedua file + prompt ke AI (lihat section 11 untuk prompt lengkapnya)
-# c. AI menambahkan field verification_klaim ke latar-belakang.json
-# d. Perbaiki klaim yang sesuai: false
-
-# 14. (Opsional) Ringkas referensi untuk AI (hanya DOI, author, abstract)
-python extract_references.py > references_summary.txt
-
-# 15. Konversi ke BibTeX untuk referensi LaTeX / manajer referensi
-python confert_bib.py
-# -> Output: references.bib
+find-refs filter
+find-refs filter -i input.json -o output.json
 ```
+**Input**: `02_openalex_raw.json`
+**Output**: `03_filtered.json`
+
+### Step 04 — deduplicate
+```bash
+find-refs deduplicate
+```
+**Input**: `03_filtered.json`
+**Output**: `04_deduplicated.json`
+**Algoritma**: Pindahkan DOI duplikat ke group yang paling spesifik (subset query).
+
+### Step 05 — remove-excluded
+```bash
+find-refs remove-excluded
+find-refs remove-excluded -e custom_excluded.txt
+```
+**Input**: `04_deduplicated.json` + `excluded_dois.txt`
+**Output**: `05_cleaned.json`
+
+### Step 06 — distribution
+```bash
+find-refs distribution
+```
+**Input**: `05_cleaned.json`
+**Output**: `06_distribution.txt`
+
+### Step 07 — merge-journal
+```bash
+find-refs merge-journal
+```
+**Input**: `05_cleaned.json` + `scimagojr_2025.json`
+**Output**: `07_with_journal_info.json` ← **dataset final**
+
+### Step 08 — extract-claims
+```bash
+find-refs extract-claims --input data/draft.md
+```
+**Input**: file Markdown (draft artikel Anda)
+**Output**: `08_claims.json` (`{results: [{sentence, dois}], doi_list: [...]}`)
+**Catatan**: Perlu package `nltk`.
+
+### Step 09 — extract-references
+```bash
+find-refs extract-references
+```
+**Input**: `07_with_journal_info.json`
+**Output**: `09_references.md` — format:
+```markdown
+# Kategori: XGBoost Cryptocurrency
+
+Total: 25 artikel
 
 ---
 
-## Penjelasan Query Boolean untuk `SEARCH_GROUPS`
+## 10.1007/s44163-025-00519-y
+**2024 | Journal of Finance**
+### Smith et al.
 
-### Aturan Dasar
+Abstract text here...
 
-| Simbol | Arti | Contoh |
-|--------|------|--------|
-| `AND` | Kedua sisi harus ada | `LSTM AND bitcoin` |
-| `OR` | Salah satu sisi ada | `(LSTM OR GRU)` |
-| `" "` | Frasa eksak (spasi dianggap satu kesatuan) | `"hidden markov model"` |
-| `( )` | Mengelompokkan | `(bitcoin OR ethereum) AND lstm` |
-
-### Contoh Query Umum
-
-**1. Mencari topik dengan dua kata kunci wajib:**
+---
 ```
-"machine learning" AND cryptocurrency
-```
+Catatan: struktur per kategori → `## DOI` → `### Author` → abstract.
 
-**2. Mencari salah satu dari beberapa model:**
+### Step 10 — select-articles
+```bash
+find-refs select-articles              # pakai selected_dois dari config
+find-refs select-articles --dois-file dois.txt
 ```
-(LSTM OR GRU OR Transformer) AND "price prediction"
-```
+**Input**: `07_with_journal_info.json` + `config.selected_dois`
+**Output**: `10_selected.json`
 
-**3. Kombinasi kompleks:**
+### Step 11 — convert-bib
+```bash
+find-refs convert-bib                                      # dari step 07
+find-refs convert-bib --input data/10_selected.json        # dari subset step 10
 ```
-("technical analysis" OR "trading strategy") AND (Sharpe OR "Sortino ratio") AND XGBoost
-```
-
-**4. Mencari frasa dengan AND di dalamnya (gunakan kutip):**
-```
-"profit factor" AND "walk forward"
-```
-
-### Catatan Penting
-
-- **Case-insensitive:** `xGBoost` sama dengan `XGBoost`.
-- **Tidak ada wildcard** (seperti `*`). Harus kata utuh.
-- **Tidak ada negasi** (NOT). Jika perlu eksklusi, lakukan pasca-filter secara manual.
-- **Setiap query akan diterapkan pada hasil fetch yang sudah dibatasi oleh ISSN dan tahun.** Gunakan query yang lebih spesifik jika ingin hasil lebih sedikit.
+**Output**: `11_references.bib` (entry `@article{...}` valid untuk LaTeX)
 
 ---
 
-## Troubleshooting
+## Migrasi dari Versi Lama
 
-| Masalah | Solusi |
-|---------|--------|
-| `ImportError: No module named 'requests'` | `pip install requests` |
-| `URL too long` error | Kurangi `ISSN_BATCH_SIZE` (misal 30) |
-| Tidak ada hasil dari API | Periksa:
-  - Apakah ISSN valid? Coba dengan satu ISSN dulu.
-  - Apakah tahun publikasi terlalu sempit? Ubah `YEAR_FROM` ke 2015.
-  - Apakah query terlalu spesifik? Gunakan kata kunci yang lebih umum.
-| `FileNotFoundError: openalex_results_deduplicated.json` | Jalankan `cp openalex_results_filtered.json openalex_results_deduplicated.json` |
-| `excluded_dois.txt` tidak ditemukan | Buat file kosong: `touch excluded_dois.txt` atau hapus baris di script yang membaca file tersebut. |
-| Hasil filter kosong semua | Query di `filter_keywords_abstrac.py` terlalu ketat. Coba gunakan query yang lebih longgar atau hapus filter. |
+| Script Lama | Command Baru |
+|-------------|--------------|
+| `get_issn_electronic.py` | `find-refs get-issn` |
+| `openalex_fetch.py` | `find-refs fetch` |
+| `filter_keywords_abstrac.py` | `find-refs filter` |
+| `clear_duplicate.py` | `find-refs deduplicate` |
+| `remove_doi_list.py` | `find-refs remove-excluded` |
+| `cek_distribusi_artikel.py` | `find-refs distribution` |
+| `marge_article_journal.py` | `find-refs merge-journal` |
+| `extract_claims.py` | `find-refs extract-claims` |
+| `extract_references.py` | `find-refs extract-references` |
+| `selected_article.py` | `find-refs select-articles` |
+| `confert_bib.py` | `find-refs convert-bib` |
+| `journal-lists/csv_to_json.py` | `find-refs csv-to-json` |
+| `journal-lists/cek_issn.py` | `find-refs check-issn` |
+| `journal-lists/delete_no_issn.py` | `find-refs delete-no-issn` |
+| `journal-lists/split_by_subject_area.py` | `find-refs split-subject` |
+
+### Mapping Output File Lama → Baru
+
+| Output Lama | Output Baru |
+|-------------|-------------|
+| `openalex_results.json` | `data/02_openalex_raw.json` |
+| `openalex_results_filtered.json` | `data/03_filtered.json` |
+| `openalex_results_deduplicated.json` | `data/04_deduplicated.json` |
+| `cleaned_results.json` | `data/05_cleaned.json` |
+| `final_references.json` | `data/07_with_journal_info.json` |
+| `selected_papers.json` | `data/10_selected.json` |
+| `references.bib` | `data/11_references.bib` |
+
+### Bug Fix Penting
+
+Versi lama `confert_bib.py` menulis `## article{...}` (dengan prefix `## `) yang **merusak parser BibTeX/LaTeX**. Versi baru menulis `@article{...}` yang valid.
+
+### Apa yang Perlu Dilakukan Setelah Migrasi
+
+1. Copy `scimagojr_2025.csv`, `scimagojr_2025.json`, `excluded_dois.txt` ke folder `data/`
+2. Edit `config.yaml`:
+   - Isi `selected_dois` dengan 27 DOI yang sebelumnya hard-coded (lihat di bawah)
+   - Sesuaikan `search_groups` jika perlu (default sudah memuat semua group lama)
+3. Jalankan `find-refs guide` untuk lihat tahapan
+4. Mulai dari TAHAP 0 (preprocess SCImago)
+
+### Daftar 27 DOI (sebelumnya hard-coded di selected_article.py)
+
+**Copy daftar ini ke `selected_dois` di `config.yaml`** jika Anda mau pakai 27 DOI yang sama dengan versi lama:
+
+```yaml
+selected_dois:
+  - "10.1007/s44163-025-00519-y"
+  - "10.1007/s10614-025-10919-y"
+  - "10.3390/s22051740"
+  - "10.7717/peerj-cs.2626"
+  - "10.11591/ijeecs.v37.i3.pp1964-1975"
+  - "10.11591/ijeecs.v39.i3.pp1745-1754"
+  - "10.1109/access.2025.3556881"
+  - "10.1155/int/6674437"
+  - "10.3390/math11112415"
+  - "10.28991/hij-2024-05-04-013"
+  - "10.28991/hij-2025-06-01-017"
+  - "10.3390/math11061335"
+  - "10.2478/cait-2023-0020"
+  - "10.3390/math11051132"
+  - "10.1109/access.2021.3088999"
+  - "10.1109/access.2023.3318478"
+  - "10.3390/forecast8030040"
+  - "10.3390/a19020101"
+  - "10.1109/access.2024.3516490"
+  - "10.3390/fintech4040077"
+  - "10.1016/j.eswa.2025.127729"
+  - "10.3905/jfds.2026.1.217"
+  - "10.3390/math13233889"
+  - "10.1007/s10614-026-11338-3"
+  - "10.3390/electronics15061334"
+  - "10.1007/s42521-024-00123-2"
+  - "10.3390/math13101577"
+```
+
+Catatan: DOI lookup di step 10 sudah **case-insensitive** (sejak v1.1), jadi Anda boleh tulis dengan huruf besar/kecil campuran tanpa masalah.
 
 ---
 
-## Kesimpulan
+## License
 
-Dengan mengikuti panduan ini, Anda dapat:
-1. Mengambil artikel dari ribuan jurnal terindeks SCImago.
-2. Memfilter berdasarkan topik tertentu menggunakan query boolean.
-3. Menyaring artikel secara semantik dengan AI menggunakan prompt filter yang membaca abstract secara mendalam.
-4. Membersihkan hasil dari artikel yang tidak diinginkan (berdasarkan DOI dari hasil prompt filter).
-5. Melihat statistik distribusi akhir.
-6. Menulis latar belakang penelitian dengan AI secara otomatis berdasarkan data referensi.
-7. Menambahkan informasi quartile dan open access ke data artikel.
-8. Mengekstrak klaim DOI dari draf Markdown untuk verifikasi rujukan.
-9. Memendekkan data referensi agar lebih efisien untuk diproses AI.
-10. Memverifikasi kebenaran klaim dalam latar belakang terhadap abstract asli menggunakan AI.
-11. Memilih artikel tertentu berdasarkan daftar DOI.
-12. Mengonversi data referensi ke format BibTeX untuk keperluan LaTeX atau manajer referensi.
-
-Selamat mencoba!
+MIT — bebas dipakai untuk keperluan akademik.

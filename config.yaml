@@ -1,0 +1,80 @@
+# =============================================================================
+# Konfigurasi Pipeline Find References Scopus
+# =============================================================================
+# File ini berisi semua konfigurasi yang dipakai oleh pipeline:
+#   1. Daftar ISSN electronic (dari SCImago) untuk filter OpenAlex
+#   2. Search groups (kelompok query boolean) — satu sumber kebenaran
+#   3. Parameter umum (rentang tahun, bahasa, batch size)
+#   4. Path file input/output dengan skema penamaan konsisten
+#
+# Cara pakai:
+#   - Ubah nilai di file ini, TIDAK perlu sentuh kode Python
+#   - Semua script membaca config.yaml lewat find_references_scopus.config
+# =============================================================================
+
+# --- Parameter umum fetch OpenAlex ---
+year_from: 2021
+year_to: 2026
+language: ["en"]
+per_page: 200
+request_delay: 1.0          # detik jeda antar request API
+max_results_per_group: 0    # 0 = tanpa batas
+issn_batch_size: 50         # pecah ISSN jadi batch agar URL tidak terlalu panjang
+
+# --- Daftar ISSN electronic (sumber: SCImago 2025) ---
+# Bisa diisi manual di sini, atau di-generate lewat: find-refs get-issn
+issn_electronic: []
+
+# --- Kelompok query pencarian ---
+# SATU sumber kebenaran untuk: fetch, filter, dan deduplikasi.
+# Setiap group punya: query (boolean AND/OR dengan quoted phrases didukung)
+search_groups:
+  "XGBoost Cryptocurrency":
+    query: '(Cryptocurrency OR Solana OR Bitcoin OR ETH OR XRP) AND "XGBoost"'
+  "HMM XGBoost":
+    query: '("Hidden Markov Model" OR HMM) AND "XGBoost"'
+  "HMM Cryptocurrency":
+    query: '("Hidden Markov Model" OR HMM) AND (Cryptocurrency OR Solana OR Bitcoin OR ETH OR XRP)'
+  "XGBoost Technical Indicators":
+    query: '"XGBoost" AND (MACD OR RSI OR ADX OR Stochastic OR CCI OR ATR OR "Bollinger Bands" OR Ichimoku OR OBV OR MFI)'
+  "XGBoost Sharpe Sortino Profit Factor":
+    query: '("Sharpe ratio" OR "Sortino ratio" OR "profit factor") AND "XGBoost"'
+  # Group tambahan untuk filter lanjutan (opsional, hanya dipakai step 03)
+  "ATR Dynamic Labeling":
+    query: '("Average True Range" OR ATR) AND "dynamic labeling"'
+  "HMM Forward Filtering":
+    query: '"forward filtering" AND HMM'
+  "Walk-Forward Backtesting":
+    query: '(walk-forward OR backtesting) AND "stop loss"'
+
+# --- Daftar DOI yang ingin dipilih (untuk step select-articles) ---
+# Diisi manual sesuai kebutuhan riset
+selected_dois: []
+
+# --- Path file input/output (relatif terhadap root project) ---
+paths:
+  # Input eksternal
+  scimago_csv: "data/scimagojr_2025.csv"
+  scimago_json: "data/scimagojr_2025.json"
+  scimago_clean: "data/scimagojr_2025_ok.json"
+  scimago_split_dir: "data/scimago_split"
+  excluded_dois: "data/excluded_dois.txt"
+
+  # Output pipeline (urutan eksekusi)
+  step_01_issn_list: "data/01_issn_list.txt"
+  step_02_openalex_raw: "data/02_openalex_raw.json"
+  step_03_filtered: "data/03_filtered.json"
+  step_04_deduplicated: "data/04_deduplicated.json"
+  step_05_cleaned: "data/05_cleaned.json"
+  step_06_distribution: "data/06_distribution.txt"
+  step_07_with_journal_info: "data/07_with_journal_info.json"
+  step_08_claims: "data/08_claims.json"
+  step_09_references_md: "data/09_references.md"
+  step_10_selected: "data/10_selected.json"
+  step_11_references_bib: "data/11_references.bib"
+
+# --- Pengaturan logging ---
+logging:
+  level: "INFO"             # DEBUG | INFO | WARNING | ERROR
+  format: "%(asctime)s [%(levelname)s] %(message)s"
+  date_format: "%Y-%m-%d %H:%M:%S"
