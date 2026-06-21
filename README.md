@@ -70,17 +70,30 @@ unggul dalam prediksi time-series keuangan [10.1007/s10614-025-10919-y]...
 
 ## Instalasi
 
-```bash
-cd find_references_scopus
+### 1. Clone repository
 
-# (Opsional) Buat virtual environment
+```bash
+git clone https://github.com/farisalfatih/find_references_scopus.git
+cd find_references_scopus
+```
+
+### 2. Buat virtual environment (opsional)
+
+```bash
 python -m venv .venv
 source .venv/bin/activate  # Linux/Mac
+source .venv/Scripts/activate # Windows
+```
 
-# Install dependencies
+### 3. Install dependencies
+
+```bash
 pip install -r requirements.txt
+```
 
-# (Opsional) Install sebagai package agar dapat command `find-refs`
+### 4. Install sebagai package (opsional)
+
+```bash
 pip install -e .
 ```
 
