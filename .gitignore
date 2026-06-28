@@ -1,1 +1,3 @@
 /.venv/
+.env
+/find_references_scopus.egg-info/

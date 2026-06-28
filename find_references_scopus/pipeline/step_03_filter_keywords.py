@@ -1,12 +1,14 @@
-"""Step 03: Filter artikel berdasarkan keyword di judul+abstrak.
+"""Step 03: Filter artikel berdasarkan keyword di abstrak.
 
 Input  : data/02_openalex_raw.json    (output step 02)
 Output : data/03_filtered.json
 
 Perilaku:
    - Untuk setiap search_group, evaluasi query boolean terhadap
-     gabungan (title + " " + abstract) setiap artikel
+     abstrak setiap artikel (sama seperti pencarian di step 02)
    - Artikel yang tidak match dengan query group-nya akan dihapus
+   - Text dinormalisasi terlebih dahulu (lowercase, normalisasi tanda baca)
+     sebelum pencocokan agar lebih akurat
    - Format query yang didukung (parser recursive-descent):
        "quoted phrase"     -> pencocokan substring literal (case-insensitive)
        word                -> pencocokan word-boundary (tidak match substring)
@@ -23,16 +25,71 @@ from __future__ import annotations
 
 import argparse
 import re
+import unicodedata
 from typing import Callable, Dict, List
 
 from ..config import get_config
 from ..utils import load_json, print_done, print_header, save_json, setup_logging
 
 
-DESCRIPTION = "Filter artikel berdasarkan keyword di judul+abstrak (query boolean)"
+DESCRIPTION = "Filter artikel berdasarkan keyword di abstrak (query boolean)"
 
 # Tag untuk find-refs list (M13: auto-derived dari module attribute)
 MANUAL_OR_AUTO = "AUTO"
+
+
+# =============================================================================
+# Text normalization
+# =============================================================================
+
+def normalize_text(text: str) -> str:
+    """Normalisasi teks sebelum pencocokan keyword.
+
+    Lakukan:
+      1. Lowercase
+      2. Normalisasi Unicode (NFKC) -> tanda baca seperti em-dash jadi regular dash
+      3. Ganti berbagai jenis dash/hyphen dengan spasi
+      4. Ganti karakter non-alphanumeric (kecuali spasi) dengan spasi
+      5. Collapse multiple spaces jadi satu spasi
+
+    Args:
+        text: Teks asli (abstract).
+
+    Returns:
+        Teks yang sudah dinormalisasi.
+    """
+    if not text:
+        return ""
+    # Lowercase
+    text = text.lower()
+    # NFKC normalization: em-dash -> regular dash, ligatures, dll
+    text = unicodedata.normalize("NFKC", text)
+    # Ganti dash/hyphen varieties dengan spasi (agar "XG-Boost" match "XGBoost")
+    text = re.sub(r"[\u2010\u2011\u2012\u2013\u2014\u2015\-]+", " ", text)
+    # Hapus karakter non-alphanumeric (kecuali spasi)
+    text = re.sub(r"[^a-z0-9\s]", " ", text)
+    # Collapse multiple spaces
+    text = re.sub(r"\s+", " ", text).strip()
+    return text
+
+
+def normalize_query_term(term: str) -> str:
+    """Normalisasi satu term/phrase dari query agar cocok dengan normalize_text.
+
+    Args:
+        term: Term dari query (mis. "XGBoost", "Bollinger Bands").
+
+    Returns:
+        Term yang sudah dinormalisasi (lowercase, tanpa tanda baca).
+    """
+    if not term:
+        return ""
+    term = term.lower()
+    term = unicodedata.normalize("NFKC", term)
+    term = re.sub(r"[\u2010\u2011\u2012\u2013\u2014\u2015\-]+", " ", term)
+    term = re.sub(r"[^a-z0-9\s]", " ", term)
+    term = re.sub(r"\s+", " ", term).strip()
+    return term
 
 
 # =============================================================================
@@ -228,26 +285,18 @@ class _Parser:
 # Evaluator: AST -> callable(text -> bool)
 # =============================================================================
 
-def _build_word_regex(word: str) -> re.Pattern:
-    """Build regex untuk match word dengan word-boundary.
-
-    Args:
-        word: Kata yang akan di-match.
-
-    Returns:
-        Pattern regex dengan \\b word \\b (case-insensitive).
-    """
-    return re.compile(r"\b" + re.escape(word) + r"\b", re.IGNORECASE)
-
-
 def _evaluate_ast(node) -> Callable[[str], bool]:
     """Build evaluator function dari AST.
+
+    Evaluator bekerja pada teks yang SUDAH dinormalisasi (lowercase,
+    tanpa tanda baca khusus). Setiap term juga dinormalisasi sebelum
+    pencocokan agar konsisten.
 
     Args:
         node: AST node berupa tuple.
 
     Returns:
-        Fungsi (text: str) -> bool.
+        Fungsi (text: str) -> bool. text sudah dinormalisasi.
     """
     if node is None:
         # Empty query = match all
@@ -256,12 +305,14 @@ def _evaluate_ast(node) -> Callable[[str], bool]:
     node_type = node[0]
 
     if node_type == "phrase":
-        phrase = node[1].lower()
-        return lambda text: phrase in text.lower()
+        phrase_norm = normalize_query_term(node[1])
+        return lambda text: phrase_norm in text
 
     if node_type == "word":
-        word = node[1]
-        pattern = _build_word_regex(word)
+        word_norm = normalize_query_term(node[1])
+        # Gunakan word-boundary yang disesuaikan: hanya alphanumeric
+        # sebagai word boundary (karena teks sudah dinormalisasi)
+        pattern = re.compile(r"(?<![a-z0-9])" + re.escape(word_norm) + r"(?![a-z0-9])", re.IGNORECASE)
         return lambda text: bool(pattern.search(text))
 
     if node_type == "not":
@@ -301,7 +352,7 @@ def parse_simple_query(query_str: str) -> Callable[[str], bool]:
         query_str: Query boolean, mis. '("XGBoost") AND (MACD OR RSI)'.
 
     Returns:
-        Fungsi yang menerima teks dan mengembalikan True jika match.
+        Fungsi yang menerima teks (sudah dinormalisasi) dan mengembalikan True jika match.
 
     Raises:
         ValueError: jika query tidak valid (paren tidak seimbang, quote tidak
@@ -371,9 +422,11 @@ def run(input_file: str | None = None, output_file: str | None = None) -> int:
         kept: List[dict] = []
         removed_count = 0
         for article in articles:
-            title = article.get("title", "") or ""
             abstract = article.get("abstract", "") or ""
-            text = title + " " + abstract
+
+            # Hanya cocokkan di abstract (sama seperti step 02)
+            text = normalize_text(abstract)
+
             if evaluator(text):
                 kept.append(article)
             else:

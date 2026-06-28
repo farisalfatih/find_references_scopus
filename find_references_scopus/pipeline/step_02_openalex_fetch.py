@@ -2,15 +2,19 @@
 
 Input  : config.yaml (issn_electronic + search_groups)
          data/01_issn_list.txt (alternatif: bisa pakai file hasil step 01)
+         .env                    (OPENALEX_API_KEY, OPENALEX_MAILTO)
 Output : data/02_openalex_raw.json
 
 Perilaku:
    - Untuk setiap search_group di config, kirim query ke OpenAlex API
-   - Filter: ISSN di salah satu daftar, tahun antara year_from–year_to,
+   - Filter: ISSN di salah satu daftar, tahun antara year_from-year_to,
      has_doi=true, has_abstract=true, language di `language`
+   - Pencarian keyword menggunakan abstract.search (di filter) agar
+     hasil hanya artikel yang BENAR-BENAR mengandung keyword di abstrak
    - Pecah ISSN jadi batch (issn_batch_size) agar URL tidak terlalu panjang
    - Paginasi via cursor sampai habis atau mencapai max_results_per_group
    - Rekonstruksi abstrak dari inverted-index OpenAlex
+   - API key dari .env digunakan untuk akses polite pool (rate limit lebih tinggi)
    - Tulis output: { group_name: [article, ...], ... }
 
 Setara dengan script lama: openalex_fetch.py
@@ -22,19 +26,51 @@ import argparse
 import os
 import time
 from datetime import datetime
-from typing import Any, Dict, Iterable, List, Set, Tuple
+from pathlib import Path
+from typing import Any, Dict, List, Set, Tuple
 
 import requests
+from dotenv import load_dotenv
 
-from ..config import get_config
+from ..config import get_config, PROJECT_ROOT
 from ..utils import print_done, print_header, save_json, setup_logging
 from ..utils import load_lines
 
 
-DESCRIPTION = "Fetch artikel dari OpenAlex API per search group"
+DESCRIPTION = "Fetch artikel dari OpenAlex API per search group (pencarian di abstract)"
 
 # Tag untuk find-refs list (M13: auto-derived dari module attribute)
 MANUAL_OR_AUTO = "AUTO"
+
+
+# =============================================================================
+# Load credentials dari .env
+# =============================================================================
+
+def load_openalex_credentials() -> Tuple[str | None, str | None]:
+    """Load OPENALEX_API_KEY dan OPENALEX_MAILTO dari .env.
+
+    Cari file .env di:
+      1. Root project (PROJECT_ROOT / .env)
+      2. Current working directory
+
+    Returns:
+        Tuple (api_key, mailto). Masing-masing None jika tidak ada.
+    """
+    env_path = PROJECT_ROOT / ".env"
+    if not env_path.is_file():
+        env_path = Path.cwd() / ".env"
+
+    if env_path.is_file():
+        load_dotenv(env_path, override=True)
+
+    api_key = os.getenv("OPENALEX_API_KEY", "")
+    mailto = os.getenv("OPENALEX_MAILTO", "")
+
+    api_key = api_key if api_key and not api_key.startswith("your_") else None
+    mailto = mailto if mailto and not mailto.startswith("your_") else None
+
+    return api_key, mailto
 
 
 # =============================================================================
@@ -42,17 +78,7 @@ MANUAL_OR_AUTO = "AUTO"
 # =============================================================================
 
 def reconstruct_abstract(abstract_inverted_index: Dict[str, List[int]] | None) -> str:
-    """Rekonstruksi abstrak dari format inverted-index OpenAlex.
-
-    OpenAlex menyimpan abstrak sebagai {word: [pos1, pos2, ...]}. Fungsi ini
-    mengembalikannya ke string linear dengan mengurutkan berdasarkan posisi.
-
-    Args:
-        abstract_inverted_index: Mapping word -> list posisi.
-
-    Returns:
-        String abstrak utuh. "" jika input kosong/None.
-    """
+    """Rekonstruksi abstrak dari format inverted-index OpenAlex."""
     if not abstract_inverted_index:
         return ""
     try:
@@ -67,17 +93,7 @@ def reconstruct_abstract(abstract_inverted_index: Dict[str, List[int]] | None) -
 
 
 def format_date(date_str: str) -> str:
-    """Lengkapi date string ke format YYYY-MM-DD.
-
-    OpenAlex kadang hanya memberi tahun ("2023") atau tahun-bulan ("2023-05").
-    Fungsi ini melengkapi ke tanggal penuh dengan default "-01".
-
-    Args:
-        date_str: Date string parsial dari OpenAlex.
-
-    Returns:
-        Date string YYYY-MM-DD, atau input asli jika tidak dikenali.
-    """
+    """Lengkapi date string ke format YYYY-MM-DD."""
     if not date_str:
         return ""
     if len(date_str) >= 10:
@@ -94,15 +110,7 @@ def format_date(date_str: str) -> str:
 # =============================================================================
 
 def extract_article_data(work: Dict[str, Any], issn_set: Set[str]) -> Dict[str, Any] | None:
-    """Ekstrak field penting dari satu work object OpenAlex.
-
-    Args:
-        work: Satu entry dari response `results` OpenAlex.
-        issn_set: Set ISSN yang dianggap valid (untuk identifikasi issn_electronic).
-
-    Returns:
-        Dict artikel dengan field terstandarisasi, atau None jika gagal.
-    """
+    """Ekstrak field penting dari satu work object OpenAlex."""
     try:
         doi = work.get("doi", "") or ""
         if doi:
@@ -113,23 +121,18 @@ def extract_article_data(work: Dict[str, Any], issn_set: Set[str]) -> Dict[str, 
         source = primary_location.get("source", {}) or {}
         oa_status = work.get("open_access", {}) or {}
 
-        # Cari ISSN source yang ada di set issn_electronic kita
-        # M14: pakai None (bukan "") kalau tidak ketemu, agar step 07 bisa cek
-        # "info is None" daripada harus handle empty string
         issn_electronic = None
         for src_issn in (source.get("issn") or []):
             if src_issn in issn_set:
                 issn_electronic = src_issn
                 break
 
-        # Ambil daftar author
         authors: List[str] = []
         for authorship in (work.get("authorships") or []):
             display_name = (authorship.get("author") or {}).get("display_name", "")
             if display_name:
                 authors.append(display_name)
 
-        # Klasifikasi Open Access
         is_oa = oa_status.get("is_oa", False)
         oa_url = oa_status.get("oa_url", "")
         if is_oa:
@@ -139,7 +142,6 @@ def extract_article_data(work: Dict[str, Any], issn_set: Set[str]) -> Dict[str, 
         else:
             open_access = "No"
 
-        # Field bibliografi (volume, issue, halaman)
         volume = biblio.get("volume")
         issue = biblio.get("issue")
         first_page = biblio.get("first_page")
@@ -158,7 +160,6 @@ def extract_article_data(work: Dict[str, Any], issn_set: Set[str]) -> Dict[str, 
             "last_page": "" if last_page is None else str(last_page),
             "publisher": source.get("host_organization_name", "") or "",
             "journal": source.get("display_name", "") or "",
-            # M14: None (bukan "") supaya step 07 bisa cek "if issn_electronic is not None"
             "issn_electronic": issn_electronic,
             "open_access": open_access,
         }
@@ -183,28 +184,32 @@ def fetch_group(
     delay: float,
     max_results: int,
     issn_batch_size: int,
+    api_key: str | None = None,
+    mailto: str | None = None,
 ) -> Tuple[List[Dict[str, Any]], int]:
     """Fetch semua artikel untuk satu search_group.
 
-    Mengirim query ke OpenAlex dengan filter ISSN (dipecah per batch),
-    lalu paginasi via cursor sampai habis.
+    Menggunakan abstract.search di filter OpenAlex (seperti openalex_fetch.py)
+    untuk memastikan artikel BENAR-BENAR mengandung keyword di abstrak.
 
     Robustness:
-      - User-Agent header untuk masuk "polite pool" OpenAlex (rate limit lebih tinggi)
-      - Retry dengan exponential backoff untuk HTTP 429 (rate limit) dan 503 (service unavailable)
-      - Max retry count untuk Timeout (hindari infinite loop)
+      - User-Agent header + API key/mailto untuk polite pool
+      - Retry dengan exponential backoff untuk HTTP 429 dan 503
+      - Max retry count untuk Timeout
 
     Args:
         group_name: Nama group (untuk logging).
         search_query: Query boolean OpenAlex.
         issn_list: List ISSN electronic.
-        issn_set: Set ISSN (versi set, sudah di-precompute di caller untuk efisiensi).
+        issn_set: Set ISSN (versi set, sudah di-precompute di caller).
         year_from, year_to: Rentang tahun publikasi.
         lang_list: List bahasa yang diizinkan (mis. ["en"]).
         per_page: Jumlah hasil per halaman API.
         delay: Jeda antar request (detik).
         max_results: Batas total hasil (0 = tanpa batas).
         issn_batch_size: Ukuran batch ISSN per request.
+        api_key: OpenAlex API key (opsional, untuk polite pool).
+        mailto: Email untuk OpenAlex polite pool (opsional).
 
     Returns:
         Tuple (list_artikel, total_artikel_diambil).
@@ -220,34 +225,42 @@ def fetch_group(
     issn_batches = [issn_list[i:i + issn_batch_size] for i in range(0, len(issn_list), issn_batch_size)]
 
     base_url = "https://api.openalex.org/works"
-    # User-Agent untuk masuk "polite pool" OpenAlex (rate limit lebih tinggi).
-    # OpenAlex docs: https://docs.openalex.org/how-to-use-the-api/rate-limits-and-credentials
     headers = {
         "User-Agent": "find_references_scopus/1.0 (https://github.com/research-pipeline)",
     }
+
+    # Parameter ekstra untuk polite pool
+    extra_params: dict = {}
+    if api_key:
+        extra_params["api_key"] = api_key
+    if mailto:
+        extra_params["mailto"] = mailto
 
     all_articles: List[Dict[str, Any]] = []
     seen_dois: Set[str] = set()
     total_fetched = 0
 
     # Konstanta retry
-    MAX_TIMEOUT_RETRIES = 5      # maksimal 5x retry untuk Timeout
-    MAX_HTTP_RETRIES = 4         # maksimal 4x retry untuk 429/503
+    MAX_TIMEOUT_RETRIES = 5
+    MAX_HTTP_RETRIES = 4
 
     for batch_idx, batch in enumerate(issn_batches):
         print(f"    Batch ISSN {batch_idx + 1}/{len(issn_batches)} ({len(batch)} ISSN)")
 
+        # Gunakan abstract.search di filter, sama seperti openalex_fetch.py
         params = {
             "filter": (
                 f"primary_location.source.issn:{'|'.join(batch)},"
                 f"from_publication_date:{year_from}-01-01,"
                 f"to_publication_date:{year_to}-12-31,"
                 f"has_doi:true,"
-                f"has_abstract:true{lang_filter}"
+                f"has_abstract:true"
+                f"{lang_filter}"
+                f",abstract.search:{search_query}"
             ),
-            "search": search_query,
             "per_page": per_page,
         }
+        params.update(extra_params)
 
         cursor = "*"
         page = 0
@@ -299,33 +312,31 @@ def fetch_group(
                 else:
                     cursor = next_cursor
 
-                print(f"      Page {page}: {len(results)} hasil, total group ini: {batch_fetched} artikel")
+                print(f"      Page {page}: {len(results)} hasil, total: {batch_fetched}")
                 if max_results > 0 and total_fetched >= max_results:
                     break
 
-                if cursor:  # hanya sleep kalau masih ada halaman berikutnya
+                if cursor:
                     time.sleep(delay)
 
             except requests.exceptions.Timeout:
                 timeout_retries += 1
                 if timeout_retries > MAX_TIMEOUT_RETRIES:
-                    print(f"      Timeout page {page} - {MAX_TIMEOUT_RETRIES}x retry gagal, skip batch.")
+                    print(f"      Timeout page {page} - {MAX_TIMEOUT_RETRIES}x retry gagal, skip.")
                     break
-                backoff = delay * (2 ** (timeout_retries - 1))  # exponential backoff
+                backoff = delay * (2 ** (timeout_retries - 1))
                 print(f"      Timeout page {page} (retry {timeout_retries}/{MAX_TIMEOUT_RETRIES}), tunggu {backoff}s...")
                 time.sleep(backoff)
-                page -= 1  # jangan increment page untuk retry
+                page -= 1
                 continue
             except requests.exceptions.HTTPError as e:
                 status_code = e.response.status_code if e.response is not None else 0
-                # Retry untuk 429 (rate limit) dan 503 (service unavailable)
                 if status_code in (429, 503):
                     http_retries += 1
                     if http_retries > MAX_HTTP_RETRIES:
-                        print(f"      HTTP {status_code} page {page} - {MAX_HTTP_RETRIES}x retry gagal, skip batch.")
+                        print(f"      HTTP {status_code} page {page} - {MAX_HTTP_RETRIES}x retry gagal, skip.")
                         break
-                    backoff = delay * (2 ** http_retries)  # exponential backoff
-                    # 429 biasanya kasih Retry-After header
+                    backoff = delay * (2 ** http_retries)
                     retry_after = e.response.headers.get("Retry-After") if e.response else None
                     if retry_after:
                         try:
@@ -334,9 +345,8 @@ def fetch_group(
                             pass
                     print(f"      HTTP {status_code} page {page} (retry {http_retries}/{MAX_HTTP_RETRIES}), tunggu {backoff}s...")
                     time.sleep(backoff)
-                    page -= 1  # jangan increment page untuk retry
+                    page -= 1
                     continue
-                # HTTP error lain (4xx selain 429, 5xx selain 503) = tidak retryable
                 print(f"      HTTP Error: {e}")
                 if e.response is not None:
                     print(f"      Response: {e.response.text[:500]}")
@@ -345,10 +355,9 @@ def fetch_group(
                 print(f"      Error: {e}")
                 break
 
-        print(f"    Batch {batch_idx + 1} selesai -> {batch_fetched} artikel untuk group ini")
+        print(f"    Batch {batch_idx + 1} selesai -> {batch_fetched} artikel")
         if max_results > 0 and total_fetched >= max_results:
             break
-        # Jeda antar batch (bukan antar page)
         if batch_idx < len(issn_batches) - 1:
             time.sleep(delay)
 
@@ -360,19 +369,12 @@ def fetch_group(
 # =============================================================================
 
 def run(issn_file: str | None = None) -> int:
-    """Entry point step 02.
-
-    Args:
-        issn_file: Path opsional ke file ISSN (satu per baris). Jika None,
-            pakai `issn_electronic` dari config.yaml.
-
-    Returns:
-        Total artikel yang berhasil di-fetch (dengan duplikasi antar group).
-    """
+    """Entry point step 02."""
     log = setup_logging()
     cfg = get_config()
 
-    # Sumber ISSN: prioritaskan file dari step 01, fallback ke config.yaml
+    api_key, mailto = load_openalex_credentials()
+
     if issn_file:
         issn_list = load_lines(issn_file)
         log.info(f"Memuat ISSN dari file: {issn_file} ({len(issn_list)} ISSN)")
@@ -380,7 +382,6 @@ def run(issn_file: str | None = None) -> int:
         issn_list = list(cfg["issn_electronic"])
         log.info(f"Memuat ISSN dari config.yaml ({len(issn_list)} ISSN)")
     else:
-        # Coba load otomatis dari output step 01
         step1_output = cfg["paths"]["step_01_issn_list"]
         if os.path.isfile(step1_output):
             issn_list = load_lines(step1_output)
@@ -396,8 +397,6 @@ def run(issn_file: str | None = None) -> int:
         log.error("Daftar ISSN kosong. Tidak ada yang bisa di-fetch.")
         return 0
 
-    # Pre-compute set ISSN sekali saja (M3: hoist set dari dalam fetch_group)
-    # Sebelumnya set() di-rebuild di setiap call fetch_group -> N×O(N) untuk N group
     issn_set = set(issn_list)
 
     search_groups = cfg.get("search_groups", {})
@@ -414,12 +413,15 @@ def run(issn_file: str | None = None) -> int:
     max_results = cfg.get("max_results_per_group", 0)
     issn_batch_size = cfg.get("issn_batch_size", 50)
 
-    print_header("Step 02: Fetch Artikel dari OpenAlex")
+    print_header("Step 02: Fetch Artikel dari OpenAlex — Pencarian di ABSTRACT")
     print(f"  ISSN count       : {len(issn_list)}")
     print(f"  Year range       : {year_from} - {year_to}")
     print(f"  Language         : {language if language else '(semua)'}")
     print(f"  Output file      : {output_path}")
     print(f"  Max results/group: {max_results if max_results > 0 else 'tanpa batas'}")
+    print(f"  API key          : {'Yes (polite pool)' if api_key else 'No'}")
+    print(f"  Mailto           : {mailto or 'No'}")
+    print(f"  Search mode      : abstract.search")
     print(f"\nDaftar kelompok pencarian ({len(search_groups)} group):")
     for idx, (name, conf) in enumerate(search_groups.items(), 1):
         print(f"  {idx}. {name}")
@@ -443,13 +445,14 @@ def run(issn_file: str | None = None) -> int:
             delay=delay,
             max_results=max_results,
             issn_batch_size=issn_batch_size,
+            api_key=api_key,
+            mailto=mailto,
         )
         grouped_results[group_name] = articles
         group_counts[group_name] = count
         print(f"  <<< Kelompok '{group_name}' selesai -> {count} artikel ditemukan.")
         time.sleep(delay)
 
-    # Tulis output
     save_json(grouped_results, output_path)
 
     print()
