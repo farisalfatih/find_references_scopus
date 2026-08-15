@@ -81,8 +81,8 @@ cd find_references_scopus
 
 ```bash
 python -m venv .venv
+.venv/Scripts/activate # Windows
 source .venv/bin/activate  # Linux/Mac
-source .venv/Scripts/activate # Windows
 ```
 
 ### 3. Install dependencies
