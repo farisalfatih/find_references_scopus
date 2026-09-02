@@ -33,3 +33,7 @@ include = ["find_references_scopus*"]
 [tool.ruff]
 line-length = 100
 target-version = "py38"
+
+[tool.pyright]
+venvPath = "."
+venv = ".venv"

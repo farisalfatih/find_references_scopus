@@ -76,9 +76,9 @@ def save_text(text: str, file_path: str) -> None:
 
 
 def load_lines(file_path: str) -> List[str]:
-    """Baca file teks per baris, kembalikan list baris non-kosong (di-strip)."""
+    """Baca file teks per baris, kembalikan list baris non-kosong dan bukan komentar (#)."""
     with open(file_path, "r", encoding="utf-8") as f:
-        return [line.strip() for line in f if line.strip()]
+        return [line.strip() for line in f if line.strip() and not line.strip().startswith("#")]
 
 
 # =============================================================================

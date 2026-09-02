@@ -13,15 +13,18 @@
 # =============================================================================
 
 # --- Parameter umum fetch OpenAlex ---
+use_issn_filter: true         # true = filter hanya jurnal dari daftar ISSN (Scopus/SCImago)
+                              # false = cari di seluruh database OpenAlex tanpa dibatasi ISSN tertentu
 year_from: 2021
 year_to: 2026
 language: ["en"]
 per_page: 200
 request_delay: 1.0          # detik jeda antar request API
 max_results_per_group: 0    # 0 = tanpa batas
-issn_batch_size: 50         # pecah ISSN jadi batch agar URL tidak terlalu panjang
+issn_batch_size: 50         # pecah ISSN jadi batch agar URL tidak terlalu panjang (jika use_issn_filter: true)
 
 # --- Daftar ISSN electronic (sumber: SCImago 2025) ---
+# Dipakai jika use_issn_filter: true.
 # Bisa diisi manual di sini, atau di-generate lewat: find-refs get-issn
 issn_electronic: []
 
@@ -47,8 +50,9 @@ search_groups:
   "Walk-Forward Backtesting":
     query: '(walk-forward OR backtesting) AND "stop loss"'
 
-# --- Daftar DOI yang ingin dipilih (untuk step select-articles) ---
-# Diisi manual sesuai kebutuhan riset
+# --- Daftar DOI yang ingin dipilih (untuk step 10 select-articles) ---
+# Bisa diisi langsung list di sini: ["10.1016/...", "10.1007/..."]
+# ATAU biarkan kosong dan isi file: data/selected_dois.txt (satu DOI per baris)
 selected_dois: []
 
 # --- Path file input/output (relatif terhadap root project) ---
@@ -59,6 +63,7 @@ paths:
   scimago_clean: "data/scimagojr_2025_ok.json"
   scimago_split_dir: "data/scimago_split"
   excluded_dois: "data/excluded_dois.txt"
+  selected_dois: "data/selected_dois.txt"
 
   # Output pipeline (urutan eksekusi)
   step_01_issn_list: "data/01_issn_list.txt"

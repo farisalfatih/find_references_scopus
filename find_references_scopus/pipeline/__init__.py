@@ -21,7 +21,7 @@ Urutan eksekusi standar:
 
 from __future__ import annotations
 
-from typing import Callable, Dict, List, Tuple
+from typing import Any, Callable, Dict, List, Tuple
 
 # Import semua step untuk registrasi otomatis di registry
 from . import (
@@ -40,7 +40,7 @@ from . import (
 
 
 # Registry berisi (command_name, module) berurutan
-STEPS: List[Tuple[str, object]] = [
+STEPS: List[Tuple[str, Any]] = [
     ("get-issn", step_01_get_issn),
     ("fetch", step_02_openalex_fetch),
     ("filter", step_03_filter_keywords),
@@ -55,6 +55,6 @@ STEPS: List[Tuple[str, object]] = [
 ]
 
 
-def get_step_map() -> Dict[str, object]:
+def get_step_map() -> Dict[str, Any]:
     """Mapping command_name -> module."""
     return {cmd: mod for cmd, mod in STEPS}

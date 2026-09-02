@@ -40,6 +40,7 @@ from __future__ import annotations
 
 import argparse
 import sys
+from typing import Any
 
 from .pipeline import STEPS, get_step_map
 from .journal_lists import JOURNAL_LISTS_STEPS
@@ -49,7 +50,7 @@ from .journal_lists import JOURNAL_LISTS_STEPS
 # Daftar command (gabungan pipeline + journal_lists)
 # =============================================================================
 
-def build_all_steps():
+def build_all_steps() -> list[tuple[str, Any]]:
     """Gabungkan registry pipeline + journal_lists untuk help."""
     return list(STEPS) + list(JOURNAL_LISTS_STEPS)
 
@@ -61,7 +62,7 @@ def build_all_steps():
 # ditambah ke STEPS tapi lupa tambah ke MANUAL_AUTO, tampil [?] di `find-refs list`.
 # Fix: ambil dari attribute `MANUAL_OR_AUTO` di module step (default "AUTO").
 
-def _get_step_tag(mod) -> str:
+def _get_step_tag(mod: Any) -> str:
     """Ambil tag AUTO/MANUAL dari module step. Default AUTO kalau tidak diset."""
     return getattr(mod, "MANUAL_OR_AUTO", "AUTO")
 
@@ -73,11 +74,13 @@ def cmd_list() -> int:
     print("  " + "-" * 80)
     for idx, (cmd, mod) in enumerate(STEPS, 1):
         tag = _get_step_tag(mod)
-        print(f"  {idx:>3}. {cmd:<22} [{tag}]  {mod.DESCRIPTION}")
+        desc = getattr(mod, "DESCRIPTION", "")
+        print(f"  {idx:>3}. {cmd:<22} [{tag}]  {desc}")
 
     print("\nUtility commands (preprocessing SCImago):\n")
     for cmd, mod in JOURNAL_LISTS_STEPS:
-        print(f"        {cmd:<22} {mod.DESCRIPTION}")
+        desc = getattr(mod, "DESCRIPTION", "")
+        print(f"        {cmd:<22} {desc}")
 
     print("\nSpecial commands:\n")
     print(f"        {'list':<22} Tampilkan daftar command tersedia")
@@ -305,7 +308,9 @@ def main(argv: list[str] | None = None) -> int:
     # Jalankan fungsi subcommand
     try:
         result = args.func(args)
-        return int(result) if isinstance(result, int) else 0
+        if isinstance(result, bool):
+            return 0 if result else 1
+        return 0
     except KeyboardInterrupt:
         print("\nDihentikan oleh user.")
         return 130

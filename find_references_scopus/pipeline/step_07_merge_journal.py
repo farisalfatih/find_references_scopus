@@ -16,6 +16,7 @@ Setara dengan script lama: marge_article_journal.py
 from __future__ import annotations
 
 import argparse
+import os
 from typing import Any, Dict
 
 from ..config import get_config
@@ -111,7 +112,19 @@ def run(articles_file: str | None = None, journals_file: str | None = None,
     log = setup_logging()
     cfg = get_config()
     articles_path = articles_file or cfg["paths"]["step_05_cleaned"]
-    journals_path = journals_file or cfg["paths"]["scimago_json"]
+    
+    if journals_file:
+        journals_path = journals_file
+    else:
+        clean_path = cfg.get("paths", {}).get("scimago_clean")
+        json_path = cfg.get("paths", {}).get("scimago_json")
+        if clean_path and os.path.isfile(clean_path):
+            journals_path = clean_path
+        elif json_path and os.path.isfile(json_path):
+            journals_path = json_path
+        else:
+            journals_path = json_path or clean_path
+
     output_path = output_file or cfg["paths"]["step_07_with_journal_info"]
 
     print_header("Step 07: Merge Info Quartile & Open Access")
@@ -128,7 +141,7 @@ def run(articles_file: str | None = None, journals_file: str | None = None,
     try:
         journals = load_json(journals_path)
     except FileNotFoundError:
-        log.error(f"File SCImago tidak ditemukan: {journals_path}")
+        log.error(f"File SCImago tidak ditemukan: {journals_path}\nJalankan `find-refs csv-to-json` terlebih dahulu.")
         return 0
 
     journal_index = build_journal_index(journals)

@@ -17,10 +17,10 @@ CLI:
 
 from __future__ import annotations
 
-from typing import Dict, List, Tuple
+from typing import Any, Dict, List, Tuple
 
 # Registry subcommand journal-lists
-JOURNAL_LISTS_STEPS: List[Tuple[str, object]] = []
+JOURNAL_LISTS_STEPS: List[Tuple[str, Any]] = []
 
 # Import dilakukan di __init__ untuk registrasi
 from . import csv_to_json, check_issn, delete_no_issn, split_by_subject_area
@@ -33,6 +33,6 @@ JOURNAL_LISTS_STEPS = [
 ]
 
 
-def get_journal_lists_step_map() -> Dict[str, object]:
+def get_journal_lists_step_map() -> Dict[str, Any]:
     """Mapping command_name -> module untuk journal-lists."""
     return {cmd: mod for cmd, mod in JOURNAL_LISTS_STEPS}

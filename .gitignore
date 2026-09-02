@@ -1,5 +1,32 @@
-/.venv/
+# Python virtual env & environments
+.venv/
+venv/
+env/
+ENV/
 .env
-/find_references_scopus.egg-info/
+
+# Build & packaging
+find_references_scopus.egg-info/
+build/
+dist/
+*.egg-info/
+
+# Python bytecode & cache
+**/__pycache__/
 __pycache__/
 *.py[cod]
+*$py.class
+.pytest_cache/
+
+# Pipeline generated outputs (data/01_* through data/11_*)
+data/0[1-9]_*
+data/1[0-9]_*
+data/*.tmp
+data/*.temp
+data/draft.md
+
+# OS & IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

@@ -710,6 +710,7 @@ Semua parameter terpusat di `config.yaml`. Edit file ini, **tidak perlu sentuh k
 
 ```yaml
 # Parameter umum fetch OpenAlex
+use_issn_filter: true         # true = filter daftar ISSN (Scopus), false = seluruh OpenAlex
 year_from: 2021
 year_to: 2026
 language: ["en"]
@@ -718,7 +719,7 @@ request_delay: 1.0
 max_results_per_group: 0    # 0 = tanpa batas
 issn_batch_size: 50
 
-# Daftar ISSN electronic (kosongkan jika pakai output step 01)
+# Daftar ISSN electronic (kosongkan jika pakai output step 01, atau jika use_issn_filter: false)
 issn_electronic: []
 
 # Search groups — SATU sumber kebenaran
@@ -849,6 +850,7 @@ find-refs get-issn --subject all -q Q1,Q2
 ### Step 02 — fetch
 ```bash
 find-refs fetch                 # pakai ISSN dari config atau output step 01
+find-refs fetch --no-issn       # fetch dari seluruh OpenAlex tanpa filter ISSN
 find-refs fetch --issn-file path/ke/issn.txt
 ```
 **Input**: config.yaml (search_groups + ISSN)

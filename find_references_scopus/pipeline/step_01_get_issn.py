@@ -306,14 +306,24 @@ def run(
         source_label = f"scimago_split ({len(subject_files)} subject area)"
         log.info(f"Total jurnal unik (gabungan): {len(journals)}")
     else:
-        # Mode default: pakai SCImago full
-        input_path = cfg["paths"]["scimago_json"]
+        # Mode default: pakai SCImago full (prioritas: scimago_clean -> scimago_json)
+        clean_path = cfg.get("paths", {}).get("scimago_clean")
+        json_path = cfg.get("paths", {}).get("scimago_json")
+        
+        input_path = None
+        if clean_path and os.path.isfile(clean_path):
+            input_path = clean_path
+        elif json_path and os.path.isfile(json_path):
+            input_path = json_path
+        else:
+            input_path = json_path or clean_path
+
         log.info(f"Mode: SCImago full")
         log.info(f"Input  : {input_path}")
         try:
             journals = load_json(input_path)
         except FileNotFoundError:
-            log.error(f"File SCImago tidak ditemukan: {input_path}")
+            log.error(f"File SCImago tidak ditemukan: {input_path}\nJalankan `find-refs csv-to-json` terlebih dahulu.")
             return 0
         except Exception as e:
             log.error(f"Gagal membaca {input_path}: {e}")

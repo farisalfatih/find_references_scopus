@@ -19,9 +19,10 @@ Setara dengan script lama: selected_article.py
 from __future__ import annotations
 
 import argparse
+import os
 from typing import Dict, List
 
-from ..config import get_config
+from ..config import get_config, PROJECT_ROOT
 from ..utils import load_json, load_lines, print_done, print_header, save_json, setup_logging
 
 
@@ -71,18 +72,39 @@ def run(input_file: str | None = None, output_file: str | None = None,
     input_path = input_file or cfg["paths"]["step_07_with_journal_info"]
     output_path = output_file or cfg["paths"]["step_10_selected"]
 
-    # Sumber daftar DOI: prioritaskan flag --dois-file, lalu config.selected_dois
+    # Sumber daftar DOI:
+    # 1. Flag CLI --dois-file
+    # 2. config.yaml `selected_dois` (bisa list atau string path)
+    # 3. config.yaml `paths.selected_dois` (file data/selected_dois.txt)
+    doi_list: List[str] = []
     if dois_file:
         doi_list = load_lines(dois_file)
-        log.info(f"Memuat DOI dari file: {dois_file} ({len(doi_list)} DOI)")
+        log.info(f"Memuat DOI dari file CLI: {dois_file} ({len(doi_list)} DOI)")
     else:
-        doi_list = list(cfg.get("selected_dois", []))
-        log.info(f"Memuat DOI dari config.yaml ({len(doi_list)} DOI)")
+        cfg_selected = cfg.get("selected_dois")
+        if isinstance(cfg_selected, str) and cfg_selected.strip():
+            # Jika berupa path ke file
+            doi_path = cfg_selected if os.path.isabs(cfg_selected) else os.path.join(str(PROJECT_ROOT), cfg_selected)
+            if os.path.isfile(doi_path):
+                doi_list = load_lines(doi_path)
+                log.info(f"Memuat DOI dari file config ({doi_path}): {len(doi_list)} DOI")
+        elif isinstance(cfg_selected, list) and cfg_selected:
+            # Jika berupa list DOI
+            doi_list = [str(d).strip() for d in cfg_selected if str(d).strip() and not str(d).strip().startswith("#")]
+            log.info(f"Memuat DOI dari list config.yaml ({len(doi_list)} DOI)")
+        
+        # Fallback ke paths.selected_dois jika list masih kosong
+        if not doi_list and "selected_dois" in cfg.get("paths", {}):
+            selected_dois_path = cfg["paths"]["selected_dois"]
+            if os.path.isfile(selected_dois_path):
+                doi_list = load_lines(selected_dois_path)
+                if doi_list:
+                    log.info(f"Memuat DOI dari {selected_dois_path} ({len(doi_list)} DOI)")
 
     if not doi_list:
         log.error(
-            "Daftar DOI kosong. Isi `selected_dois` di config.yaml "
-            "atau gunakan --dois-file."
+            "Daftar DOI kosong. Tulis DOI di data/selected_dois.txt, "
+            "isi `selected_dois` di config.yaml, atau gunakan opsi --dois-file."
         )
         return 0
 

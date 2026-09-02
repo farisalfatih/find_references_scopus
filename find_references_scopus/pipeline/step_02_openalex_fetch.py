@@ -109,7 +109,7 @@ def format_date(date_str: str) -> str:
 # Extract satu artikel dari response OpenAlex
 # =============================================================================
 
-def extract_article_data(work: Dict[str, Any], issn_set: Set[str]) -> Dict[str, Any] | None:
+def extract_article_data(work: Dict[str, Any], issn_set: Set[str] | None = None) -> Dict[str, Any] | None:
     """Ekstrak field penting dari satu work object OpenAlex."""
     try:
         doi = work.get("doi", "") or ""
@@ -122,10 +122,14 @@ def extract_article_data(work: Dict[str, Any], issn_set: Set[str]) -> Dict[str, 
         oa_status = work.get("open_access", {}) or {}
 
         issn_electronic = None
-        for src_issn in (source.get("issn") or []):
-            if src_issn in issn_set:
-                issn_electronic = src_issn
-                break
+        src_issns = source.get("issn") or []
+        if issn_set:
+            for src_issn in src_issns:
+                if src_issn in issn_set:
+                    issn_electronic = src_issn
+                    break
+        elif src_issns:
+            issn_electronic = src_issns[0]
 
         authors: List[str] = []
         for authorship in (work.get("authorships") or []):
@@ -184,8 +188,12 @@ def fetch_group(
     delay: float,
     max_results: int,
     issn_batch_size: int,
+    use_issn_filter: bool = True,
     api_key: str | None = None,
     mailto: str | None = None,
+    existing_articles: List[Dict[str, Any]] | None = None,
+    seen_dois: Set[str] | None = None,
+    on_page_save: Any | None = None,
 ) -> Tuple[List[Dict[str, Any]], int]:
     """Fetch semua artikel untuk satu search_group.
 
@@ -196,6 +204,8 @@ def fetch_group(
       - User-Agent header + API key/mailto untuk polite pool
       - Retry dengan exponential backoff untuk HTTP 429 dan 503
       - Max retry count untuk Timeout
+      - Menyimpan langsung (on_page_save) setiap kali 1 page berhasil di-fetch
+        sehingga jika ada gangguan koneksi/error, data tidak hilang.
 
     Args:
         group_name: Nama group (untuk logging).
@@ -208,21 +218,31 @@ def fetch_group(
         delay: Jeda antar request (detik).
         max_results: Batas total hasil (0 = tanpa batas).
         issn_batch_size: Ukuran batch ISSN per request.
+        use_issn_filter: Jika False, fetch dari seluruh database OpenAlex tanpa filter ISSN.
         api_key: OpenAlex API key (opsional, untuk polite pool).
         mailto: Email untuk OpenAlex polite pool (opsional).
+        existing_articles: List artikel yang sudah ada sebelumnya (jika resume).
+        seen_dois: Set DOI yang sudah terambil agar tidak duplikat.
+        on_page_save: Callback untuk menyimpan state/JSON saat page baru masuk.
 
     Returns:
         Tuple (list_artikel, total_artikel_diambil).
     """
     if not search_query:
         print(f"  Group '{group_name}' tidak memiliki query, dilewati.")
-        return [], 0
+        return existing_articles or [], len(existing_articles or [])
 
     lang_filter = ""
     if lang_list:
         lang_filter = f",language:{'|'.join(lang_list)}"
 
-    issn_batches = [issn_list[i:i + issn_batch_size] for i in range(0, len(issn_list), issn_batch_size)]
+    if use_issn_filter and issn_list:
+        batches: List[List[str] | None] = [
+            issn_list[i:i + issn_batch_size]
+            for i in range(0, len(issn_list), issn_batch_size)
+        ]
+    else:
+        batches = [None]
 
     base_url = "https://api.openalex.org/works"
     headers = {
@@ -236,20 +256,24 @@ def fetch_group(
     if mailto:
         extra_params["mailto"] = mailto
 
-    all_articles: List[Dict[str, Any]] = []
-    seen_dois: Set[str] = set()
-    total_fetched = 0
+    all_articles: List[Dict[str, Any]] = list(existing_articles or [])
+    if seen_dois is None:
+        seen_dois = set()
+        for art in all_articles:
+            d = art.get("doi")
+            if d:
+                seen_dois.add(d.lower().replace("https://doi.org/", ""))
+
+    total_fetched = len(all_articles)
 
     # Konstanta retry
     MAX_TIMEOUT_RETRIES = 5
     MAX_HTTP_RETRIES = 4
 
-    for batch_idx, batch in enumerate(issn_batches):
-        print(f"    Batch ISSN {batch_idx + 1}/{len(issn_batches)} ({len(batch)} ISSN)")
-
-        # Gunakan abstract.search di filter, sama seperti openalex_fetch.py
-        params = {
-            "filter": (
+    for batch_idx, batch in enumerate(batches):
+        if batch is not None:
+            print(f"    Batch ISSN {batch_idx + 1}/{len(batches)} ({len(batch)} ISSN)")
+            filter_str = (
                 f"primary_location.source.issn:{'|'.join(batch)},"
                 f"from_publication_date:{year_from}-01-01,"
                 f"to_publication_date:{year_to}-12-31,"
@@ -257,7 +281,20 @@ def fetch_group(
                 f"has_abstract:true"
                 f"{lang_filter}"
                 f",abstract.search:{search_query}"
-            ),
+            )
+        else:
+            print(f"    Fetching dari seluruh database OpenAlex (tanpa batasan ISSN)...")
+            filter_str = (
+                f"from_publication_date:{year_from}-01-01,"
+                f"to_publication_date:{year_to}-12-31,"
+                f"has_doi:true,"
+                f"has_abstract:true"
+                f"{lang_filter}"
+                f",abstract.search:{search_query}"
+            )
+
+        params = {
+            "filter": filter_str,
             "per_page": per_page,
         }
         params.update(extra_params)
@@ -285,15 +322,16 @@ def fetch_group(
 
                 if page == 1:
                     estimated = meta.get("count", 0)
-                    print(f"      Estimasi artikel: ~{estimated}")
+                    print(f"      Estimasi artikel dari API: ~{estimated}")
 
+                new_on_this_page = 0
                 for work in results:
                     if max_results > 0 and total_fetched >= max_results:
                         break
 
                     doi = work.get("doi", "") or ""
-                    if doi:
-                        doi_clean = doi.replace("https://doi.org/", "")
+                    doi_clean = doi.lower().replace("https://doi.org/", "").strip()
+                    if doi_clean:
                         if doi_clean in seen_dois:
                             continue
                         seen_dois.add(doi_clean)
@@ -305,6 +343,14 @@ def fetch_group(
                     all_articles.append(entry)
                     total_fetched += 1
                     batch_fetched += 1
+                    new_on_this_page += 1
+
+                # Simpan incremental setiap kali selesai memproses 1 halaman API
+                if on_page_save:
+                    try:
+                        on_page_save(all_articles)
+                    except Exception as save_err:
+                        print(f"      Warning: Gagal menyimpan incremental: {save_err}")
 
                 next_cursor = meta.get("next_cursor")
                 if not next_cursor or next_cursor == "null" or not results:
@@ -312,7 +358,10 @@ def fetch_group(
                 else:
                     cursor = next_cursor
 
-                print(f"      Page {page}: {len(results)} hasil, total: {batch_fetched}")
+                print(
+                    f"      Page {page}: {len(results)} hasil ({new_on_this_page} baru), "
+                    f"total kelompok '{group_name}': {len(all_articles)} (tersimpan)"
+                )
                 if max_results > 0 and total_fetched >= max_results:
                     break
 
@@ -322,7 +371,7 @@ def fetch_group(
             except requests.exceptions.Timeout:
                 timeout_retries += 1
                 if timeout_retries > MAX_TIMEOUT_RETRIES:
-                    print(f"      Timeout page {page} - {MAX_TIMEOUT_RETRIES}x retry gagal, skip.")
+                    print(f"      Timeout page {page} - {MAX_TIMEOUT_RETRIES}x retry gagal, skip batch ini.")
                     break
                 backoff = delay * (2 ** (timeout_retries - 1))
                 print(f"      Timeout page {page} (retry {timeout_retries}/{MAX_TIMEOUT_RETRIES}), tunggu {backoff}s...")
@@ -334,7 +383,7 @@ def fetch_group(
                 if status_code in (429, 503):
                     http_retries += 1
                     if http_retries > MAX_HTTP_RETRIES:
-                        print(f"      HTTP {status_code} page {page} - {MAX_HTTP_RETRIES}x retry gagal, skip.")
+                        print(f"      HTTP {status_code} page {page} - {MAX_HTTP_RETRIES}x retry gagal, skip batch ini.")
                         break
                     backoff = delay * (2 ** http_retries)
                     retry_after = e.response.headers.get("Retry-After") if e.response else None
@@ -355,56 +404,111 @@ def fetch_group(
                 print(f"      Error: {e}")
                 break
 
-        print(f"    Batch {batch_idx + 1} selesai -> {batch_fetched} artikel")
+        if batch is not None:
+            print(f"    Batch {batch_idx + 1} selesai -> {batch_fetched} artikel baru")
+        else:
+            print(f"    Fetch kelompok '{group_name}' selesai -> {batch_fetched} artikel baru")
+
         if max_results > 0 and total_fetched >= max_results:
             break
-        if batch_idx < len(issn_batches) - 1:
+        if batch_idx < len(batches) - 1:
             time.sleep(delay)
 
-    return all_articles, total_fetched
+    return all_articles, len(all_articles)
+
+
+# =============================================================================
+# Checkpoint helper
+# =============================================================================
+
+def _load_checkpoint(checkpoint_path: str) -> Dict[str, Any]:
+    """Muat file state checkpoint."""
+    if os.path.isfile(checkpoint_path):
+        try:
+            from ..utils import load_json
+            return load_json(checkpoint_path)
+        except Exception:
+            pass
+    return {"completed_groups": []}
+
+
+def _save_checkpoint(checkpoint_path: str, data: Dict[str, Any]) -> None:
+    """Simpan file state checkpoint."""
+    try:
+        from ..utils import save_json
+        save_json(data, checkpoint_path)
+    except Exception:
+        pass
 
 
 # =============================================================================
 # Entry point
 # =============================================================================
 
-def run(issn_file: str | None = None) -> int:
-    """Entry point step 02."""
+def run(
+    issn_file: str | None = None,
+    output_file: str | None = None,
+    fresh: bool = False,
+    target_group: str | None = None,
+    no_issn: bool = False,
+) -> int:
+    """Entry point step 02 dengan dukungan resume & incremental save.
+
+    Args:
+        issn_file: Path ke file daftar ISSN.
+        output_file: Path output JSON (default: config step_02_openalex_raw).
+        fresh: Jika True, hapus cache & ulangi fetch dari awal.
+        target_group: Jika diisi, hanya fetch kelompok tertentu.
+        no_issn: Jika True, fetch dari seluruh OpenAlex tanpa filter ISSN.
+
+    Returns:
+        Total artikel yang berhasil diambil.
+    """
     log = setup_logging()
     cfg = get_config()
 
     api_key, mailto = load_openalex_credentials()
 
-    if issn_file:
-        issn_list = load_lines(issn_file)
-        log.info(f"Memuat ISSN dari file: {issn_file} ({len(issn_list)} ISSN)")
-    elif cfg.get("issn_electronic"):
-        issn_list = list(cfg["issn_electronic"])
-        log.info(f"Memuat ISSN dari config.yaml ({len(issn_list)} ISSN)")
-    else:
-        step1_output = cfg["paths"]["step_01_issn_list"]
-        if os.path.isfile(step1_output):
-            issn_list = load_lines(step1_output)
-            log.info(f"Memuat ISSN otomatis dari {step1_output} ({len(issn_list)} ISSN)")
+    use_issn_filter = bool(cfg.get("use_issn_filter", True))
+    if no_issn:
+        use_issn_filter = False
+
+    issn_list: List[str] = []
+    if use_issn_filter:
+        if issn_file:
+            issn_list = load_lines(issn_file)
+            log.info(f"Memuat ISSN dari file: {issn_file} ({len(issn_list)} ISSN)")
+        elif cfg.get("issn_electronic"):
+            issn_list = list(cfg["issn_electronic"])
+            log.info(f"Memuat ISSN dari config.yaml ({len(issn_list)} ISSN)")
         else:
-            log.error(
-                "ISSN kosong. Jalankan `find-refs get-issn` dulu, "
-                "atau isi `issn_electronic` di config.yaml."
-            )
+            step1_output = cfg["paths"]["step_01_issn_list"]
+            if os.path.isfile(step1_output):
+                issn_list = load_lines(step1_output)
+                log.info(f"Memuat ISSN otomatis dari {step1_output} ({len(issn_list)} ISSN)")
+            else:
+                log.error(
+                    "ISSN kosong. Jalankan `find-refs get-issn` dulu, "
+                    "isi `issn_electronic` di config.yaml, atau set `use_issn_filter: false`."
+                )
+                return 0
+
+        if not issn_list:
+            log.error("Daftar ISSN kosong. Tidak ada yang bisa di-fetch.")
             return 0
+    else:
+        log.info("Mode fetch: TANPA filter ISSN (mencari di seluruh database OpenAlex)")
 
-    if not issn_list:
-        log.error("Daftar ISSN kosong. Tidak ada yang bisa di-fetch.")
-        return 0
-
-    issn_set = set(issn_list)
+    issn_set = set(issn_list) if issn_list else set()
 
     search_groups = cfg.get("search_groups", {})
     if not search_groups:
         log.error("search_groups kosong di config.yaml.")
         return 0
 
-    output_path = cfg["paths"]["step_02_openalex_raw"]
+    output_path = output_file or cfg["paths"]["step_02_openalex_raw"]
+    checkpoint_path = output_path + ".checkpoint.json"
+
     year_from = cfg.get("year_from", 2021)
     year_to = cfg.get("year_to", 2026)
     language = cfg.get("language", ["en"])
@@ -414,7 +518,10 @@ def run(issn_file: str | None = None) -> int:
     issn_batch_size = cfg.get("issn_batch_size", 50)
 
     print_header("Step 02: Fetch Artikel dari OpenAlex — Pencarian di ABSTRACT")
-    print(f"  ISSN count       : {len(issn_list)}")
+    if use_issn_filter:
+        print(f"  ISSN filter      : Aktif ({len(issn_list)} ISSN)")
+    else:
+        print(f"  ISSN filter      : Nonaktif (seluruh database OpenAlex)")
     print(f"  Year range       : {year_from} - {year_to}")
     print(f"  Language         : {language if language else '(semua)'}")
     print(f"  Output file      : {output_path}")
@@ -422,17 +529,72 @@ def run(issn_file: str | None = None) -> int:
     print(f"  API key          : {'Yes (polite pool)' if api_key else 'No'}")
     print(f"  Mailto           : {mailto or 'No'}")
     print(f"  Search mode      : abstract.search")
+    print(f"  Mode resume      : {'Mulai dari awal (--fresh)' if fresh else 'Aktif (melanjutkan data sebelumnya)'}")
+
+    # Muat data yang sudah ada jika mode resume
+    grouped_results: Dict[str, List[Dict[str, Any]]] = {}
+    completed_groups: Set[str] = set()
+    global_seen_dois: Set[str] = set()
+
+    if not fresh and os.path.isfile(output_path):
+        try:
+            from ..utils import load_json
+            loaded_data = load_json(output_path)
+            if isinstance(loaded_data, dict):
+                grouped_results = loaded_data
+                for g_name, arts in grouped_results.items():
+                    if isinstance(arts, list):
+                        for a in arts:
+                            d = a.get("doi")
+                            if d:
+                                global_seen_dois.add(d.lower().replace("https://doi.org/", "").strip())
+                log.info(f"Resume: Memuat {len(grouped_results)} group ({len(global_seen_dois)} DOI unik) dari {output_path}")
+        except Exception as e:
+            log.warning(f"Gagal memuat file lama ({output_path}): {e}. Memulai baru.")
+            grouped_results = {}
+
+        chk = _load_checkpoint(checkpoint_path)
+        completed_groups = set(chk.get("completed_groups", []))
+
+    if fresh:
+        if os.path.isfile(checkpoint_path):
+            try:
+                os.remove(checkpoint_path)
+            except OSError:
+                pass
+
     print(f"\nDaftar kelompok pencarian ({len(search_groups)} group):")
     for idx, (name, conf) in enumerate(search_groups.items(), 1):
-        print(f"  {idx}. {name}")
+        status_str = " (SELESAI)" if name in completed_groups else ""
+        print(f"  {idx}. {name}{status_str}")
         print(f"     query: {conf['query']}")
     print()
 
-    grouped_results: Dict[str, List[Dict[str, Any]]] = {}
-    group_counts: Dict[str, int] = {}
+    # Callback untuk menyimpan state secara real-time ke file JSON
+    def make_save_callback(g_name: str):
+        def _callback(current_group_articles: List[Dict[str, Any]]):
+            grouped_results[g_name] = current_group_articles
+            save_json(grouped_results, output_path)
+        return _callback
 
-    for group_name, group_config in search_groups.items():
-        print(f"\n>>> Memproses kelompok: {group_name}")
+    groups_to_process = (
+        {target_group: search_groups[target_group]}
+        if target_group and target_group in search_groups
+        else search_groups
+    )
+
+    for group_name, group_config in groups_to_process.items():
+        if not fresh and group_name in completed_groups:
+            existing_count = len(grouped_results.get(group_name, []))
+            print(f"\n>>> Kelompok '{group_name}' sudah selesai diambil sebelumnya ({existing_count} artikel). Dilewati.")
+            continue
+
+        existing_arts = grouped_results.get(group_name, [])
+        if existing_arts:
+            print(f"\n>>> Melanjutkan kelompok: {group_name} (sudah ada {len(existing_arts)} artikel tersimpan)")
+        else:
+            print(f"\n>>> Memproses kelompok: {group_name}")
+
         articles, count = fetch_group(
             group_name=group_name,
             search_query=group_config.get("query", ""),
@@ -445,26 +607,51 @@ def run(issn_file: str | None = None) -> int:
             delay=delay,
             max_results=max_results,
             issn_batch_size=issn_batch_size,
+            use_issn_filter=use_issn_filter,
             api_key=api_key,
             mailto=mailto,
+            existing_articles=existing_arts,
+            seen_dois=global_seen_dois,
+            on_page_save=make_save_callback(group_name),
         )
+
         grouped_results[group_name] = articles
-        group_counts[group_name] = count
-        print(f"  <<< Kelompok '{group_name}' selesai -> {count} artikel ditemukan.")
+        save_json(grouped_results, output_path)
+
+        # Tandai kelompok ini telah selesai
+        completed_groups.add(group_name)
+        _save_checkpoint(checkpoint_path, {
+            "completed_groups": list(completed_groups),
+            "last_updated": datetime.now().isoformat(),
+        })
+
+        print(f"  <<< Kelompok '{group_name}' selesai -> {count} artikel total tersimpan.")
         time.sleep(delay)
 
+    # Simpan final
     save_json(grouped_results, output_path)
+
+    # Bersihkan checkpoint jika semua selesai
+    if completed_groups >= set(search_groups.keys()):
+        if os.path.isfile(checkpoint_path):
+            try:
+                os.remove(checkpoint_path)
+            except OSError:
+                pass
+
+    total_all = sum(len(arts) for arts in grouped_results.values() if isinstance(arts, list))
 
     print()
     print_header("Ringkasan Hasil Step 02", width=60)
-    for name, count in group_counts.items():
+    for name in search_groups.keys():
+        count = len(grouped_results.get(name, []))
         print(f"  {name:<40} : {count} artikel")
-    print(f"\n  Total artikel (dengan duplikasi antar kelompok): {sum(group_counts.values())}")
+    print(f"\n  Total artikel (dengan duplikasi antar kelompok): {total_all}")
     print(f"  Output file: {os.path.abspath(output_path)}")
     print(f"  Selesai pada: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
-    print_done(f"Step 02 selesai — {sum(group_counts.values())} artikel total")
-    return sum(group_counts.values())
+    print_done(f"Step 02 selesai — {total_all} artikel total tersimpan")
+    return total_all
 
 
 def add_parser(subparsers: argparse._SubParsersAction) -> None:
@@ -479,4 +666,30 @@ def add_parser(subparsers: argparse._SubParsersAction) -> None:
         default=None,
         help="Path ke file ISSN (satu per baris). Default: pakai config.yaml atau output step 01.",
     )
-    parser.set_defaults(func=lambda args: run(issn_file=args.issn_file))
+    parser.add_argument(
+        "-o", "--output",
+        default=None,
+        help="Path file JSON output (default: data/02_openalex_raw.json)",
+    )
+    parser.add_argument(
+        "--fresh",
+        action="store_true",
+        help="Ulangi fetch dari awal (abaikan dan timpa hasil fetch sebelumnya)",
+    )
+    parser.add_argument(
+        "-g", "--group",
+        default=None,
+        help="Hanya fetch untuk search_group tertentu",
+    )
+    parser.add_argument(
+        "--no-issn",
+        action="store_true",
+        help="Fetch dari seluruh database OpenAlex tanpa membatasi daftar ISSN (mengabaikan filter ISSN)",
+    )
+    parser.set_defaults(func=lambda args: run(
+        issn_file=args.issn_file,
+        output_file=args.output,
+        fresh=args.fresh,
+        target_group=args.group,
+        no_issn=args.no_issn,
+    ))
