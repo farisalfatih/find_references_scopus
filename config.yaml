@@ -15,13 +15,13 @@
 # --- Parameter umum fetch OpenAlex ---
 use_issn_filter: true         # true = filter hanya jurnal dari daftar ISSN (Scopus/SCImago)
                               # false = cari di seluruh database OpenAlex tanpa dibatasi ISSN tertentu
-year_from: 2021
+year_from: 2022
 year_to: 2026
-language: ["en"]
+language: ["en", "id"]
 per_page: 200
-request_delay: 1.0          # detik jeda antar request API
-max_results_per_group: 0    # 0 = tanpa batas
-issn_batch_size: 50         # pecah ISSN jadi batch agar URL tidak terlalu panjang (jika use_issn_filter: true)
+request_delay: 4.0          # detik jeda antar request API
+max_results_per_group: 10    # 0 = tanpa batas
+issn_batch_size: 100         # pecah ISSN jadi batch agar URL tidak terlalu panjang (jika use_issn_filter: true)
 
 # --- Daftar ISSN electronic (sumber: SCImago 2025) ---
 # Dipakai jika use_issn_filter: true.
