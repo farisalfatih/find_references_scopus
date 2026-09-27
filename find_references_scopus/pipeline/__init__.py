@@ -13,6 +13,7 @@ Urutan eksekusi standar:
     05 remove-excluded       -> hapus DOI yang ada di excluded_dois.txt
     06 distribution          -> tampilkan distribusi artikel per kategori
     07 merge-journal         -> tambah info quartile & open_access dari SCImago
+    07a filter-scopus        -> hapus artikel dari jurnal yang tidak terindeks Scopus
     08 extract-claims        -> ekstrak kalimat berisi DOI dari Markdown
     09 extract-references    -> format artikel jadi Markdown ringkas
     10 select-articles       -> ambil subset artikel berdasar daftar DOI
@@ -32,6 +33,7 @@ from . import (
     step_05_remove_excluded,
     step_06_check_distribution,
     step_07_merge_journal,
+    step_07a_filter_scopus,
     step_08_extract_claims,
     step_09_extract_references,
     step_10_select_articles,
@@ -48,6 +50,7 @@ STEPS: List[Tuple[str, Any]] = [
     ("remove-excluded", step_05_remove_excluded),
     ("distribution", step_06_check_distribution),
     ("merge-journal", step_07_merge_journal),
+    ("filter-scopus", step_07a_filter_scopus),
     ("extract-claims", step_08_extract_claims),
     ("extract-references", step_09_extract_references),
     ("select-articles", step_10_select_articles),

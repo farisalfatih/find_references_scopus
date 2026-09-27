@@ -15,12 +15,12 @@
 # --- Parameter umum fetch OpenAlex ---
 use_issn_filter: true         # true = filter hanya jurnal dari daftar ISSN (Scopus/SCImago)
                               # false = cari di seluruh database OpenAlex tanpa dibatasi ISSN tertentu
-year_from: 2022
+year_from: 2021
 year_to: 2026
-language: ["en", "id"]
+language: ["en"]
 per_page: 200
 request_delay: 4.0          # detik jeda antar request API
-max_results_per_group: 10    # 0 = tanpa batas
+max_results_per_group: 0    # 0 = tanpa batas
 issn_batch_size: 100         # pecah ISSN jadi batch agar URL tidak terlalu panjang (jika use_issn_filter: true)
 
 # --- Daftar ISSN electronic (sumber: SCImago 2025) ---
@@ -32,23 +32,8 @@ issn_electronic: []
 # SATU sumber kebenaran untuk: fetch, filter, dan deduplikasi.
 # Setiap group punya: query (boolean AND/OR dengan quoted phrases didukung)
 search_groups:
-  "XGBoost Cryptocurrency":
-    query: '(Cryptocurrency OR Solana OR Bitcoin OR ETH OR XRP) AND "XGBoost"'
-  "HMM XGBoost":
-    query: '("Hidden Markov Model" OR HMM) AND "XGBoost"'
-  "HMM Cryptocurrency":
-    query: '("Hidden Markov Model" OR HMM) AND (Cryptocurrency OR Solana OR Bitcoin OR ETH OR XRP)'
-  "XGBoost Technical Indicators":
-    query: '"XGBoost" AND (MACD OR RSI OR ADX OR Stochastic OR CCI OR ATR OR "Bollinger Bands" OR Ichimoku OR OBV OR MFI)'
-  "XGBoost Sharpe Sortino Profit Factor":
-    query: '("Sharpe ratio" OR "Sortino ratio" OR "profit factor") AND "XGBoost"'
-  # Group tambahan untuk filter lanjutan (opsional, hanya dipakai step 03)
-  "ATR Dynamic Labeling":
-    query: '("Average True Range" OR ATR) AND "dynamic labeling"'
-  "HMM Forward Filtering":
-    query: '"forward filtering" AND HMM'
-  "Walk-Forward Backtesting":
-    query: '(walk-forward OR backtesting) AND "stop loss"'
+  "Crypto/Financial ML Forecasting":
+    query: '(Bitcoin OR cryptocurrency OR crypto OR Ethereum OR XRP OR stock OR equity OR financial OR trading OR portfolio OR intraday) AND (forecasting OR prediction OR price OR volatility OR return OR risk OR sentiment OR regime) AND (XGBoost OR LightGBM OR LSTM OR "machine learning" OR "deep learning" OR HMM OR regime OR "technical indicators" OR "feature selection" OR sentiment)'
 
 # --- Daftar DOI yang ingin dipilih (untuk step 10 select-articles) ---
 # Bisa diisi langsung list di sini: ["10.1016/...", "10.1007/..."]
@@ -73,6 +58,7 @@ paths:
   step_05_cleaned: "data/05_cleaned.json"
   step_06_distribution: "data/06_distribution.txt"
   step_07_with_journal_info: "data/07_with_journal_info.json"
+  step_07a_scopus_only: "data/07a_scopus_only.json"
   step_08_claims: "data/08_claims.json"
   step_09_references_md: "data/09_references.md"
   step_10_selected: "data/10_selected.json"

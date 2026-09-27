@@ -156,7 +156,8 @@ def cmd_guide() -> int:
     print("  Jalankan  : find-refs remove-excluded")
     print("              find-refs distribution")
     print("              find-refs merge-journal")
-    print("  Output    : data/07_with_journal_info.json (dataset final)")
+    print("              find-refs filter-scopus   (opsional: hapus non-Scopus)")
+    print("  Output    : data/07_with_journal_info.json / data/07a_scopus_only.json")
     print()
 
     # Tahap 5: Tulis latar belakang dengan citation [DOI]
