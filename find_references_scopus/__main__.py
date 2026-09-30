@@ -1,10 +1,9 @@
-"""Entry point untuk `python -m find_references_scopus`.
+"""Entry point: ``python -m find_references_scopus``."""
 
-Memanggil main() dari cli.py.
-"""
-import sys
+from __future__ import annotations
 
-from .cli import main
+from find_references_scopus.cli import app
+
 
 if __name__ == "__main__":
-    sys.exit(main())
+    app()

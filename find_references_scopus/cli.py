@@ -1,324 +1,322 @@
-"""CLI terpadu untuk pipeline find_references_scopus.
+"""Main CLI entry point for findref.
 
-Penggunaan:
-    # Via module Python
-    python -m find_references_scopus <command> [options]
-    python -m find_references_scopus --help
-
-    # Via entry point (jika sudah pip install)
-    find-refs <command> [options]
-
-Daftar command (urutan pipeline):
-    01. get-issn              Ekstrak ISSN electronic dari SCImago       [MANUAL]
-    02. fetch                 Fetch artikel dari OpenAlex API            [AUTO]
-    03. filter                Filter artikel berdasarkan keyword         [AUTO]
-    04. deduplicate           Deduplikasi antar group                    [AUTO]
-    05. remove-excluded       Hapus DOI yang ada di daftar exclude       [MANUAL]
-    06. distribution          Tampilkan distribusi artikel per kategori  [AUTO]
-    07. merge-journal         Tambah info quartile & open_access         [AUTO]
-    08. extract-claims        Ekstrak kalimat berisi DOI dari Markdown   [MANUAL]
-    09. extract-references    Format artikel jadi Markdown ringkas       [AUTO]
-    10. select-articles       Pilih subset artikel berdasar DOI          [MANUAL]
-    11. convert-bib           Konversi JSON ke BibTeX                    [AUTO]
-
-Legend:
-    [AUTO]   = Bisa dijalankan otomatis, tidak butuh keputusan user
-    [MANUAL] = Butuh input/keputusan user sebelum/sesudah dijalankan
-
-Command utilitas (preprocessing SCImago):
-    csv-to-json               Konversi SCImago CSV -> JSON
-    check-issn                Inspeksi kelengkapan ISSN
-    delete-no-issn            Hapus jurnal tanpa ISSN electronic
-    split-subject             Pecah JSON per subject area
-
-Command khusus:
-    list                      Tampilkan daftar command tersedia
-    guide                     Tampilkan panduan tahap-tahap pipeline + checkpoint manual
+Built with Typer + Rich for a Vercel-CLI-style experience:
+  - Beautiful colored output
+  - Subcommand groups
+  - --json flag on every command (agent-friendly)
+  - Deterministic exit codes
+  - Auto-generated --help
 """
 
 from __future__ import annotations
 
-import argparse
 import sys
-from typing import Any
+from typing import Optional
 
-from .pipeline import STEPS, get_step_map
-from .journal_lists import JOURNAL_LISTS_STEPS
+import typer
+from rich.panel import Panel
 
-
-# =============================================================================
-# Daftar command (gabungan pipeline + journal_lists)
-# =============================================================================
-
-def build_all_steps() -> list[tuple[str, Any]]:
-    """Gabungkan registry pipeline + journal_lists untuk help."""
-    return list(STEPS) + list(JOURNAL_LISTS_STEPS)
+from find_references_scopus import __version__
+from find_references_scopus.commands.config_cmd import config_app
+from find_references_scopus.commands.cache_cmd import cache_app
+from find_references_scopus.utils import console, setup_logging
 
 
-# =============================================================================
-# Tag AUTO/MANUAL per step
-# =============================================================================
-# M13: Sebelumnya hard-coded dict terpisah dari registry. Kalau step baru
-# ditambah ke STEPS tapi lupa tambah ke MANUAL_AUTO, tampil [?] di `find-refs list`.
-# Fix: ambil dari attribute `MANUAL_OR_AUTO` di module step (default "AUTO").
+# ---------------------------------------------------------------------- #
+# Root app
+# ---------------------------------------------------------------------- #
 
-def _get_step_tag(mod: Any) -> str:
-    """Ambil tag AUTO/MANUAL dari module step. Default AUTO kalau tidak diset."""
-    return getattr(mod, "MANUAL_OR_AUTO", "AUTO")
-
-
-def cmd_list() -> int:
-    """Tampilkan daftar semua command tersedia dengan tag AUTO/MANUAL."""
-    print("Pipeline commands (urutan eksekusi standar):\n")
-    print(f"  {'#':>3}  {'Command':<22} {'Type':<8} Description")
-    print("  " + "-" * 80)
-    for idx, (cmd, mod) in enumerate(STEPS, 1):
-        tag = _get_step_tag(mod)
-        desc = getattr(mod, "DESCRIPTION", "")
-        print(f"  {idx:>3}. {cmd:<22} [{tag}]  {desc}")
-
-    print("\nUtility commands (preprocessing SCImago):\n")
-    for cmd, mod in JOURNAL_LISTS_STEPS:
-        desc = getattr(mod, "DESCRIPTION", "")
-        print(f"        {cmd:<22} {desc}")
-
-    print("\nSpecial commands:\n")
-    print(f"        {'list':<22} Tampilkan daftar command tersedia")
-    print(f"        {'guide':<22} Tampilkan panduan tahap-tahap pipeline")
-    return 0
+app = typer.Typer(
+    name="findref",
+    help=(
+        "[bold]Find-Refs[/bold] — Professional CLI for finding, validating, "
+        "filtering, and exporting academic references with Scopus indexing detection.\n\n"
+        "Quick start:\n"
+        "  [code]findref setup[/code]\n"
+        "  [code]findref search 'machine learning finance'[/code]\n"
+        "  [code]findref export results.json --format bibtex -o refs.bib[/code]"
+    ),
+    rich_markup_mode="rich",
+    context_settings={"help_option_names": ["-h", "--help"]},
+)
 
 
-# =============================================================================
-# Subcommand khusus: guide (panduan tahapan, BUKAN pipeline runner)
-# =============================================================================
-
-def cmd_guide() -> int:
-    """Tampilkan panduan tahap-tahap pipeline dengan checkpoint manual.
-
-    BUKAN menjalankan pipeline — hanya menjelaskan urutan dan keputusan
-    manual yang perlu diambil user di setiap tahap.
-    """
-    print("=" * 78)
-    print("  PANDUAN PIPELINE — Tahap demi Tahap")
-    print("=" * 78)
-    print()
-    print("Pipeline ini TIDAK otomatis end-to-end. Setiap tahap butuh keputusan")
-    print("manual dari Anda. Jalankan satu per satu command di bawah ini.")
-    print()
-    print("Lihat README.md untuk panduan lengkap + kumpulan prompt AI untuk")
-    print("membantu pembuatan artikel jurnal dari awal sampai akhir.")
-    print()
-
-    # Tahap 0: Preprocess SCImago
-    print("-" * 78)
-    print("  TAHAP 0 — Persiapan data SCImago (sekali saja, otomatis)")
-    print("-" * 78)
-    print("  Jalankan:  find-refs csv-to-json")
-    print("             find-refs delete-no-issn")
-    print("             find-refs split-subject   (opsional)")
-    print("  Output   : data/scimagojr_2025.json + scimagojr_2025_ok.json")
-    print()
-
-    # Tahap 1: Pilih ISSN
-    print("-" * 78)
-    print("  TAHAP 1 — Pilih ISSN berdasarkan quartile  [MANUAL]")
-    print("-" * 78)
-    print("  Keputusan : quartile mana yang dipakai? (Q1? Q1+Q2? semua?)")
-    print("  Jalankan  : find-refs get-issn -q Q1,Q2")
-    print("  Output    : data/01_issn_list.txt")
-    print()
-
-    # Tahap 2: Fetch + Filter + Dedup
-    print("-" * 78)
-    print("  TAHAP 2 — Fetch artikel OpenAlex + filter + deduplikasi")
-    print("-" * 78)
-    print("  Jalankan  : find-refs fetch")
-    print("              find-refs filter")
-    print("              find-refs deduplicate")
-    print("  Output    : data/04_deduplicated.json")
-    print("  Catatan   : fetch bisa lama (menit–jam tergantung ISSN & search_groups)")
-    print()
-
-    # Tahap 3: Review manual
-    print("-" * 78)
-    print("  TAHAP 3 — REVIEW MANUAL: tentukan DOI exclude  [MANUAL]")
-    print("-" * 78)
-    print("  Lakukan  : buka data/04_deduplicated.json, baca abstrak tiap artikel,")
-    print("             identifikasi DOI yang tidak relevan meski match keyword")
-    print("  Tulis ke : data/excluded_dois.txt (satu DOI per baris)")
-    print("             (boleh kosong kalau tidak ada yang di-exclude)")
-    print()
-
-    # Tahap 4: Remove excluded + distribution + merge journal
-    print("-" * 78)
-    print("  TAHAP 4 — Hapus exclude + statistik + merge info jurnal")
-    print("-" * 78)
-    print("  Jalankan  : find-refs remove-excluded")
-    print("              find-refs distribution")
-    print("              find-refs merge-journal")
-    print("              find-refs filter-scopus   (opsional: hapus non-Scopus)")
-    print("  Output    : data/07_with_journal_info.json / data/07a_scopus_only.json")
-    print()
-
-    # Tahap 5: Tulis latar belakang dengan citation [DOI]
-    print("-" * 78)
-    print("  TAHAP 5 — TULIS LATAR BELAKANG  [MANUAL dengan bantuan AI]")
-    print("-" * 78)
-    print("  Lakukan  : gunakan AI (ChatGPT/Gemini/Claude) untuk tulis latar")
-    print("             belakang. Berikan data/07_with_journal_info.json sebagai")
-    print("             konteks. Minta AI menyisipkan [DOI] di setiap klaim.")
-    print("  Lihat    : README.md bagian 'Prompt AI untuk Pembuatan Artikel'")
-    print("             untuk kumpulan prompt siap pakai.")
-    print("  Simpan ke: data/draft.md")
-    print()
-
-    # Tahap 6: Verifikasi klaim DOI
-    print("-" * 78)
-    print("  TAHAP 6 — Verifikasi klaim [DOI] di draf")
-    print("-" * 78)
-    print("  Jalankan  : find-refs extract-claims --input data/draft.md")
-    print("  Output    : data/08_claims.json (kalimat + DOI yang di-claim)")
-    print("  Lakukan  : review apakah setiap klaim benar-benar didukung artikel")
-    print("             yang DOI-nya di-claim. Hapus/ubah klaim yang tidak cocok.")
-    print()
-
-    # Tahap 7: Subset artikel untuk cite
-    print("-" * 78)
-    print("  TAHAP 7 — PILIH DOI untuk cite di paper  [MANUAL opsional]")
-    print("-" * 78)
-    print("  Lakukan  : tentukan DOI mana yang akan Anda cite di paper akhir")
-    print("  Edit     : config.yaml, isi bagian `selected_dois`")
-    print("  Jalankan : find-refs select-articles")
-    print("  Output   : data/10_selected.json")
-    print()
-
-    # Tahap 8: Export
-    print("-" * 78)
-    print("  TAHAP 8 — Export ke Markdown & BibTeX")
-    print("-" * 78)
-    print("  Jalankan : find-refs extract-references")
-    print("             find-refs convert-bib")
-    print("                 (atau: convert-bib --input data/10_selected.json")
-    print("                  kalau mau pakai subset dari tahap 7)")
-    print("  Output   : data/09_references.md + data/11_references.bib")
-    print()
-
-    # Penutup
-    print("=" * 78)
-    print("  TIPS")
-    print("=" * 78)
-    print("  - Setiap step individual bisa dijalankan ulang tanpa rusak data lain")
-    print("  - Lihat `find-refs <command> --help` untuk opsi tiap command")
-    print("  - Lihat README.md untuk:")
-    print("      * Kumpulan prompt AI (brainstorming topik, latar belakang,")
-    print("        metode, hasil, diskusi, kesimpulan, verifikasi klaim)")
-    print("      * Prompt jika bingung mau topik apa")
-    print("      * Prompt jika sudah punya code penelitian")
-    print("      * Prompt untuk memilih jurnal yang relevan")
-    print("=" * 78)
-    return 0
+# Register sub-app groups
+app.add_typer(config_app, name="config", help="Manage accounts (OpenAlex mailtos) and defaults.")
+app.add_typer(cache_app, name="cache", help="Manage the HTTP response cache.")
 
 
-# =============================================================================
-# Main entry point
-# =============================================================================
+# ---------------------------------------------------------------------- #
+# Global options
+# ---------------------------------------------------------------------- #
 
-def main(argv: list[str] | None = None) -> int:
-    """Entry point CLI utama.
+@app.callback(invoke_without_command=True)
+def main_callback(
+    ctx: typer.Context,
+    verbose: bool = typer.Option(False, "--verbose", "-v", help="Enable verbose (DEBUG) logging"),
+    quiet: bool = typer.Option(False, "--quiet", "-q", help="Suppress non-error output"),
+    version: bool = typer.Option(False, "--version", "-V", help="Show version and exit"),
+) -> None:
+    """Configure global state."""
+    if version:
+        console.print(f"findref v{__version__}")
+        raise typer.Exit(0)
 
-    Args:
-        argv: Argumen command line. None = pakai sys.argv.
+    if verbose:
+        setup_logging("DEBUG")
+    elif quiet:
+        setup_logging("ERROR")
+    else:
+        setup_logging("INFO")
 
-    Returns:
-        Exit code (0 sukses, 1 error).
-    """
-    parser = argparse.ArgumentParser(
-        prog="find-refs",
-        description="Pipeline fetch & filter artikel OpenAlex berbasis ISSN SCImago",
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog=(
-            "Contoh pemakaian:\n"
-            "  find-refs list                       # daftar semua command\n"
-            "  find-refs guide                      # panduan tahap-tahap\n"
-            "  find-refs get-issn --quartile Q1,Q2  # step 01 manual\n"
-            "  find-refs fetch                      # step 02 otomatis\n"
-            "  find-refs extract-claims -i draft.md # step 08 manual\n"
-            "\n"
-            "Lihat README.md untuk kumpulan prompt AI pembuatan artikel jurnal."
-        ),
-    )
-    parser.add_argument(
-        "--config", "-c",
-        default=None,
-        help="Path ke config.yaml (default: config.yaml di root project)",
+    # If no subcommand given, show help (but only after handling --version)
+    if ctx.invoked_subcommand is None:
+        console.print(ctx.get_help())
+        raise typer.Exit(0)
+
+
+# ---------------------------------------------------------------------- #
+# Top-level commands
+# ---------------------------------------------------------------------- #
+
+@app.command()
+def setup(
+    ctx: typer.Context,
+    non_interactive: bool = typer.Option(
+        False, "--non-interactive", "-y",
+        help="Skip prompts; use defaults / env vars only",
+    ),
+) -> None:
+    """Run the interactive setup wizard."""
+    from find_references_scopus.commands.setup import setup_command
+    setup_command(ctx, non_interactive=non_interactive)
+
+
+@app.command()
+def search(
+    ctx: typer.Context,
+    query: str = typer.Argument(..., help="Search query (e.g. 'deep learning forecasting')"),
+    year_from: Optional[int] = typer.Option(None, "--year-from", help="Filter: minimum publication year"),
+    year_to: Optional[int] = typer.Option(None, "--year-to", help="Filter: maximum publication year"),
+    limit: int = typer.Option(50, "--limit", "-n", help="Max results to return"),
+    per_page: int = typer.Option(100, "--per-page", help="Page size for API requests"),
+    issn: Optional[str] = typer.Option(
+        None, "--issn",
+        help="Override ISSN filter (comma-separated). Pass 'none' to disable ISSN filter for this search.",
+    ),
+    use_issn_filter: Optional[bool] = typer.Option(
+        None, "--issn-filter/--no-issn-filter",
+        help="Enable/disable SCImago ISSN filter (overrides config default)",
+    ),
+    subject_areas: Optional[str] = typer.Option(
+        None, "--subject-areas",
+        help="Override subject areas filter (comma-separated, e.g. 'Computer Science,Medicine')",
+    ),
+    quartile: Optional[str] = typer.Option(
+        None, "--quartile",
+        help="Override quartile filter (e.g. 'Q1,Q2' or 'all')",
+    ),
+    max_scan: int = typer.Option(
+        2000, "--max-scan",
+        help="When the ISSN filter has >100 ISSNs, how many OpenAlex works to scan locally before giving up (0 = unlimited)",
+    ),
+    annotate_scopus: bool = typer.Option(True, "--annotate-scopus/--no-annotate-scopus", help="Annotate Scopus indexing"),
+    output: Optional[str] = typer.Option(None, "--output", "-o", help="Save JSON results to file (path or dir)"),
+    output_dir: Optional[str] = typer.Option(None, "--output-dir", help="Directory to save output files"),
+    auto_name: Optional[bool] = typer.Option(None, "--auto-name/--no-auto-name", help="Auto-name output with timestamp"),
+    openalex_pool: bool = typer.Option(False, "--openalex-pool", help="Use ALL OpenAlex mailtos as rotation pool"),
+    openalex_rotate: Optional[bool] = typer.Option(None, "--openalex-rotate/--no-openalex-rotate", help="Rotate mailto per request"),
+    json_output: bool = typer.Option(False, "--json", help="Output JSON to stdout (agent-friendly)"),
+    verbose: bool = typer.Option(False, "--verbose", "-v", help="Verbose logging"),
+) -> None:
+    """Search for academic references via OpenAlex (with optional SCImago ISSN filter)."""
+    from find_references_scopus.commands.search import search_command
+    search_command(
+        ctx,
+        query=query,
+        year_from=year_from,
+        year_to=year_to,
+        limit=limit,
+        per_page=per_page,
+        issn=issn,
+        use_issn_filter=use_issn_filter,
+        subject_areas=subject_areas,
+        quartile=quartile,
+        max_scan=max_scan,
+        annotate_scopus=annotate_scopus,
+        output=output,
+        output_dir=output_dir,
+        auto_name=auto_name,
+        openalex_pool=openalex_pool,
+        openalex_rotate=openalex_rotate,
+        json_output=json_output,
+        verbose=verbose,
     )
 
-    subparsers = parser.add_subparsers(dest="command", help="Sub-command tersedia")
 
-    # Register semua subcommand dari registry pipeline + journal_lists
-    for cmd, mod in build_all_steps():
-        mod.add_parser(subparsers)
-
-    # Subcommand khusus
-    list_parser = subparsers.add_parser("list", help="Tampilkan daftar command tersedia")
-    list_parser.set_defaults(func=lambda args: cmd_list())
-
-    guide_parser = subparsers.add_parser(
-        "guide",
-        help="Tampilkan panduan tahap-tahap pipeline + checkpoint manual",
+@app.command()
+def validate(
+    ctx: typer.Context,
+    input_file: Optional[str] = typer.Option(
+        None, "--input", "-i",
+        help="File with DOIs (.txt with one DOI per line, or .bib BibTeX). Markdown NOT supported.",
+    ),
+    dois: Optional[str] = typer.Option(None, "--dois", help="Comma-separated list of DOIs"),
+    annotate_scopus: bool = typer.Option(True, "--annotate-scopus/--no-annotate-scopus"),
+    output: Optional[str] = typer.Option(None, "--output", "-o", help="Save JSON results to file (path or dir)"),
+    output_dir: Optional[str] = typer.Option(None, "--output-dir", help="Directory to save output files"),
+    auto_name: Optional[bool] = typer.Option(None, "--auto-name/--no-auto-name", help="Auto-name output with timestamp"),
+    json_output: bool = typer.Option(False, "--json"),
+    verbose: bool = typer.Option(False, "--verbose", "-v"),
+) -> None:
+    """Validate a list of DOIs — check Scopus indexing and enrich metadata via OpenAlex."""
+    from find_references_scopus.commands.validate import validate_command
+    from pathlib import Path
+    validate_command(
+        ctx,
+        input_file=Path(input_file) if input_file else None,
+        dois=dois,
+        annotate_scopus=annotate_scopus,
+        output=output,
+        output_dir=output_dir,
+        auto_name=auto_name,
+        json_output=json_output,
+        verbose=verbose,
     )
-    guide_parser.set_defaults(func=lambda args: cmd_guide())
 
-    args = parser.parse_args(argv)
 
-    # Override config path jika --config diberikan
-    if args.config:
-        from pathlib import Path
-        import yaml
-        from .config import PROJECT_ROOT, set_config_override
+@app.command(name="filter")
+def filter_cmd(
+    ctx: typer.Context,
+    input_file: str = typer.Argument(..., help="JSON file with search results"),
+    output: Optional[str] = typer.Option(None, "--output", "-o", help="Output JSON file (path or dir)"),
+    output_dir: Optional[str] = typer.Option(None, "--output-dir", help="Directory to save output files"),
+    auto_name: Optional[bool] = typer.Option(None, "--auto-name/--no-auto-name", help="Auto-name output with timestamp"),
+    min_year: Optional[int] = typer.Option(None, "--min-year"),
+    max_year: Optional[int] = typer.Option(None, "--max-year"),
+    min_citations: Optional[int] = typer.Option(None, "--min-citations"),
+    scopus_only: bool = typer.Option(False, "--scopus-only"),
+    quartile: Optional[str] = typer.Option(None, "--quartile", help="Q1,Q2 / Q1 / all"),
+    no_unranked: bool = typer.Option(False, "--no-unranked"),
+    exclude_keywords: Optional[str] = typer.Option(None, "--exclude-keywords"),
+    include_keywords: Optional[str] = typer.Option(None, "--include-keywords"),
+    open_access_only: bool = typer.Option(False, "--open-access-only"),
+    language: Optional[str] = typer.Option(None, "--language"),
+    deduplicate: bool = typer.Option(True, "--deduplicate/--no-deduplicate"),
+    annotate_scopus: bool = typer.Option(False, "--annotate-scopus"),
+    json_output: bool = typer.Option(False, "--json"),
+    dry_run: bool = typer.Option(False, "--dry-run"),
+    verbose: bool = typer.Option(False, "--verbose", "-v"),
+) -> None:
+    """Filter out unsuitable references from a JSON file."""
+    from find_references_scopus.commands.filter_cmd import filter_command
+    from pathlib import Path
+    filter_command(
+        ctx,
+        input_file=Path(input_file),
+        output=output,
+        output_dir=output_dir,
+        auto_name=auto_name,
+        min_year=min_year,
+        max_year=max_year,
+        min_citations=min_citations,
+        scopus_only=scopus_only,
+        quartile=quartile,
+        no_unranked=no_unranked,
+        exclude_keywords=exclude_keywords,
+        include_keywords=include_keywords,
+        open_access_only=open_access_only,
+        language=language,
+        deduplicate=deduplicate,
+        annotate_scopus=annotate_scopus,
+        json_output=json_output,
+        dry_run=dry_run,
+        verbose=verbose,
+    )
 
-        path = Path(args.config)
-        if not path.is_file():
-            print(f"Error: config file tidak ditemukan: {path}")
-            return 1
-        try:
-            with open(path, "r", encoding="utf-8") as f:
-                cfg = yaml.safe_load(f)
-        except yaml.YAMLError as e:
-            print(f"Error: format YAML tidak valid: {e}")
-            return 1
-        if not isinstance(cfg, dict):
-            print("Error: root konfigurasi harus mapping.")
-            return 1
 
-        # Resolve path relatif terhadap PROJECT_ROOT
-        if "paths" in cfg and isinstance(cfg["paths"], dict):
-            resolved = {}
-            for k, v in cfg["paths"].items():
-                resolved[k] = str(PROJECT_ROOT / v)
-            cfg["paths"] = resolved
+@app.command()
+def export(
+    ctx: typer.Context,
+    input_file: str = typer.Argument(..., help="JSON file with papers"),
+    format: str = typer.Option("bibtex", "--format", "-f", help="bibtex, ris, csv, jsonl, md"),
+    output: Optional[str] = typer.Option(None, "--output", "-o", help="Output file (path or dir)"),
+    output_dir: Optional[str] = typer.Option(None, "--output-dir", help="Directory to save output files"),
+    auto_name: Optional[bool] = typer.Option(None, "--auto-name/--no-auto-name", help="Auto-name output with timestamp"),
+    annotate_scopus: bool = typer.Option(False, "--annotate-scopus"),
+    scopus_only: bool = typer.Option(False, "--scopus-only"),
+    json_output: bool = typer.Option(False, "--json"),
+    verbose: bool = typer.Option(False, "--verbose", "-v"),
+) -> None:
+    """Export papers to BibTeX/RIS/CSV/JSONL/Markdown."""
+    from find_references_scopus.commands.export_cmd import export_command
+    from pathlib import Path
+    export_command(
+        ctx,
+        input_file=Path(input_file),
+        format=format,
+        output=output,
+        output_dir=output_dir,
+        auto_name=auto_name,
+        annotate_scopus=annotate_scopus,
+        scopus_only=scopus_only,
+        json_output=json_output,
+        verbose=verbose,
+    )
 
-        # Set override via API yang thread-safe (H8)
-        set_config_override(cfg)
 
-    # Tidak ada subcommand -> tampilkan help
-    if not hasattr(args, "func"):
-        parser.print_help()
-        return 0
+@app.command()
+def issn(
+    ctx: typer.Context,
+    issns: list[str] = typer.Argument(..., help="One or more ISSNs, e.g. 0007-9235"),
+    json_output: bool = typer.Option(False, "--json", help="Output as JSON"),
+    verbose: bool = typer.Option(False, "--verbose", "-v"),
+) -> None:
+    """Look up ISSNs in the bundled SCImago data (Scopus indexing + quartile), offline."""
+    from find_references_scopus.commands.issn_cmd import issn_command
+    issn_command(ctx, issns=issns, json_output=json_output, verbose=verbose)
 
-    # Jalankan fungsi subcommand
-    try:
-        result = args.func(args)
-        if isinstance(result, bool):
-            return 0 if result else 1
-        return 0
-    except KeyboardInterrupt:
-        print("\nDihentikan oleh user.")
-        return 130
-    except Exception as e:
-        print(f"Error: {e}", file=sys.stderr)
-        return 1
 
+@app.command()
+def uninstall(
+    ctx: typer.Context,
+    yes: bool = typer.Option(False, "--yes", "-y", help="Don't ask for confirmation"),
+    purge: bool = typer.Option(False, "--purge", help="Also delete config, accounts, cache, and logs"),
+    dry_run: bool = typer.Option(False, "--dry-run", help="Show what would be removed, change nothing"),
+    json_output: bool = typer.Option(False, "--json", help="Output as JSON"),
+) -> None:
+    """Remove findref (installed via install.sh / install.ps1) from this computer."""
+    from find_references_scopus.commands.uninstall import uninstall_command
+    uninstall_command(ctx, yes=yes, purge=purge, dry_run=dry_run, json_output=json_output)
+
+
+@app.command()
+def doctor(
+    ctx: typer.Context,
+    json_output: bool = typer.Option(False, "--json"),
+    verbose: bool = typer.Option(False, "--verbose", "-v"),
+) -> None:
+    """Diagnose installation, config, and API connectivity."""
+    from find_references_scopus.commands.doctor import doctor_command
+    doctor_command(ctx, json_output=json_output, verbose=verbose)
+
+
+@app.command()
+def guide() -> None:
+    """Show the workflow guide."""
+    from find_references_scopus.commands.guide import guide_command
+    guide_command()
+
+
+@app.command()
+def version() -> None:
+    """Print the version."""
+    console.print(f"findref v{__version__}")
+
+
+# ---------------------------------------------------------------------- #
+# Entry point
+# ---------------------------------------------------------------------- #
 
 if __name__ == "__main__":
-    sys.exit(main())
+    app()

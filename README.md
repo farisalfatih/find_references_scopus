@@ -1,1032 +1,1023 @@
-# Find References Scopus
+# Find-Refs
 
-Pipeline Python + panduan prompt AI untuk **membantu pembuatan artikel jurnal dari nol sampai selesai**. Pipeline ini mengambil artikel dari OpenAlex (berbasis ISSN SCImago), lalu Anda memakai outputnya sebagai bahan referensi untuk menulis latar belakang, metode, hasil, diskusi, dan kesimpulan dengan bantuan AI.
+> Professional CLI for finding, validating, filtering, and exporting academic references — with **Scopus indexing detection** built in.
 
-Hasil akhir: **Markdown dengan citation `[DOI]`** yang siap dipakai di LaTeX/Word, plus file `.bib` untuk BibTeX.
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Version](https://img.shields.io/badge/version-2.0.0-green.svg)]()
 
----
+**Find-Refs** is a focused, agent-friendly command-line tool for researchers, students, and AI assistants who need to:
 
-## Daftar Isi
+- 🔍 **Search** academic papers via **OpenAlex** — free, no API key needed (just your email)
+- 🎯 **Filter** out unsuitable references (by year, citations, journal quartile, keywords, open-access status)
+- 📊 **Detect** whether each paper is indexed in Scopus, **offline** from bundled SCImago data, with quartile info (Q1/Q2/Q3/Q4)
+- 📤 **Export** curated reference lists to BibTeX, RIS, CSV, JSONL, or Markdown
+- 🔐 **Manage multiple OpenAlex mailtos** — rotate between accounts to avoid rate limits
 
-- [Filosofi Project](#filosofi-project)
-- [Instalasi](#instalasi)
-- [Tahap-Tahap Pipeline](#tahap-tahap-pipeline)
-- [Prompt AI untuk Pembuatan Artikel](#prompt-ai-untuk-pembuatan-artikel)
-  - [A. Jika Bingung Mau Topik Apa](#a-jika-bingung-mau-topik-apa)
-  - [B. Memilih Jurnal yang Relevan](#b-memilih-jurnal-yang-relevan)
-  - [C. Mencari Referensi Pendukung](#c-mencari-referensi-pendukung)
-  - [D. Menulis Latar Belakang dengan [DOI]](#d-menulis-latar-belakang-dengan-doi)
-  - [E. Menulis Metode](#e-menulis-metode)
-  - [F. Menulis Hasil & Analisis](#f-menulis-hasil--analisis)
-  - [G. Menulis Diskusi](#g-menulis-diskusi)
-  - [H. Menulis Kesimpulan](#h-menulis-kesimpulan)
-  - [I. Jika Sudah Punya Code Penelitian](#i-jika-sudah-punya-code-penelitian)
-  - [J. Verifikasi Klaim [DOI]](#j-verifikasi-klaim-doi)
-  - [K. Finalisasi & Export ke BibTeX](#k-finalisasi--export-ke-bibtex)
-- [Daftar Command CLI](#daftar-command-cli)
-- [Konfigurasi (config.yaml)](#konfigurasi-configyaml)
-- [Struktur Folder](#struktur-folder)
-- [Detail Setiap Step Pipeline](#detail-setiap-step-pipeline)
-- [Migrasi dari Versi Lama](#migrasi-dari-versi-lama)
+Designed for **agents and automation**: every command supports `--json` for structured output and returns deterministic exit codes.
 
 ---
 
-## Filosofi Project
+## Table of Contents
 
-Project ini **bukan pipeline otomatis end-to-end**. Ada banyak keputusan riset yang hanya bisa diambil oleh peneliti:
-
-1. **Quartile mana** yang dipakai untuk filter jurnal? (Q1? Q1+Q2? semua?)
-2. **DOI mana** yang harus di-exclude karena tidak relevan meski match keyword?
-3. **Topik** apa yang mau diteliti?
-4. **Jurnal** mana yang mau dituju?
-5. **Klaim** mana yang benar-benar didukung referensi?
-
-Pipeline hanya mengotomasi bagian mekanis (fetch, filter, deduplikasi). Sisanya — brainstorming, menulis, verifikasi — dilakukan peneliti dengan bantuan AI memakai prompt-prompt yang sudah disediakan di README ini.
-
-### Output Akhir yang Diharapkan
-
-```
-data/
-├── draft.md                  ← Artikel lengkap dengan citation [DOI]
-├── 11_references.bib         ← File BibTeX untuk LaTeX
-├── 09_references.md          ← Daftar referensi ringkas (DOI, author, abstrak)
-└── 08_claims.json            ← Audit: setiap kalimat dengan [DOI] diekstrak
-```
-
-Format `draft.md`:
-```markdown
-## Latar Belakang
-
-Pasar cryptocurrency bersifat sangat volatile dengan fluktuasi harga yang
-sulit diprediksi [10.3390/fintech4040077]. XGBoost telah menunjukkan performa
-unggul dalam prediksi time-series keuangan [10.1007/s10614-025-10919-y]...
-```
-
-**Format citation**: HARUS pakai `[DOI]` (literal DOI di dalam kurung siku), BUKAN `\cite{}` atau `(Author, 2024)`. Alasannya: step 08 (`extract-claims`) memakai regex `10\.\d{4,9}/...` untuk ekstrak DOI dari markdown — format `[DOI]` paling reliable untuk diparse otomatis.
-
-**Konversi `[DOI]` → `\cite{key}`**: Tidak ada auto-convert di pipeline ini. Setelah Anda jalankan step 11 (`convert-bib`), file `.bib` berisi `@article{lastnameYYYY_abcde, ...}` akan ter-generate. Anda harus manual replace `[DOI]` di `draft.md` dengan `\cite{lastnameYYYY_abcde}` (atau pakai tool terpisah / regex find-replace di editor).
+- [Quick Start](#quick-start)
+- [Installation](#installation)
+  - [Linux / macOS](#linux--macos)
+  - [Windows](#windows)
+  - [Manual / Development](#manual--development)
+- [Configuration & Multi-Account Management](#configuration--multi-account-management)
+- [Commands](#commands)
+  - [`findref setup`](#findref-setup)
+  - [`findref search`](#findref-search)
+  - [`findref validate`](#findref-validate)
+  - [`findref filter`](#findref-filter)
+  - [`findref export`](#findref-export)
+  - [`findref config`](#findref-config)
+  - [`findref doctor`](#findref-doctor)
+  - [`findref guide`](#findref-guide)
+  - [`findref cache`](#findref-cache)
+- [Agent Integration](#agent-integration)
+  - [JSON Output](#json-output)
+  - [Exit Codes](#exit-codes)
+  - [Environment Variables](#environment-variables)
+- [Workflow Examples](#workflow-examples)
+- [Project Structure](#project-structure)
+- [Migration from v1.x](#migration-from-v1x)
+- [License](#license)
 
 ---
 
-## Instalasi
-
-### 1. Clone repository
+## Quick Start
 
 ```bash
-git clone https://github.com/farisalfatih/find_references_scopus.git
+# 1. Install (Linux / macOS / WSL) - see "Installation" for Windows
+curl -fsSL https://raw.githubusercontent.com/farisalfatih/find_references_scopus/v-2/install/install.sh | bash
+
+# 2. Run setup wizard
+findref setup
+
+# 3. Search references
+findref search "deep learning for financial forecasting" --year-from 2020
+
+# 4. Filter
+findref filter results.json --min-year 2020 --scopus-only --quartile Q1,Q2 -o filtered.json
+
+# 5. Export to BibTeX
+findref export filtered.json --format bibtex -o references.bib
+```
+
+---
+
+## Installation
+
+All installers follow the same (correct) flow: **clone -> create virtualenv -> install packages inside the venv**.
+Nothing is installed into your system Python, so you will not hit
+`externally-managed-environment` or `Cannot uninstall typing_extensions ... installed by debian` errors.
+
+Requirements: **Python 3.10+** (git is optional - the installers fall back to downloading a zip/tar.gz).
+
+Everything is installed under one folder:
+
+| Platform | Install folder | `findref` command |
+|----------|----------------|-------------------|
+| Linux / macOS | `~/.findref/` (`src/` + `venv/`) | symlink in `~/.local/bin` |
+| Windows | `%LOCALAPPDATA%\findref\app\` (`src\` + `venv\`) | shim in `%LOCALAPPDATA%\findref\app\bin` (added to user PATH) |
+
+### Linux / macOS / WSL - one line
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/farisalfatih/find_references_scopus/v-2/install/install.sh | bash
+```
+
+The script asks no questions. Options (pass with `bash -s -- <option>`):
+
+| Option | Meaning |
+|--------|---------|
+| `--dev` | Editable install (needs a local clone) |
+| `--dir PATH` | Install somewhere other than `~/.findref` |
+| `--branch NAME` | Use another git branch |
+| `--no-modify-path` | Do not touch `~/.bashrc` / `~/.zshrc` |
+| `--uninstall` | Remove findref |
+
+Example: `curl -fsSL <url> | bash -s -- --no-modify-path`
+
+Re-running the same command updates findref.
+
+### Windows - one command with curl
+
+Windows 10/11 ships with `curl.exe`. Run in **CMD or PowerShell**:
+
+```bat
+curl.exe -fsSL https://raw.githubusercontent.com/farisalfatih/find_references_scopus/v-2/install/install.ps1 -o install.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1
+```
+
+> Type `curl.exe`, not `curl` - in PowerShell `curl` is an alias for `Invoke-WebRequest`.
+
+Then **close and reopen the terminal** and run `findref --version`.
+
+Options are environment variables, e.g. in PowerShell:
+
+```powershell
+$env:FINDREF_HOME = "D:\tools\findref"; .\install.ps1      # custom folder
+$env:FINDREF_UNINSTALL = "1"; .\install.ps1                  # uninstall
+```
+
+Need Python first? `winget install -e --id Python.Python.3.12`
+
+### Manual installation (what the scripts do)
+
+**Linux / macOS**
+
+```bash
+git clone -b v-2 https://github.com/farisalfatih/find_references_scopus.git
 cd find_references_scopus
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+pip install .            # or: pip install -e .   for development
+findref --version
 ```
 
-### 2. Buat virtual environment (opsional)
+**Windows (PowerShell)**
+
+```powershell
+git clone -b v-2 https://github.com/farisalfatih/find_references_scopus.git
+cd find_references_scopus
+py -3 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+pip install .
+findref --version
+```
+
+If PowerShell blocks `Activate.ps1`: `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`, or use CMD and run `.venv\Scripts\activate.bat`.
+
+With the manual method you must activate the venv (`source .venv/bin/activate` / `.\.venv\Scripts\Activate.ps1`) in every new terminal before using `findref`.
+
+### Troubleshooting
+
+| Symptom | Cause / fix |
+|---------|-------------|
+| `error: externally-managed-environment` | Debian/Ubuntu protect system Python (PEP 668). Use the installer or a venv - do **not** use `--break-system-packages`. |
+| `Cannot uninstall typing_extensions ... RECORD file not found ... installed by debian` | You ran `pip install` against the system Python. Use a venv (the installers do this automatically). |
+| `The virtual environment was not created successfully` / `ensurepip is not available` | `sudo apt install python3-venv python3-full` |
+| `findref: command not found` | Open a new terminal, or `source ~/.bashrc`. Windows: reopen the terminal. |
+| `curl` in PowerShell prints a security prompt / errors | Use `curl.exe`. |
+| Stale files after upgrading | Delete `build/` and `*.egg-info/` in the source folder, then reinstall. |
+
+### Update / Uninstall
 
 ```bash
-python -m venv .venv
-.venv/Scripts/activate # Windows
-source .venv/bin/activate  # Linux/Mac
+# Update: re-run the install command (Linux/macOS: curl ... | bash, Windows: the two commands above)
+
+# Uninstall:
+findref uninstall                     # interactive; asks whether to also delete your settings
+findref uninstall --yes               # no prompts, keep config/cache/logs
+findref uninstall --yes --purge       # no prompts, delete everything including config/cache/logs
+findref uninstall --dry-run           # show what would be removed, change nothing
+
+# Alternative (works even if findref itself won't run) — same effect, config is always kept:
+curl -fsSL https://raw.githubusercontent.com/farisalfatih/find_references_scopus/v-2/install/install.sh | bash -s -- --uninstall
+#   Windows (run install.ps1 as in the Installation section, then):
+#   $env:FINDREF_UNINSTALL = "1"; .\install.ps1
 ```
 
-### 3. Install dependencies
+Installed with `pip install find-refs` yourself, into your own virtualenv?
+`findref uninstall` cannot remove program files it doesn't own; it tells you the
+`pip uninstall find-refs` command to run instead, and still handles `--purge`.
 
-```bash
-pip install -r requirements.txt
-```
-
-### 4. Install sebagai package (opsional)
-
-```bash
-pip install -e .
-```
-
-### Dependencies
-
-- `requests` — HTTP client untuk OpenAlex API
-- `nltk` — Tokenizer kalimat (untuk ekstrak klaim DOI)
-- `pyyaml` — Parser config.yaml
+Your config is kept unless you ask for `--purge` (see the paths in the next section).
 
 ---
 
-## Tahap-Tahap Pipeline
+## Configuration & Multi-Account Management
 
-Jalankan `find-refs guide` untuk lihat panduan singkat di terminal. Berikut penjelasan lengkap setiap tahap:
+Find-Refs stores its configuration at:
 
-### TAHAP 0 — Persiapan Data SCImago (sekali saja)
+| Platform | Path |
+|----------|------|
+| Linux    | `~/.config/findref/config.toml` (or `$XDG_CONFIG_HOME/findref/config.toml` if that variable is set) |
+| macOS    | `~/Library/Application Support/findref/config.toml` |
+| Windows  | `%LOCALAPPDATA%\findref\config.toml` |
 
-```bash
-find-refs csv-to-json
-find-refs delete-no-issn
-find-refs split-subject   # opsional
-```
-**Output**: `data/scimagojr_2025.json` + `data/scimagojr_2025_ok.json`
+This is a different folder from where the *program* is installed (see the
+[Installation](#installation) table above), on purpose: running the installer's
+`--uninstall`, or `findref uninstall` without `--purge`, removes the program but
+never touches this folder. Run `findref config path` to print the exact file, or
+`findref doctor` to see every folder findref uses (config, cache, logs, data).
 
-### TAHAP 1 — Pilih ISSN berdasarkan Quartile + Subject Area [MANUAL]
+Override the config folder with the `FINDREF_CONFIG_DIR` environment variable
+(useful for CI / portable installs).
 
-Putuskan:
-1. **Subject area mana** yang mau dipakai? (mis. Computer Science saja, atau gabungan beberapa area)
-2. **Quartile mana** yang mau dipakai? (mis. Q1+Q2 untuk jurnal top-tier)
-
-```bash
-# Lihat daftar subject area tersedia (27 area, masing-masing punya nomor)
-find-refs get-issn --subject list
-
-# Mode default: SCImago full (semua subject area)
-find-refs get-issn -q Q1,Q2         # Q1+Q2 dari semua area
-find-refs get-issn                  # semua quartile
-
-# Mode subject area: pilih area spesifik
-find-refs get-issn --subject 7              # Computer Science saja, semua quartile
-find-refs get-issn --subject 7,8 -q Q1      # Computer Science + Decision Sciences, Q1
-find-refs get-issn --subject Computer -q Q1,Q2  # semua area yg namanya ada "Computer"
-find-refs get-issn --subject "Computer Science,Mathematics" -q Q1   # multi-name
-
-# atau mode interaktif (prompt quartile via input()):
-find-refs get-issn -i
-```
-**Output**: `data/01_issn_list.txt`
-
-### TAHAP 2 — Fetch Artikel OpenAlex + Filter + Deduplikasi
+### Adding multiple accounts
 
 ```bash
-find-refs fetch        # ambil artikel dari OpenAlex API (bisa lama)
-find-refs filter       # filter berdasar keyword di judul+abstrak
-find-refs deduplicate  # hapus DOI duplikat antar group
+# Interactive
+findref config add-account --name alice-univ
+# Non-interactive (for CI / scripts)
+findref config add-account \
+  --name alice-univ \
+  --label "Alice @ University" \
+  --mailto "alice@university.edu" \
+  --non-interactive
+
+# Switch between accounts instantly
+findref config use alice-univ
+findref config use bob-personal
+
+# List accounts
+findref config list
 ```
-**Output**: `data/04_deduplicated.json`
 
-### TAHAP 3 — REVIEW MANUAL: Tentukan DOI Exclude [MANUAL]
+### Account fields
 
-Buka `data/04_deduplicated.json`. Baca abstrak tiap artikel. Identifikasi DOI yang **tidak relevan** meski match keyword (false positive filter).
+Find-Refs uses **OpenAlex only** for online lookups, and OpenAlex needs **no API key** —
+only a contact email ("polite pool") for faster, more reliable rate limits.
+Scopus indexing and quartiles come from bundled SCImago data, so no Scopus key is used either.
 
-Tulis DOI tersebut ke `data/excluded_dois.txt` (satu per baris). Boleh kosong kalau tidak ada.
+An account therefore stores just:
 
-### TAHAP 4 — Hapus Exclude + Statistik + Merge Info Jurnal
+| Field             | Description                                              |
+|-------------------|----------------------------------------------------------|
+| `label`           | Human-friendly name (optional)                           |
+| `openalex_mailto` | Email for the OpenAlex polite pool                       |
 
-```bash
-find-refs remove-excluded
-find-refs distribution
-find-refs merge-journal
-```
-**Output**: `data/07_with_journal_info.json` ← **dataset final dengan quartile & open_access**
-
-### TAHAP 5 — TULIS ARTIKEL dengan Bantuan AI [MANUAL]
-
-Gunakan AI (ChatGPT/Gemini/Claude/dll) untuk menulis latar belakang, metode, hasil, diskusi, kesimpulan. Berikan `data/07_with_journal_info.json` sebagai konteks. Minta AI menyisipkan `[DOI]` di setiap klaim.
-
-**Lihat bagian [Prompt AI untuk Pembuatan Artikel](#prompt-ai-untuk-pembuatan-artikel)** untuk kumpulan prompt siap pakai.
-
-**Output**: `data/draft.md`
-
-### TAHAP 6 — Verifikasi Klaim [DOI]
-
-```bash
-find-refs extract-claims --input data/draft.md
-```
-**Output**: `data/08_claims.json` — list kalimat yang mengandung [DOI] + DOI unik
-
-**Regex DOI yang dipakai**: `10\.\d{4,9}/...` (registrant code 4-9 digit, suffix alfanumerik). DOI otomatis di:
-- **Lowercase-normalize** (DOI case-insensitive per spesifikasi Crossref)
-- **Strip trailing punctuation** (titik, koma, titik koma, kurung) agar tidak bocor dari akhir kalimat
-
-Review: apakah setiap klaim di draf benar-benar didukung artikel yang DOI-nya di-claim? Hapus/ubah klaim yang tidak cocok.
-
-### TAHAP 7 — PILIH DOI untuk Cite di Paper [MANUAL opsional]
-
-Tentukan DOI mana yang akan Anda cite di paper akhir (subset dari 07). Edit `config.yaml`, isi `selected_dois`. Lalu:
-
-```bash
-find-refs select-articles
-```
-**Output**: `data/10_selected.json`
-
-### TAHAP 8 — Export ke Markdown & BibTeX
-
-```bash
-find-refs extract-references       # Markdown ringkas semua artikel
-find-refs convert-bib              # BibTeX dari SEMUA artikel (step 07)
-# ATAU pakai subset (step 10):
-find-refs convert-bib --input data/10_selected.json
-```
-**Output**: `data/09_references.md` + `data/11_references.bib`
+> Upgrading from an older config? Leftover `scopus_api_key`, `crossref_mailto`, etc. are ignored
+> and removed the next time the config is saved.
 
 ---
 
-## Prompt AI untuk Pembuatan Artikel
+## OpenAlex Multi-Mailto Rotation (Rate-Limit Avoidance)
 
-Berikut kumpulan prompt siap pakai untuk AI assistant (ChatGPT, Gemini, Claude, GLM, dll). Copy-paste dan sesuaikan bagian dalam `[...]` dengan konteks Anda.
+OpenAlex is **free**, but applies per-mailto rate limits. By rotating through
+multiple mailtos, you can effectively multiply your throughput N times (where
+N = number of unique mailtos).
 
-### A. Jika Bingung Mau Topik Apa
+### How it works
 
-**Prompt eksplorasi topik**:
-```
-Saya ingin menulis artikel jurnal tapi belum punya topik pasti. Background saya:
-- Bidang: [mis. machine learning / finance / kesehatan / pendidikan]
-- Tool yang saya kuasai: [mis. Python, XGBoost, PyTorch, R]
-- Minat khusus: [mis. cryptocurrency, NLP, computer vision, time-series]
+The `OpenAlexClient` accepts a `MailtoPool` — a round-robin / reactive pool
+of mailtos. When you run `findref search --openalex-pool`, findref automatically
+collects mailtos from:
 
-Bantu saya:
-1. Beri 10 ide topik penelitian yang feasible untuk jurnal Q1/Q2 (bukan topik
-   yang sudah terlalu jenuh).
-2. Untuk setiap topik, jelaskan: novelty-nya apa, mengapa penting, apa
-   gap penelitian yang bisa di-isi, dan tool/toolchain yang cocok.
-3. Untuk topik yang menurut Anda paling promising, beri 5 keyword pencarian
-   yang bisa saya pakai di OpenAlex/Google Scholar.
+1. **Current account's `openalex_mailto`** (preferred)
+2. **All other accounts' `openalex_mailto`** (rotation candidates)
+3. **`defaults.openalex_mailto_pool`** (extra mailtos via `findref config add-mailto`)
+4. **`FINDREF_OPENALEX_MAILTO_POOL` env var** (CI / Docker)
 
-Format jawaban: tabel markdown dengan kolom (Topik, Novelty, Gap, Keyword).
-```
+On HTTP 429, the current mailto is marked as "cooling down" for 60 seconds
+(configurable), and the next request automatically uses the next mailto.
 
-**Prompt validasi topik**:
-```
-Saya sedang mempertimbangkan topik penelitian: "[topik Anda]".
+### Quick start
 
-Bantu evaluasi:
-1. Apakah topik ini sudah terlalu jenuh? Cek berapa banyak paper serupa
-   dalam 3 tahun terakhir (estimasi berdasarkan keyword).
-2. Apa angle yang bisa membuat topik ini jadi novel? Beri 3 saran angle.
-3. Jurnal Q1/Q2 apa yang cocok untuk topik ini? Sebutkan 3 jurnal + ISSN.
-4. Apa risiko utama saat eksekusi topik ini (data, method, dll.)?
-```
+```bash
+# 1. Add multiple accounts (each with a different mailto)
+findref config add-account --name alice --openalex-mailto alice@univ.edu -y
+findref config add-account --name bob   --openalex-mailto bob@univ.edu -y
+findref config add-account --name carol --openalex-mailto carol@univ.edu -y
 
----
+# 2. Add extra mailtos WITHOUT creating fake accounts
+findref config add-mailto dave@univ.edu
+findref config add-mailto eve@univ.edu
 
-### B. Memilih Jurnal yang Relevan
+# 3. Verify the pool
+findref config show-pool
 
-**Prompt pencarian jurnal**:
-```
-Saya menulis artikel dengan topik: "[topik Anda]".
-Method utama: [mis. XGBoost + HMM untuk prediksi harga cryptocurrency].
+# 4. Search with pool rotation
+findref search "deep learning" --openalex-pool --limit 100
 
-Saya punya akses ke dataset SCImago 2025 (file JSON berisi 32,000+ jurnal
-dengan field: journal, issn_print, issn_electronic, quartile, open_access,
-subject_area, sub_category).
-
-Bantu saya:
-1. Tentukan subject_area SCImago yang paling cocok untuk topik saya
-   (mis. Computer Science, Decision Sciences, Economics Econometrics and Finance).
-2. Beri kriteria filter jurnal yang harus dipakai:
-   - Quartile minimum: [Q1/Q2/Q3/Q4]
-   - Open access: [Yes/No/Diamond/semua]
-   - Subject area prioritas: [uraian]
-3. Saya akan memakai pipeline find_references_scopus untuk filter jurnal.
-   Beri query boolean OpenAlex untuk search_groups di config.yaml.
-
-PENTING — Aturan query (parser recursive-descent, DIDUKUNG):
-- "quoted phrase" untuk frasa literal (mis. "XGBoost", "Hidden Markov Model")
-- (a OR b OR c) untuk alternatif
-- X AND Y untuk wajib keduanya
-- X AND NOT Y untuk exclude (mis. "XGBoost" AND NOT survey)
-- Nested parens DIDUKUNG: ((A OR B) AND C) OR D
-- Word-boundary match: "eth" TIDAK match "method"/"version"
-
-Format output:
-  "Group Name 1":
-    query: '(keyword1 OR keyword2) AND "phrase"'
-  "Group Name 2":
-    query: '...'
-
-Buat 3-5 group query yang mencakup aspek berbeda dari topik saya.
-JANGAN fabricate ISSN — saya akan ambil ISSN dari SCImago via step 01
-(find-refs get-issn), bukan dari output AI.
+# 5. Or with proactive rotation (rotate every request, not just on 429)
+findref search "deep learning" --openalex-pool --openalex-rotate
 ```
 
-**Prompt validasi jurnal tujuan**:
-```
-Saya mau submit ke jurnal: [nama jurnal + ISSN].
+### Config persistence
 
-Bantu analisis:
-1. Apakah scope jurnal ini cocok dengan topik saya? (cek di description jurnal)
-2. Quartile jurnal ini apa? (SJR/Scopus)
-3. Berapa biasanya waktu review & publication?
-4. Apakah jurnal ini open access atau berbayar? Berapa APC-nya?
-5. Beri 3 contoh artikel di jurnal ini (5 tahun terakhir) yang mirip topik
-   saya — untuk saya jadikan referensi struktur penulisan.
+Set defaults in config.toml so you don't need flags every time:
+
+```bash
+findref config set-default openalex_auto_rotate true
+# Now `findref search` always rotates
 ```
 
----
+Or via env var (for CI / Docker):
 
-### C. Mencari Referensi Pendukung
-
-**Prompt setelah dataset didapat** (setelah TAHAP 4):
-
+```bash
+export FINDREF_OPENALEX_MAILTO_POOL="alice@univ.edu,bob@univ.edu"
+export FINDREF_OPENALEX_AUTO_ROTATE=true
+findref search "topic" --openalex-pool
 ```
-Saya punya dataset artikel hasil filter (file JSON 07_with_journal_info.json)
-dengan struktur:
+
+### Pool stats (for debugging)
+
+```bash
+# JSON output includes pool stats
+findref search "topic" --openalex-pool --json | jq '.openalex_pool_stats'
+```
+
+Example output:
+
+```json
 {
-  "kategori_1": [
-    {
-      "doi": "...", "title": "...", "abstract": "...",
-      "authors": [...], "year": ..., "journal": "...",
-      "quartile": "Q1/Q2/...", "open_access": "Yes/No/Diamond OA"
-    },
-    ...
-  ],
-  "kategori_2": [...]
+  "alice@univ.edu": {"request_count": 5, "in_cooldown": false},
+  "bob@univ.edu":   {"request_count": 4, "in_cooldown": false},
+  "carol@univ.edu": {"request_count": 4, "in_cooldown": true, "cooldown_remaining": 45.2}
 }
-
-Tugas: bantu saya identifikasi referensi yang paling relevan untuk topik
-saya: "[topik]". Method yang saya pakai: [uraian singkat method].
-
-Untuk setiap kategori, beri:
-1. Top 5 artikel yang PALING relevan (dengan alasan singkat 1 kalimat).
-2. 1-2 artikel yang harus jadi referensi UTAMA (karena paling foundational).
-3. 1-2 artikel yang harus di-cite karena CONTRASTING view (membandingkan).
-
-Format output: tabel markdown dengan kolom (DOI, Title, Year, Why-relevant,
-Role: main/supporting/contrast).
-
-JANGAN gunakan artikel di luar dataset yang saya berikan.
 ```
 
 ---
 
-### D. Menulis Latar Belakang dengan [DOI]
+## Flexible Output Location
 
-**Prompt menulis latar belakang** (paling penting!):
+All output-producing commands (`search`, `filter`, `export`, `validate`)
+support flexible output location resolution:
 
-```
-Bantu saya menulis bagian "Latar Belakang" untuk artikel jurnal dengan
-topik: "[topik Anda]".
+### Priority (highest first)
 
-Konteks artikel:
-- Method yang diajukan: [uraian singkat, mis. "XGBoost + HMM untuk prediksi
-  harga cryptocurrency dengan dynamic labeling berbasis ATR"]
-- Kontribusi utama: [3 bullet point novelty]
-- Target jurnal: [nama jurnal, quartile]
+| Method | Example |
+|--------|---------|
+| 1. `--output path` (explicit file) | `findref search "..." -o /tmp/refs.json` |
+| 2. `--output dir/` (dir + auto-name) | `findref search "..." -o /tmp/refs/ --auto-name` |
+| 3. `--output-dir dir` (dir + default name) | `findref search "..." --output-dir /tmp/refs/` |
+| 4. `FINDREF_OUTPUT_DIR` env var | `FINDREF_OUTPUT_DIR=/tmp/refs findref search "..."` |
+| 5. `output_dir` from config | `findref config set-default output_dir /tmp/refs` |
+| 6. Current working directory | (fallback) |
 
-Dataset referensi yang TERSEDIA (boleh di-cite, beri [DOI] di akhir kalimat
-yang merujuk):
-[copy-paste bagian dari 07_with_journal_info.json yang sudah Anda kurasi,
- atau attach file dan minta AI baca]
+### Auto-naming
 
-Aturan penulisan:
-1. Setiap klaim faktual HARUS diakhiri dengan [DOI] sumbernya.
-   Format WAJIB: kurung siku + DOI literal, contoh:
-   "Pasar cryptocurrency memiliki volatilitas 5x lebih tinggi dari
-   saham [10.3390/fintech4040077]."
-
-2. PENTING — Format DOI yang benar:
-   - Pakai literal DOI: 10.xxxx/yyyy (registrant 4-9 digit)
-   - JANGAN pakai placeholder seperti [DOI-A] atau [DOI-B] — ganti dengan
-     DOI aktual dari dataset di atas
-   - JANGAN pakai \cite{} atau (Author, 2024) — HANYA [DOI]
-   - Letakkan DOI di AKHIR kalimat sebelum tanda baca akhir
-     (titik/koma), supaya regex step 08 bisa ekstrak dengan bersih
-   - Contoh BENAR: "...5x lebih tinggi [10.3390/fintech4040077]."
-   - Contoh SALAH: "...5x lebih tinggi. [10.3390/fintech4040077]"
-     (titik sebelum bracket akan menyebabkan DOI ter-ekstrak dengan titik)
-
-3. Jika ada kontradiksi antar referensi, sebutkan keduanya:
-   "Studi A menemukan X [DOI-A], namun studi B menemukan Y [DOI-B]."
-   (Ganti [DOI-A] dan [DOI-B] dengan DOI aktual dari dataset)
-
-4. JANGAN cite artikel di luar dataset di atas.
-
-5. Struktur latar belakang (4-5 paragraf):
-   - Paragraf 1: konteks luas topik + kenapa penting
-   - Paragraf 2: state-of-the-art saat ini (cite 3-5 paper foundational)
-   - Paragraf 3: gap penelitian yang belum di-isi
-   - Paragraf 4: kontribusi paper ini (3 bullet point)
-   - Paragraf 5: struktur paper (opsional)
-6. Panjang: 600-800 kata.
-7. Bahasa: [Indonesia/English].
-
-Output: tulis langsung dalam format Markdown, siap di-paste ke draf.
-```
-
-**Tips**:
-- Jika dataset terlalu besar untuk di-paste, pecah per kategori dan minta AI tulis latar belakang bertahap per topik.
-- Selalu minta `[DOI]` di akhir kalimat — jangan `\cite{}` atau `(Author, Year)` karena pipeline extract-claims (TAHAP 6) hanya mengenali pola `10.xxxx/yyyy` (literal DOI).
-- Setelah AI generate, jalankan `find-refs extract-claims --input data/draft.md` untuk verifikasi semua DOI yang di-claim benar-benar ada di dataset (TAHAP 6).
-
----
-
-### E. Menulis Metode
-
-```
-Bantu saya menulis bagian "Metode" untuk artikel yang sama.
-
-Method yang saya pakai:
-- Algoritma: [mis. XGBoost untuk klasifikasi, HMM untuk state detection]
-- Data: [sumber, periode, fitur]
-- Evaluasi: [metric, mis. Sharpe ratio, Sortino ratio, profit factor, accuracy]
-- Train/test split: [walk-forward / k-fold / chronological]
-
-Struktur yang diminta:
-1. Overview Method (1 paragraf)
-2. Data Preparation (1-2 paragraf, cite sumber data dengan [DOI])
-3. Feature Engineering (1-2 paragraf, cite teknik yang dipakai dengan [DOI])
-4. Model Architecture (2-3 paragraf, cite algoritma asli dengan [DOI])
-5. Evaluation Metrics (1 paragraf, definisi setiap metric + [DOI])
-6. Backtesting Strategy (1 paragraf, cite metode backtest dengan [DOI])
-
-Aturan:
-- Setiap definisi/saya pakai rumus → cite sumber aslinya dengan [DOI].
-- Format rumus pakai LaTeX inline: $\text{Sharpe} = \frac{\mu}{\sigma}$.
-- Bahasa: [Indonesia/English].
-- Panjang: 800-1200 kata.
-```
-
----
-
-### F. Menulis Hasil & Analisis
-
-```
-Bantu saya menulis bagian "Hasil dan Analisis".
-
-Hasil eksperimen saya (rangkuman, sisipkan angka Anda):
-- Model A (baseline): Sharpe = X, Sortino = Y, Profit Factor = Z
-- Model B (proposed): Sharpe = X', Sortino = Y', Profit Factor = Z'
-- Improvement: [persentase]
-- Statistical test: [t-test/Mann-Whitney, p-value]
-
-Struktur yang diminta:
-1. Overview Hasil (1 paragraf, sebutkan temuan utama)
-2. Performance Comparison (1-2 paragraf + 1 tabel markdown)
-3. Ablation Study (1 paragraf, kontribusi tiap komponen method)
-4. Analysis: kenapa model proposed lebih baik (2-3 paragraf,
-   cite 2-3 referensi yang mendukung interpretasi Anda dengan [DOI])
-5. Limitations (1 paragraf, sebutkan keterbatasan dengan jujur)
-
-Aturan:
-- Jangan over-claim. Pakai kata "menunjukkan" bukan "membuktikan".
-- Bandingkan dengan hasil paper lain jika ada (cite [DOI]).
-- Bahasa: [Indonesia/English].
-- Panjang: 600-900 kata.
-```
-
----
-
-### G. Menulis Diskusi
-
-```
-Bantu saya menulis bagian "Diskusi".
-
-Hasil utama paper saya: [1 kalimat temuan utama].
-Method yang dipakai: [uraian singkat].
-
-Struktur yang diminta:
-1. Interpretasi hasil dalam konteks literatur (2-3 paragraf)
-   - Bandingkan dengan 3-5 paper terkait (cite [DOI])
-   - Kenapa hasil saya konsisten/berbeda dengan mereka?
-2. Implikasi praktis (1-2 paragraf)
-   - Untuk praktisi: apa manfaat method ini?
-   - Untuk regulator: apa pertimbangan policy?
-3. Implikasi teoretis (1 paragraf)
-   - Apa kontribusi terhadap body of knowledge?
-4. Future research (1 paragraf, 3-4 bullet point)
-
-Aturan:
-- Jangan ulangi Hasil — fokus pada "kenapa" dan "apa implikasinya".
-- Cite minimal 5 referensi dari dataset.
-- Bahasa: [Indonesia/English].
-- Panjang: 700-1000 kata.
-```
-
----
-
-### H. Menulis Kesimpulan
-
-```
-Bantu saya menulis "Kesimpulan" (1 paragraf, 200-300 kata).
-
-Konteks:
-- Topik: [topik]
-- Kontribusi utama: [3 bullet]
-- Hasil utama: [1 kalimat dengan angka]
-
-Struktur:
-1. Restate problem (1 kalimat)
-2. Restate method (1 kalimat)
-3. Sebutkan 3 temuan utama (3 kalimat, dengan angka)
-4. Implikasi praktis (1 kalimat)
-5. Future work (1 kalimat)
-
-JANGAN cite [DOI] di kesimpulan.
-JANGAN perkenalkan ide baru.
-
-Catatan: Walaupun step 08 (extract-claims) akan tetap mengekstrak DOI
-dari section manapun di draft.md (termasuk kesimpulan), best practice
-akademik adalah TIDAK cite di kesimpulan. Kalau AI tetap menambahkan
-[DOI], hapus manual saat review.
-```
-
----
-
-### I. Jika Sudah Punya Code Penelitian
-
-**Prompt translate code → artikel**:
-
-```
-Saya sudah punya code penelitian lengkap (Python). Saya ingin menulis
-artikel jurnal dari code ini.
-
-Code saya: [paste code, atau attach file]
-
-Bantu saya:
-1. Ekstrak struktur penelitian dari code:
-   - Apa problem yang dipecahkan?
-   - Apa method yang dipakai?
-   - Apa dataset?
-   - Apa metric evaluasi?
-   - Apa hasil utama (dari output code)?
-2. Identifikasi novelty-nya (apa yang baru dari code ini).
-3. Beri saran topik & judul artikel (5 alternatif).
-4. Beri saran 3-5 jurnal target (Q1/Q2) yang cocok.
-5. Beri outline artikel (section + sub-section + perkiraan panjang tiap section).
-6. Beri 5 keyword pencarian untuk cari referensi pendukung di OpenAlex.
-
-Setelah ini saya akan:
-- Pakai outline yang Anda buat untuk generate search_groups di config.yaml
-  (ikuti sintaks di README bagian "Sintaks Query Boolean")
-- Jalankan pipeline find_references_scopus untuk fetch referensi
-- Pakai prompt "Menulis Latar Belakang dengan [DOI]" dengan dataset hasil
-
-Catatan: Output prompt ini (outline, search_groups, keyword) TIDAK otomatis
-ter-parse oleh pipeline. Anda harus copy-paste manual ke config.yaml.
-```
-
-**Prompt menulis method dari code**:
-
-```
-Bantu saya menulis bagian "Metode" berdasarkan code Python saya berikut.
-
-Code: [paste code lengkap]
-
-Tulis metode dalam format paper akademik:
-1. Jangan translate code baris-per-baris. Abstraksikan jadi konsep.
-2. Sebutkan library/version yang dipakai (mis. "XGBoost 1.7.6 [DOI-XGBoost-paper]").
-3. Sebutkan hyperparameter penting (yang Anda pakai default vs yang di-tune).
-4. Untuk setiap teknik yang dipakai, cite paper aslinya dengan [DOI].
-   (Saya akan supply dataset referensi terpisah.)
-5. Sertakan pseudo-code untuk algoritma utama (format LaTeX algorithm2e).
-
-Bahasa: [Indonesia/English]. Panjang: 800-1200 kata.
-```
-
-**Prompt menulis hasil dari output eksperimen**:
-
-```
-Saya sudah jalankan eksperimen. Output log/CSV:
-
-[paste output: mis. classification_report, sharpe ratio, equity curve summary, dst]
-
-Bantu saya:
-1. Rangkum hasil dalam tabel markdown (perbandingan model).
-2. Identifikasi temuan utama (3 bullet point).
-3. Sebutkan anomali/insight menarik yang perlu di-discuss.
-4. Apa perlu uji statistik lanjutan? (sebutkan test apa + library Python)
-5. Draft 1 paragraf "Overview Hasil" untuk paper.
-
-JANGAN fabricate angka. Hanya pakai yang ada di output saya.
-```
-
----
-
-### J. Verifikasi Klaim [DOI]
-
-Setelah Anda selesai menulis `draft.md` (TAHAP 5), jalankan:
+Use `--auto-name` to automatically generate a timestamped filename:
 
 ```bash
-find-refs extract-claims --input data/draft.md
+findref search "deep learning" --auto-name --output-dir ./refs/
+# → ./refs/search_deep-learning_20260927_120000.json
+
+findref filter results.json --auto-name --output-dir ./refs/
+# → ./refs/filter_results_filtered_20260927_120001.json
+
+findref export results.json --format bibtex --auto-name --output-dir ./refs/
+# → ./refs/export_results_bibtex_20260927_120002.bib
 ```
 
-Output `data/08_claims.json` berisi semua kalimat yang mengandung [DOI] + list DOI unik. Lalu pakai prompt ini di AI:
+Enable auto-name globally:
 
-**Prompt verifikasi klaim**:
+```bash
+findref config set-default auto_name true
+# Now all commands auto-name unless you pass --no-auto-name
 ```
-Saya punya daftar klaim dari draft artikel saya (format JSON):
-{
-  "results": [
-    {"sentence": "...kalimat dengan [DOI]...", "dois": ["10.xxxx/yyyy"]},
-    ...
-  ],
-  "doi_list": ["10.xxxx/yyyy", ...]
-}
 
-Dan saya punya dataset artikel (07_with_journal_info.json) dengan struktur:
-{kategori: [{doi, title, abstract, ...}, ...]}
+Or via env var:
 
-Tugas: untuk SETIAP klaim di draft, cek apakah klaim tersebut BENAR-BENAR
-didukung oleh artikel yang di-claim (cek abstract/title artikel).
-
-Output: tabel markdown dengan kolom:
-| Klaim | DOI di-claim | Relevan? (Yes/Partial/No) | Catatan |
-
-Jika ada klaim "No" atau "Partial", beri saran:
-- Ganti DOI yang lebih cocok (dari dataset), ATAU
-- Hapus klaim tersebut, ATAU
-- Lemahklaim klaim (mis. dari "menunjukkan" jadi "mungkin menunjukkan")
-
-Jangan fabricate DOI baru di luar dataset.
+```bash
+export FINDREF_AUTO_NAME=true
+findref search "topic" --output-dir ./refs/
 ```
 
 ---
 
-### K. Finalisasi & Export ke BibTeX
+## Project-Local Config (`.findref.yaml`)
 
-**Prompt finalisasi struktur artikel**:
+Create a `.findref.yaml` file in your project root to override user defaults
+**per project**. This is useful for:
 
-```
-Saya sudah punya draft artikel (file markdown) dengan struktur:
-1. Latar Belakang
-2. Metode
-3. Hasil & Analisis
-4. Diskusi
-5. Kesimpulan
+- Different SCImago path per project
+- Different OpenAlex mailto pool per project
+- Different default output directory per project
 
-Draft: [paste atau attach]
-
-Bantu saya:
-1. Cek konsistensi istilah (mis. "model" vs "sistem" vs "framework" — pilih satu).
-2. Cek flow antar section (apakah transisi mulus?).
-3. Cek apakah ada klaim di Diskusi yang TIDAK didukung Hasil.
-4. Beri saran judul akhir (5 alternatif, max 15 kata).
-5. Beri 5 keyword untuk abstract.
-6. Tulis abstract (200-250 kata) berdasarkan draft.
-
-Bahasa: [Indonesia/English].
-```
-
-**Setelah final**, convert ke BibTeX:
-```bash
-find-refs convert-bib --input data/07_with_journal_info.json
-# Output: data/11_references.bib (untuk LaTeX \bibliography{references})
-```
-
-Atau pakai subset DOI yang Anda cite di paper:
-```bash
-# Edit config.yaml, isi selected_dois dengan DOI yang benar-benar di-cite
-find-refs select-articles
-find-refs convert-bib --input data/10_selected.json
-```
-
----
-
-## Daftar Command CLI
-
-Setelah `pip install -e .`:
-
-```bash
-find-refs list            # lihat semua command
-find-refs guide           # panduan tahap-tahap pipeline
-find-refs <command> -h    # bantuan command tertentu
-```
-
-### Pipeline Commands (11 step)
-
-| # | Command | Type | Deskripsi |
-|---|---------|------|-----------|
-| 01 | `get-issn` | MANUAL | Ekstrak ISSN electronic dari SCImago per quartile + subject area |
-| 02 | `fetch` | AUTO | Fetch artikel OpenAlex per search group |
-| 03 | `filter` | AUTO | Filter keyword di judul+abstrak |
-| 04 | `deduplicate` | AUTO | Hapus DOI duplikat antar group |
-| 05 | `remove-excluded` | MANUAL | Hapus DOI yang ada di `excluded_dois.txt` |
-| 06 | `distribution` | AUTO | Statistik artikel per kategori |
-| 07 | `merge-journal` | AUTO | Tambah quartile & open_access dari SCImago |
-| 08 | `extract-claims` | MANUAL | Ekstrak kalimat berisi [DOI] dari Markdown |
-| 09 | `extract-references` | AUTO | Format artikel jadi Markdown ringkas |
-| 10 | `select-articles` | MANUAL | Pilih subset artikel berdasar DOI |
-| 11 | `convert-bib` | AUTO | Konversi JSON ke BibTeX |
-
-### Utility Commands (preprocessing SCImago)
-
-| Command | Deskripsi |
-|---------|-----------|
-| `csv-to-json` | Konversi SCImago CSV → JSON |
-| `check-issn` | Audit kelengkapan ISSN print/electronic |
-| `delete-no-issn` | Hapus jurnal tanpa ISSN electronic |
-| `split-subject` | Pecah JSON per subject area |
-
-### Special Commands
-
-| Command | Deskripsi |
-|---------|-----------|
-| `list` | Tampilkan daftar command dengan tag AUTO/MANUAL |
-| `guide` | Tampilkan panduan tahap-tahap pipeline + checkpoint |
-
----
-
-## Konfigurasi (config.yaml)
-
-Semua parameter terpusat di `config.yaml`. Edit file ini, **tidak perlu sentuh kode Python**.
+### Example `.findref.yaml`
 
 ```yaml
-# Parameter umum fetch OpenAlex
-use_issn_filter: true         # true = filter daftar ISSN (Scopus), false = seluruh OpenAlex
-year_from: 2021
-year_to: 2026
-language: ["en"]
-per_page: 200
-request_delay: 1.0
-max_results_per_group: 0    # 0 = tanpa batas
-issn_batch_size: 50
+# Project-local findref config
+# This file overrides ~/.findref/config.toml defaults for THIS project only.
+# CLI flags and env vars still take precedence over this file.
 
-# Daftar ISSN electronic (kosongkan jika pakai output step 01, atau jika use_issn_filter: false)
-issn_electronic: []
+defaults:
+  openalex_mailto: alice@this-project.edu
+  openalex_mailto_pool: "alice@univ.edu,bob@univ.edu"
+  openalex_auto_rotate: true
+  output_dir: ./refs        # All output goes to ./refs/ in this project
+  auto_name: true            # Auto-name files with timestamp
+  year_from: 2020
+  year_to: 2025
+  language: en
 
-# Search groups — SATU sumber kebenaran
-search_groups:
-  "XGBoost Cryptocurrency":
-    query: '(Cryptocurrency OR Solana OR Bitcoin OR ETH OR XRP) AND "XGBoost"'
-  "HMM XGBoost":
-    query: '("Hidden Markov Model" OR HMM) AND "XGBoost"'
-  # ... tambah group sesuai kebutuhan
-
-# DOI yang ingin dipilih di step 10
-selected_dois: []
-
-# Path file input/output (relatif terhadap root project)
-paths:
-  scimago_csv: "data/scimagojr_2025.csv"
-  scimago_json: "data/scimagojr_2025.json"
-  excluded_dois: "data/excluded_dois.txt"
-  step_01_issn_list: "data/01_issn_list.txt"
-  # ... dst
+# Top-level convenience (same as defaults.scimago_path)
+scimago_path: ./data/scimagojr_2025.json
 ```
 
-### Sintaks Query Boolean
+### How it works
 
-Query di `search_groups` didukung oleh parser recursive-descent (sejak v1.1) dengan sintaks lengkap:
+When you run any `findref` command, the CLI walks up from your current
+directory looking for `.findref.yaml` (or `.findref.yml`, `findref.yaml`).
+The first one found is loaded and its values override the user config
+defaults — but are themselves overridden by CLI flags and env vars.
 
-- `"quoted phrase"` — pencocokan substring literal (case-insensitive)
-- `word` — pencocokan **word-boundary** (mis. `eth` TIDAK match `method`/`version`/`ethical`)
-- `(a OR b OR c)` — salah satu harus ada
-- `X AND Y` — keduanya harus ada
-- `X AND NOT Y` — X harus ada, Y tidak boleh ada
-- `((a OR b) AND c) OR d` — **nested parentheses didukung penuh**
-- `"phrase with AND inside"` — AND/OR di dalam quote dianggap **literal**, tidak di-parse
-
-**Validasi otomatis**: Jika query tidak valid (paren tidak seimbang, quote tidak tertutup, dll), step 03 akan log error dan skip group tersebut (artikel disalin apa adanya).
-
-**Contoh query valid**:
+```bash
+# In a project with .findref.yaml:
+cd my-research-project/
+findref search "neural networks" --limit 50
+# → automatically saves to ./refs/search_neural-networks_<timestamp>.json
+# → uses the project's OpenAlex mailto pool
+# → uses the project's SCImago path
 ```
-("Hidden Markov Model" OR HMM) AND "XGBoost"
-```
-```
-(Cryptocurrency OR Solana OR Bitcoin OR ETH OR XRP) AND "XGBoost" AND NOT "survey"
-```
-```
-(("Sharpe ratio" OR "Sortino ratio") AND XGBoost) OR ("profit factor" AND LSTM)
-```
-
-**Limitasi**: Tidak ada wildcard (`*`), tidak ada regex, tidak ada proximity search (`~`). Untuk kebutuhan tersebut, gunakan search API OpenAlex langsung.
 
 ---
 
-## Struktur Folder
+## SCImago ISSN Filter (Restrict Search to Scopus Journals)
+
+When enabled, ``findref search`` restricts results to journals indexed in SCImago,
+optionally filtered by subject area and quartile. This is the core feature for
+ensuring search results are Scopus-indexed (the ``scopus_indexed`` flag will be
+``true`` for all results by construction).
+
+### How to configure
+
+**Option A: Interactive wizard (recommended)**
+
+```bash
+findref config set-issn-filter
+```
+
+This will:
+1. Ask whether to enable the filter
+2. Show available subject areas in your SCImago JSON (multi-select)
+3. Ask which quartiles to include (Q1, Q2, Q3, Q4, unranked)
+4. Ask whether to include unranked Scopus journals (quartile '-')
+5. Save and show a preview of the resolved ISSN count
+
+**Option B: Non-interactive (for scripts / CI)**
+
+```bash
+findref config set-issn-filter \
+    --enable \
+    --subject-areas "Computer Science,Mathematics" \
+    --quartiles "Q1,Q2" \
+    --include-unranked \
+    --scimago-path /path/to/scimagojr_2025.json \
+    --non-interactive
+```
+
+**Option C: From setup wizard**
+
+```bash
+findref setup
+# Step 3 of the wizard handles SCImago path + ISSN filter config interactively
+```
+
+### Show current filter config
+
+```bash
+findref config show-issn-filter
+# Output:
+#   Enabled: yes
+#   Subject areas: Computer Science, Mathematics
+#   Quartiles: Q1,Q2
+#   Include unranked: yes
+#   SCImago JSON: /path/to/scimagojr_2025.json
+#   Resolved: 247 ISSNs
+#   Stats: {total_journals: 5000, after_subject_filter: 312, ...}
+```
+
+### Disable filter for one search
+
+```bash
+# Search ALL journals (ignores config)
+findref search "topic" --no-issn-filter
+
+# Override subject area + quartile for just this search
+findref search "topic" --subject-areas "Medicine" --quartile Q1
+```
+
+### Get SCImago data
+
+Download SCImago journal data from https://scimagojr.com/ (free, registration
+required). The expected JSON format is a list of journal dicts:
+
+```json
+[
+  {
+    "issn_electronic": "0306-4379",
+    "title": "Decision Support Systems",
+    "quartile": "Q1",
+    "open_access": "closed",
+    "subject_area": "Computer Science",
+    "best_quartile": "Q1"
+  },
+  ...
+]
+```
+
+You can also use the SCImago CSV export — convert it to JSON first:
+
+```bash
+# Future: findref scimago load scimagojr_2025.csv
+# For now, use any CSV→JSON converter (e.g. https://csvjson.com/)
+```
+
+---
+
+## Commands
+
+### `findref setup`
+
+Interactive first-run wizard. Walks you through:
+
+1. Setting your default OpenAlex mailto (polite pool)
+2. Adding your first account (optional — an extra mailto for rotation)
+3. Configuring the SCImago Scopus / quartile filter
+4. Verifying OpenAlex connectivity
+
+Idempotent — safe to re-run anytime.
+
+```bash
+findref setup                     # Interactive
+findref setup -y                  # Non-interactive (use env vars / defaults)
+```
+
+---
+
+### `findref search`
+
+Search academic papers via **OpenAlex** (the only search source). If the SCImago
+ISSN filter is enabled in config, search is restricted to journals indexed in
+SCImago (filtered by subject area + quartile).
+
+```bash
+# Basic search (uses ISSN filter if configured)
+findref search "LSTM bitcoin price prediction"
+
+# With year filter + limit
+findref search "cancer immunotherapy" \
+  --year-from 2020 --year-to 2025 \
+  --limit 100 \
+  --output results.json
+
+# Disable ISSN filter for this search (search ALL journals)
+findref search "topic" --no-issn-filter
+
+# Override subject area + quartile for this search
+findref search "topic" --subject-areas "Computer Science,Medicine" --quartile Q1,Q2
+
+# Explicit ISSN list (overrides SCImago filter)
+findref search "machine learning" --issn 1234-5678,9876-5432
+
+# Use mailto pool to avoid rate limits
+findref search "topic" --openalex-pool --openalex-rotate
+
+# JSON output for agent integration
+findref search "neural networks" --json | jq '.results | length'
+
+# Don't annotate Scopus (faster)
+findref search "topic" --no-annotate-scopus
+```
+
+**Options:**
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--year-from` | config default | Minimum publication year |
+| `--year-to` | config default | Maximum publication year |
+| `--limit, -n` | 50 | Maximum number of results |
+| `--per-page` | 100 | Page size for API requests |
+| `--issn` | (none) | Override ISSN filter (comma-separated, or 'none' to disable) |
+| `--issn-filter / --no-issn-filter` | config default | Enable/disable SCImago ISSN filter |
+| `--subject-areas` | config default | Override subject areas (comma-separated) |
+| `--quartile` | config default | Override quartile filter (Q1,Q2 / Q1 / all) |
+| `--annotate-scopus / --no-annotate-scopus` | on | Look up Scopus indexing after search |
+| `--output, -o` | (stdout) | Save results to JSON file (path or dir) |
+| `--output-dir` | (none) | Directory to save output files |
+| `--auto-name / --no-auto-name` | config default | Auto-name output with timestamp |
+| `--openalex-pool` | off | Use ALL mailtos as rotation pool |
+| `--openalex-rotate / --no-openalex-rotate` | config default | Rotate mailto per request |
+| `--json` | off | Output JSON to stdout (agent-friendly) |
+
+---
+
+### `findref validate`
+
+Validate a list of DOIs and check Scopus indexing. Enriches each DOI with metadata
+via OpenAlex.
+
+**Supported input formats:**
+
+- `.txt` — one DOI per line (comments with `#` are ignored)
+- `.bib` — BibTeX file (DOIs extracted via bibtexparser)
+- `--dois` — comma-separated list of DOIs
+
+**Markdown files (.md) are NOT supported.** (Markdown extraction was removed per user request.)
+
+```bash
+# From a text file (one DOI per line)
+findref validate -i dois.txt
+
+# From a .bib file (extracts DOIs via bibtexparser)
+findref validate -i my_refs.bib
+
+# Direct list
+findref validate --dois "10.1000/xxx,10.1000/yyy"
+
+# Save enriched results
+findref validate -i dois.txt -o validated.json
+
+# Use OpenAlex as enrichment source (default)
+findref validate -i dois.txt --json | jq '.scopus_count'
+```
+
+---
+
+### `findref filter`
+
+Filter out unsuitable references from a JSON file.
+
+```bash
+# Year + citation filter
+findref filter results.json \
+  --min-year 2020 \
+  --max-year 2025 \
+  --min-citations 5 \
+  -o filtered.json
+
+# Scopus Q1/Q2 only
+findref filter results.json \
+  --scopus-only \
+  --quartile Q1,Q2 \
+  -o q1q2_only.json
+
+# Keyword blacklist + whitelist
+findref filter results.json \
+  --exclude-keywords "preprint,survey,workshop" \
+  --include-keywords "neural network,deep learning" \
+  -o filtered.json
+
+# Open access only
+findref filter results.json --open-access-only -o oa_only.json
+
+# Dry run (preview without saving)
+findref filter results.json --scopus-only --dry-run
+
+# Disable deduplication
+findref filter results.json --no-deduplicate
+```
+
+**Filter rules available:**
+
+| Flag | Description |
+|------|-------------|
+| `--min-year YYYY` | Drop papers before this year |
+| `--max-year YYYY` | Drop papers after this year |
+| `--min-citations N` | Drop papers with fewer than N citations |
+| `--scopus-only` | Keep only Scopus-indexed papers |
+| `--quartile Q1,Q2` | Keep only specified quartiles |
+| `--no-unranked` | Drop Scopus journals with quartile `-` (unranked) |
+| `--exclude-keywords kw1,kw2` | Drop papers containing these keywords |
+| `--include-keywords kw1,kw2` | Keep only papers containing these keywords |
+| `--open-access-only` | Keep only open-access papers |
+| `--language en,fr` | Keep only specified languages |
+| `--no-deduplicate` | Disable DOI + fuzzy title deduplication |
+
+---
+
+### `findref export`
+
+Export papers to multiple formats.
+
+```bash
+# BibTeX (default)
+findref export results.json --format bibtex -o refs.bib
+
+# RIS (for EndNote / Covidence / Mendeley)
+findref export results.json --format ris -o refs.ris
+
+# CSV (for Excel review)
+findref export results.json --format csv -o refs.csv
+
+# JSONL (for agent processing)
+findref export results.json --format jsonl -o refs.jsonl
+
+# Markdown (human-readable)
+findref export results.json --format md -o refs.md
+
+# Re-annotate Scopus + export only Scopus-indexed
+findref export results.json --annotate-scopus --scopus-only -o scopus_only.bib
+```
+
+**Supported formats:**
+
+| Format | Extension | Notes |
+|--------|-----------|-------|
+| `bibtex` | `.bib` | Embeds `scopus_indexed = {true/false}` field per entry |
+| `ris` | `.ris` | Adds `N1` (notes) field with Scopus flag + quartile |
+| `csv` | `.csv` | All columns including `scopus_indexed`, `quartile` |
+| `jsonl` | `.jsonl` | One paper per line — agent-friendly |
+| `md` | `.md` | Human-readable with Scopus/Q badge per entry |
+
+---
+
+### `findref config`
+
+Manage accounts (OpenAlex mailtos) and defaults. See [Configuration](#configuration--multi-account-management).
+
+```bash
+findref config list                          # List all accounts
+findref config add-account --name alice      # Add account (interactive)
+findref config use alice                      # Switch to account
+findref config show                            # Show current account
+findref config remove alice                    # Delete account
+findref config set-default year_from 2020     # Update a default value
+findref config path                            # Print config file path
+findref config edit                            # Open in $EDITOR
+
+# OpenAlex mailto pool management (rate-limit avoidance)
+findref config show-pool                      # Show all mailtos collected for rotation
+findref config add-mailto bob@univ.edu        # Add mailto to rotation pool
+findref config remove-mailto bob@univ.edu     # Remove mailto from pool
+findref config set-default openalex_auto_rotate true  # Rotate per request
+```
+
+---
+
+### `findref doctor`
+
+Diagnose installation, config, and OpenAlex connectivity.
+
+```bash
+findref doctor                # Interactive check
+findref doctor --json         # JSON output
+```
+
+Checks:
+- ✅ Python version (3.10+)
+- ✅ Config file exists and loads
+- ✅ Cache / logs / data directories writable
+- ✅ Bundled SCImago data present
+- ✅ OpenAlex reachable, and which mailto is in use (warns if still the placeholder)
+
+---
+
+### `findref guide`
+
+Print the full workflow guide.
+
+```bash
+findref guide
+```
+
+---
+
+### `findref cache`
+
+Manage the HTTP response cache (SQLite-backed).
+
+```bash
+findref cache stats    # Show entries + path
+findref cache clear    # Wipe cache
+```
+
+---
+
+## Agent Integration
+
+Find-Refs is designed to be called by AI agents, scripts, and CI pipelines.
+
+### JSON Output
+
+Every command supports `--json` for structured output:
+
+```bash
+findref search "topic" --json
+findref validate -i dois.txt --json
+findref filter results.json --scopus-only --json
+findref export results.json --format bibtex --json
+findref config list --json
+findref doctor --json
+```
+
+### Exit Codes
+
+| Code | Meaning          |
+|------|------------------|
+| 0    | Success          |
+| 1    | Generic error    |
+| 2    | No results found |
+| 3    | Rate-limited by API |
+| 4    | Access denied by OpenAlex (HTTP 401/403) |
+| 5    | Network error    |
+| 6    | Config error     |
+| 130  | Interrupted (Ctrl+C) |
+
+### Environment Variables
+
+Override config without modifying files — useful in CI / Docker.
+
+| Variable | Purpose |
+|----------|---------|
+| `FINDREF_CONFIG_DIR` | Use a custom config directory (portable install) |
+| `FINDREF_CACHE_DIR` | Use a custom HTTP cache directory |
+| `FINDREF_LOGS_DIR` | Use a custom logs directory |
+| `FINDREF_DATA_DIR` | Use a custom user data directory |
+| `FINDREF_OPENALEX_MAILTO` | Override OpenAlex polite-pool email |
+| `FINDREF_OPENALEX_MAILTO_POOL` | Comma-sep list of OpenAlex mailtos for rotation |
+| `FINDREF_OPENALEX_AUTO_ROTATE` | `true` to rotate mailtos proactively per request |
+| `FINDREF_OUTPUT_DIR` | Default output directory for all commands |
+| `FINDREF_AUTO_NAME` | `true` to enable auto-naming globally |
+
+### Example: Agent workflow (Python)
+
+```python
+import subprocess
+import json
+
+# Search
+result = subprocess.run(
+    ["findref", "search", "deep learning finance", "--json"],
+    capture_output=True, text=True
+)
+if result.returncode != 0:
+    print(f"Search failed: {result.stderr}")
+else:
+    data = json.loads(result.stdout)
+    print(f"Found {data['count']} papers")
+    print(f"Scopus-indexed: {sum(1 for p in data['results'] if p['scopus_indexed'])}")
+
+# Filter + export
+with open("results.json", "w") as f:
+    json.dump(data, f)
+
+subprocess.run([
+    "findref", "filter", "results.json",
+    "--scopus-only", "--quartile", "Q1,Q2",
+    "-o", "filtered.json"
+])
+subprocess.run([
+    "findref", "export", "filtered.json",
+    "--format", "bibtex", "-o", "refs.bib"
+])
+```
+
+---
+
+## Workflow Examples
+
+### Example 1: Literature review for a paper
+
+```bash
+# Step 1: Setup
+findref setup
+
+# Step 2: Search OpenAlex (Scopus-indexed journals only, Q1/Q2)
+findref search "transformer attention mechanism" \
+  --issn-filter --quartile Q1,Q2 \
+  --year-from 2017 \
+  --limit 100 \
+  -o search_results.json
+
+# Step 3: Filter to high-quality references only
+findref filter search_results.json \
+  --min-year 2020 \
+  --min-citations 10 \
+  --scopus-only \
+  --quartile Q1,Q2 \
+  --exclude-keywords "preprint,survey" \
+  -o high_quality.json
+
+# Step 4: Export to BibTeX
+findref export high_quality.json --format bibtex -o references.bib
+
+# Step 5: Also export to Markdown for human review
+findref export high_quality.json --format md -o references.md
+```
+
+### Example 2: Validate an existing .bib file
+
+```bash
+# Extract DOIs from existing BibTeX, check Scopus indexing
+findref validate -i my_refs.bib -o validated.json
+
+# Show summary
+findref validate -i my_refs.bib --json | jq '{found: .found, scopus: .scopus_count, total: .input_count}'
+```
+
+### Example 3: Several mailtos for heavy searching
+
+```bash
+# One-time: register a few mailtos (each account = one OpenAlex mailto)
+findref config add-account --name alice --mailto alice@univ.edu -y
+findref config add-account --name bob   --mailto bob@univ.edu   -y
+
+# Rotate between them when OpenAlex rate-limits
+findref search "..." --openalex-pool --limit 200
+
+# Or pick one explicitly
+findref config use bob
+```
+
+### Example 4: Agent batch processing
+
+```bash
+# Use env vars only (no config file — perfect for ephemeral CI)
+export FINDREF_OPENALEX_MAILTO="bot@company.com"
+
+findref search "neural networks" --json | \
+  jq '.results[] | select(.scopus_indexed == true) | .doi' | \
+  xargs -I {} findref validate --dois {} --json
+```
+
+---
+
+## Project Structure
 
 ```
-find_references_scopus/
+find-refs/
+├── find_references_scopus/
+│   ├── __init__.py              # Package metadata + exit codes
+│   ├── __main__.py              # python -m find_references_scopus
+│   ├── cli.py                   # Main Typer app + top-level commands
+│   ├── config/
+│   │   ├── defaults.py          # Path resolution (cross-platform)
+│   │   └── manager.py           # Multi-account config manager (TOML)
+│   ├── commands/
+│   │   ├── setup.py             # findref setup (interactive wizard)
+│   │   ├── config_cmd.py        # findref config (sub-app)
+│   │   ├── search.py            # findref search
+│   │   ├── validate.py          # findref validate
+│   │   ├── filter_cmd.py        # findref filter
+│   │   ├── export_cmd.py        # findref export
+│   │   ├── doctor.py            # findref doctor
+│   │   ├── guide.py             # findref guide
+│   │   └── cache_cmd.py         # findref cache (sub-app)
+│   ├── api/
+│   │   ├── base.py              # BaseClient with retry/rate-limit/cache
+│   │   └── openalex.py          # OpenAlex API client (the only online API)
+│   ├── core/
+│   │   ├── models.py             # Paper, ReferenceList dataclasses
+│   │   ├── scopus_checker.py    # Scopus indexing detection (offline, SCImago)
+│   │   ├── filter_rules.py      # Filter engine + rule classes
+│   │   └── deduplication.py     # DOI + fuzzy title dedup
+│   ├── exporters/
+│   │   ├── base.py              # Exporter base class
+│   │   ├── bibtex.py            # BibTeX exporter (with scopus_indexed field)
+│   │   ├── ris.py               # RIS exporter
+│   │   ├── csv_exp.py           # CSV exporter
+│   │   ├── jsonl.py             # JSONL exporter
+│   │   └── markdown.py          # Markdown exporter
+│   ├── utils/
+│   │   ├── __init__.py          # Console + logging + JSON helpers
+│   │   └── cache.py             # SQLite HTTP cache (requests-cache)
+│   └── data/
+│       └── scimagojr_2025.json  # Bundled SCImago journal data (optional)
+├── install/
+│   ├── install.sh               # Linux / macOS installer
+│   └── install.ps1              # Windows installer
+├── tests/
+│   ├── test_config.py
+│   ├── test_filter.py
+│   └── test_export.py
 ├── pyproject.toml
-├── requirements.txt
-├── config.yaml                 # Konfigurasi terpusat
-├── README.md                   # Dokumentasi ini
-├── data/                       # Semua file data
-│   ├── scimagojr_2025.csv      # Sumber SCImago
-│   ├── scimagojr_2025.json     # Konversi JSON
-│   ├── excluded_dois.txt       # Daftar DOI exclude (manual)
-│   ├── draft.md                # Draf artikel Anda (manual, dengan [DOI])
-│   ├── 01_issn_list.txt        # Output step 01
-│   ├── 02_openalex_raw.json    # Output step 02
-│   ├── ...
-│   └── 11_references.bib       # Output final untuk LaTeX
-├── docs/
-│   └── flowchart.svg           # Diagram alur
-└── find_references_scopus/     # Package Python
-    ├── __init__.py
-    ├── __main__.py             # python -m find_references_scopus
-    ├── cli.py                  # CLI dispatcher
-    ├── config.py               # Loader config.yaml
-    ├── utils.py                # Utility bersama
-    ├── pipeline/               # 11 step
-    │   ├── step_01_get_issn.py
-    │   ├── ...
-    │   └── step_11_convert_bib.py
-    └── journal_lists/          # 4 utility SCImago
-        ├── csv_to_json.py
-        ├── check_issn.py
-        ├── delete_no_issn.py
-        └── split_by_subject_area.py
+├── README.md
+└── LICENSE
 ```
 
 ---
 
-## Detail Setiap Step Pipeline
+## Migration from v1.x
 
-### Step 01 — get-issn
+Find-Refs v2.0 is a complete rewrite focused on **reference search and Scopus detection only**.
 
-**Tujuan**: Ekstrak ISSN electronic dari SCImago, bisa per quartile dan/atau per subject area.
+### Removed (v1.x features no longer present)
 
-**Mode sumber data**:
-1. **SCImago full** (default) — pakai `data/scimagojr_2025.json`
-2. **Subject area pilihan** — pakai file di `data/scimago_split/subject_area_*.json` (hasil dari `find-refs split-subject`)
+- `step_08_extract_claims` — Markdown [DOI] extraction (use your AI agent for this)
+- `step_09_extract_references` — Markdown reference generation (replaced by `findref export --format md`)
+- Prompt engineering guides for paper writing (out of scope)
 
-**Cara pakai**:
-```bash
-# Mode default: SCImago full
-find-refs get-issn -q Q1,Q2         # Q1+Q2 dari semua subject area
-find-refs get-issn                  # semua quartile
-find-refs get-issn -i               # interaktif (prompt quartile)
+### Renamed commands
 
-# Mode subject area: lihat daftar dulu
-find-refs get-issn --subject list   # tampilkan 27 subject area + nomor
+| v1.x                | v2.0                              |
+|---------------------|-----------------------------------|
+| `find-refs fetch`   | `findref search` (OpenAlex) |
+| `find-refs filter`  | `findref filter` (rewritten)       |
+| `find-refs deduplicate` | `findref filter --deduplicate` (built-in) |
+| `find-refs remove-excluded` | `findref filter --exclude-keywords` |
+| `find-refs distribution` | (removed — use `--json` + `jq`) |
+| `find-refs merge-journal` | Automatic (part of `findref search` and `findref filter`) |
+| `find-refs filter-scopus` | `findref filter --scopus-only` |
+| `find-refs extract-claims` | **Removed** (was markdown extraction) |
+| `find-refs extract-references` | `findref export --format md` |
+| `find-refs select-articles` | `findref filter --include-keywords ...` or `--include-dois` |
+| `find-refs convert-bib` | `findref export --format bibtex` |
 
-# Pilih subject area berdasarkan nomor
-find-refs get-issn --subject 7               # Computer Science saja
-find-refs get-issn --subject 7,8             # Computer Science + Decision Sciences
-find-refs get-issn --subject 7,8 -q Q1       # + filter Q1
+### New in v2.0
 
-# Pilih subject area berdasarkan nama/keyword (case-insensitive)
-find-refs get-issn --subject Computer        # semua area yg namanya ada "Computer"
-find-refs get-issn --subject "Computer Science,Mathematics"  # multi-name
-
-# Gabung semua subject area (sama dengan SCImago full)
-find-refs get-issn --subject all -q Q1,Q2
-```
-
-**Input**: `data/scimagojr_2025.json` (mode default) ATAU `data/scimago_split/subject_area_*.json` (mode subject)
-**Output**: `data/01_issn_list.txt` (satu ISSN per baris)
-
-**Catatan**: Subject area yang dipilih akan otomatis di-dedup (jurnal yang muncul di multiple subject area hanya dihitung sekali).
-
-### Step 02 — fetch
-```bash
-find-refs fetch                 # pakai ISSN dari config atau output step 01
-find-refs fetch --no-issn       # fetch dari seluruh OpenAlex tanpa filter ISSN
-find-refs fetch --issn-file path/ke/issn.txt
-```
-**Input**: config.yaml (search_groups + ISSN)
-**Output**: `data/02_openalex_raw.json`
-**Catatan**: Proses bisa lama (menit-jam). OpenAlex rate limit ~100 req/menit.
-
-### Step 03 — filter
-```bash
-find-refs filter
-find-refs filter -i input.json -o output.json
-```
-**Input**: `02_openalex_raw.json`
-**Output**: `03_filtered.json`
-
-### Step 04 — deduplicate
-```bash
-find-refs deduplicate
-```
-**Input**: `03_filtered.json`
-**Output**: `04_deduplicated.json`
-**Algoritma**: Pindahkan DOI duplikat ke group yang paling spesifik (subset query).
-
-### Step 05 — remove-excluded
-```bash
-find-refs remove-excluded
-find-refs remove-excluded -e custom_excluded.txt
-```
-**Input**: `04_deduplicated.json` + `excluded_dois.txt`
-**Output**: `05_cleaned.json`
-
-### Step 06 — distribution
-```bash
-find-refs distribution
-```
-**Input**: `05_cleaned.json`
-**Output**: `06_distribution.txt`
-
-### Step 07 — merge-journal
-```bash
-find-refs merge-journal
-```
-**Input**: `05_cleaned.json` + `scimagojr_2025.json`
-**Output**: `07_with_journal_info.json` ← **dataset final**
-
-### Step 08 — extract-claims
-```bash
-find-refs extract-claims --input data/draft.md
-```
-**Input**: file Markdown (draft artikel Anda)
-**Output**: `08_claims.json` (`{results: [{sentence, dois}], doi_list: [...]}`)
-**Catatan**: Perlu package `nltk`.
-
-### Step 09 — extract-references
-```bash
-find-refs extract-references
-```
-**Input**: `07_with_journal_info.json`
-**Output**: `09_references.md` — format:
-```markdown
-# Kategori: XGBoost Cryptocurrency
-
-Total: 25 artikel
-
----
-
-## 10.1007/s44163-025-00519-y
-**2024 | Journal of Finance**
-### Smith et al.
-
-Abstract text here...
-
----
-```
-Catatan: struktur per kategori → `## DOI` → `### Author` → abstract.
-
-### Step 10 — select-articles
-```bash
-find-refs select-articles              # pakai selected_dois dari config
-find-refs select-articles --dois-file dois.txt
-```
-**Input**: `07_with_journal_info.json` + `config.selected_dois`
-**Output**: `10_selected.json`
-
-### Step 11 — convert-bib
-```bash
-find-refs convert-bib                                      # dari step 07
-find-refs convert-bib --input data/10_selected.json        # dari subset step 10
-```
-**Output**: `11_references.bib` (entry `@article{...}` valid untuk LaTeX)
-
----
-
-## Migrasi dari Versi Lama
-
-| Script Lama | Command Baru |
-|-------------|--------------|
-| `get_issn_electronic.py` | `find-refs get-issn` |
-| `openalex_fetch.py` | `find-refs fetch` |
-| `filter_keywords_abstrac.py` | `find-refs filter` |
-| `clear_duplicate.py` | `find-refs deduplicate` |
-| `remove_doi_list.py` | `find-refs remove-excluded` |
-| `cek_distribusi_artikel.py` | `find-refs distribution` |
-| `marge_article_journal.py` | `find-refs merge-journal` |
-| `extract_claims.py` | `find-refs extract-claims` |
-| `extract_references.py` | `find-refs extract-references` |
-| `selected_article.py` | `find-refs select-articles` |
-| `confert_bib.py` | `find-refs convert-bib` |
-| `journal-lists/csv_to_json.py` | `find-refs csv-to-json` |
-| `journal-lists/cek_issn.py` | `find-refs check-issn` |
-| `journal-lists/delete_no_issn.py` | `find-refs delete-no-issn` |
-| `journal-lists/split_by_subject_area.py` | `find-refs split-subject` |
-
-### Mapping Output File Lama → Baru
-
-| Output Lama | Output Baru |
-|-------------|-------------|
-| `openalex_results.json` | `data/02_openalex_raw.json` |
-| `openalex_results_filtered.json` | `data/03_filtered.json` |
-| `openalex_results_deduplicated.json` | `data/04_deduplicated.json` |
-| `cleaned_results.json` | `data/05_cleaned.json` |
-| `final_references.json` | `data/07_with_journal_info.json` |
-| `selected_papers.json` | `data/10_selected.json` |
-| `references.bib` | `data/11_references.bib` |
-
-### Bug Fix Penting
-
-Versi lama `confert_bib.py` menulis `## article{...}` (dengan prefix `## `) yang **merusak parser BibTeX/LaTeX**. Versi baru menulis `@article{...}` yang valid.
-
-### Apa yang Perlu Dilakukan Setelah Migrasi
-
-1. Copy `scimagojr_2025.csv`, `scimagojr_2025.json`, `excluded_dois.txt` ke folder `data/`
-2. Edit `config.yaml`:
-   - Isi `selected_dois` dengan 27 DOI yang sebelumnya hard-coded (lihat di bawah)
-   - Sesuaikan `search_groups` jika perlu (default sudah memuat semua group lama)
-3. Jalankan `find-refs guide` untuk lihat tahapan
-4. Mulai dari TAHAP 0 (preprocess SCImago)
-
-### Daftar 27 DOI (sebelumnya hard-coded di selected_article.py)
-
-**Copy daftar ini ke `selected_dois` di `config.yaml`** jika Anda mau pakai 27 DOI yang sama dengan versi lama:
-
-```yaml
-selected_dois:
-  - "10.1007/s44163-025-00519-y"
-  - "10.1007/s10614-025-10919-y"
-  - "10.3390/s22051740"
-  - "10.7717/peerj-cs.2626"
-  - "10.11591/ijeecs.v37.i3.pp1964-1975"
-  - "10.11591/ijeecs.v39.i3.pp1745-1754"
-  - "10.1109/access.2025.3556881"
-  - "10.1155/int/6674437"
-  - "10.3390/math11112415"
-  - "10.28991/hij-2024-05-04-013"
-  - "10.28991/hij-2025-06-01-017"
-  - "10.3390/math11061335"
-  - "10.2478/cait-2023-0020"
-  - "10.3390/math11051132"
-  - "10.1109/access.2021.3088999"
-  - "10.1109/access.2023.3318478"
-  - "10.3390/forecast8030040"
-  - "10.3390/a19020101"
-  - "10.1109/access.2024.3516490"
-  - "10.3390/fintech4040077"
-  - "10.1016/j.eswa.2025.127729"
-  - "10.3905/jfds.2026.1.217"
-  - "10.3390/math13233889"
-  - "10.1007/s10614-026-11338-3"
-  - "10.3390/electronics15061334"
-  - "10.1007/s42521-024-00123-2"
-  - "10.3390/math13101577"
-```
-
-Catatan: DOI lookup di step 10 sudah **case-insensitive** (sejak v1.1), jadi Anda boleh tulis dengan huruf besar/kecil campuran tanpa masalah.
+- ✨ OpenAlex as the single search source (no API key), with multi-mailto rotation (`findref config`)
+- ✨ Offline Scopus / quartile detection from bundled SCImago data
+- ✨ Multiple export formats (RIS, CSV, JSONL, Markdown)
+- ✨ `--json` flag on every command (agent-friendly)
+- ✨ Deterministic exit codes
+- ✨ HTTP response cache (SQLite-backed)
+- ✨ Install scripts for Linux / macOS / Windows
+- ✨ `findref setup` interactive wizard
+- ✨ `findref doctor` diagnostics
+- ✨ Environment variable overrides (for CI / Docker)
 
 ---
 
 ## License
 
-MIT — bebas dipakai untuk keperluan akademik.
+MIT — see [LICENSE](LICENSE).

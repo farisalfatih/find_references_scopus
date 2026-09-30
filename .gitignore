@@ -1,37 +1,11 @@
-# Python virtual env & environments
-.venv/
-venv/
-env/
-ENV/
-.env
-
-# Build & packaging
-find_references_scopus.egg-info/
+# Build artifacts (jangan di-commit; file lama di build/ bisa ikut ter-install)
 build/
 dist/
 *.egg-info/
-
-# Python bytecode & cache
-**/__pycache__/
 __pycache__/
-*.py[cod]
-*$py.class
+*.pyc
+.venv/
+venv/
 .pytest_cache/
-
-# Logs
-*.log
-logs/
-
-# Pipeline generated outputs (data/01_* through data/11_*)
-data/0[1-9]_*
-data/1[0-9]_*
-data/*.checkpoint.json
-data/*.tmp
-data/*.temp
-data/draft.md
-
-# OS & IDE
-.DS_Store
-Thumbs.db
-.idea/
-.vscode/
+.ruff_cache/
+.mypy_cache/
