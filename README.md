@@ -51,7 +51,7 @@ Designed for **agents and automation**: every command supports `--json` for stru
 
 ```bash
 # 1. Install (Linux / macOS / WSL) - see "Installation" for Windows
-curl -fsSL https://raw.githubusercontent.com/farisalfatih/find_references_scopus/v-2/install/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/farisalfatih/find_references_scopus/main/install/install.sh | bash
 
 # 2. Run setup wizard
 findref setup
@@ -86,7 +86,7 @@ Everything is installed under one folder:
 ### Linux / macOS / WSL - one line
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/farisalfatih/find_references_scopus/v-2/install/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/farisalfatih/find_references_scopus/main/install/install.sh | bash
 ```
 
 The script asks no questions. Options (pass with `bash -s -- <option>`):
@@ -108,7 +108,7 @@ Re-running the same command updates findref.
 Windows 10/11 ships with `curl.exe`. Run in **CMD or PowerShell**:
 
 ```bat
-curl.exe -fsSL https://raw.githubusercontent.com/farisalfatih/find_references_scopus/v-2/install/install.ps1 -o install.ps1
+curl.exe -fsSL https://raw.githubusercontent.com/farisalfatih/find_references_scopus/main/install/install.ps1 -o install.ps1
 powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1
 ```
 
@@ -130,7 +130,7 @@ Need Python first? `winget install -e --id Python.Python.3.12`
 **Linux / macOS**
 
 ```bash
-git clone -b v-2 https://github.com/farisalfatih/find_references_scopus.git
+git clone -b main https://github.com/farisalfatih/find_references_scopus.git
 cd find_references_scopus
 python3 -m venv .venv
 source .venv/bin/activate
@@ -142,7 +142,7 @@ findref --version
 **Windows (PowerShell)**
 
 ```powershell
-git clone -b v-2 https://github.com/farisalfatih/find_references_scopus.git
+git clone -b main https://github.com/farisalfatih/find_references_scopus.git
 cd find_references_scopus
 py -3 -m venv .venv
 .\.venv\Scripts\Activate.ps1
@@ -178,7 +178,7 @@ findref uninstall --yes --purge       # no prompts, delete everything including 
 findref uninstall --dry-run           # show what would be removed, change nothing
 
 # Alternative (works even if findref itself won't run) — same effect, config is always kept:
-curl -fsSL https://raw.githubusercontent.com/farisalfatih/find_references_scopus/v-2/install/install.sh | bash -s -- --uninstall
+curl -fsSL https://raw.githubusercontent.com/farisalfatih/find_references_scopus/main/install/install.sh | bash -s -- --uninstall
 #   Windows (run install.ps1 as in the Installation section, then):
 #   $env:FINDREF_UNINSTALL = "1"; .\install.ps1
 ```

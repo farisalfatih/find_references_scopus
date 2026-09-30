@@ -12,7 +12,7 @@
 #  dkk. - lihat `findref doctor` - supaya --uninstall tidak pernah ikut menghapusnya.)
 #
 # Pemakaian (satu baris):
-#   curl -fsSL https://raw.githubusercontent.com/farisalfatih/find_references_scopus/v-2/install/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/farisalfatih/find_references_scopus/main/install/install.sh | bash
 #
 # Atau dari folder hasil clone:
 #   bash install/install.sh [opsi]
@@ -20,7 +20,7 @@
 # Opsi:
 #   --dev              Install mode editable (untuk pengembang)
 #   --dir PATH         Lokasi instalasi (default: ~/.findref)
-#   --branch NAMA      Branch yang di-clone (default: v-2)
+#   --branch NAMA      Branch yang di-clone (default: main)
 #   --repo URL         URL repo git (default: repo resmi)
 #   --no-modify-path   Jangan ubah ~/.bashrc / ~/.zshrc
 #   --uninstall        Hapus instalasi findref (config/cache/log TIDAK dihapus;
@@ -44,7 +44,7 @@ set -euo pipefail
 # ---------------------------------------------------------------------- #
 
 REPO_URL="${FINDREF_REPO_URL:-https://github.com/farisalfatih/find_references_scopus.git}"
-REPO_BRANCH="${FINDREF_REPO_BRANCH:-v-2}"
+REPO_BRANCH="${FINDREF_REPO_BRANCH:-main}"
 INSTALL_HOME="${FINDREF_HOME:-$HOME/.findref}"
 BIN_DIR="$HOME/.local/bin"
 DEV_MODE=false

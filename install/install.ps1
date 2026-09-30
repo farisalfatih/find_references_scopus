@@ -11,7 +11,7 @@
 #
 # Pemakaian dengan curl (bawaan Windows 10/11) - jalankan di CMD atau PowerShell:
 #
-#   curl.exe -fsSL https://raw.githubusercontent.com/farisalfatih/find_references_scopus/v-2/install/install.ps1 -o install.ps1
+#   curl.exe -fsSL https://raw.githubusercontent.com/farisalfatih/find_references_scopus/main/install/install.ps1 -o install.ps1
 #   powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1
 #
 # Catatan: tulis "curl.exe" (bukan "curl") karena di PowerShell "curl" adalah alias
@@ -23,7 +23,7 @@
 # Opsi (lewat environment variable):
 #   $env:FINDREF_HOME         Lokasi instalasi (default: %LOCALAPPDATA%\findref\app)
 #   $env:FINDREF_REPO_URL     URL repo git (default: repo resmi)
-#   $env:FINDREF_REPO_BRANCH  Branch (default: v-2)
+#   $env:FINDREF_REPO_BRANCH  Branch (default: main)
 #   $env:FINDREF_DEV=1        Mode editable (butuh source lokal)
 #   $env:FINDREF_UNINSTALL=1  Hapus instalasi findref
 #
@@ -42,7 +42,7 @@ param([switch]$Uninstall)
 # ---------------------------------------------------------------------- #
 
 $RepoUrl    = if ($env:FINDREF_REPO_URL)    { $env:FINDREF_REPO_URL }    else { "https://github.com/farisalfatih/find_references_scopus.git" }
-$RepoBranch = if ($env:FINDREF_REPO_BRANCH) { $env:FINDREF_REPO_BRANCH } else { "v-2" }
+$RepoBranch = if ($env:FINDREF_REPO_BRANCH) { $env:FINDREF_REPO_BRANCH } else { "main" }
 # NOTE: findref's config/cache/log files live at %LOCALAPPDATA%\findref (via `platformdirs`,
 # see config/defaults.py). The program itself installs one level deeper, in ...\findref\app,
 # so that `--uninstall` (or `findref uninstall`) can remove the program without also wiping
