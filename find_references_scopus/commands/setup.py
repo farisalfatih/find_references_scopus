@@ -189,11 +189,14 @@ def _run_interactive(ctx: typer.Context) -> None:
         mgr.update_defaults(issn_subject_areas=final_sa)
 
         # 3c. Quartiles
-        q_choices = ["Q1", "Q2", "Q3", "Q4", "- (unranked)"]
+        _q_default = {"Q1", "Q2", "Q3", "Q4"}
+        q_choices = [
+            questionary.Choice(v, checked=(v in _q_default))
+            for v in ["Q1", "Q2", "Q3", "Q4", "- (unranked)"]
+        ]
         selected_q = questionary.checkbox(
             "Select quartiles to include:",
             choices=q_choices,
-            default=["Q1", "Q2", "Q3", "Q4"],
         ).ask()
         normalized = []
         for q in selected_q:
